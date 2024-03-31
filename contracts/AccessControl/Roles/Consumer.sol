@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
-import 'openzeppelin/contracts/access/AccessControl.sol'
+import "@openzeppelin/contracts/access/AccessControl.sol";
 
 contract Consumer is AccessControl {
   bytes32 public constant  Consumer = keccak256("CONSUMER");
@@ -9,7 +9,7 @@ contract Consumer is AccessControl {
   event ConsumerAdded(address indexed account);
   event ConsumerRemoved(address indexed account);
 
-  constructor () internal {
+  constructor () {
     _addConsumer(msg.sender);
   }
 
@@ -19,11 +19,11 @@ contract Consumer is AccessControl {
   }
 
     function isConsumer(address account) public view returns (bool) {
-       return hasRole(account,Consumer); 
+       return hasRole(Consumer,account); 
     }
 
     function amIConsumer() public view returns (bool) {
-       return hasRole(msg.sender,Consumer);
+       return hasRole(Consumer,msg.sender);
     }
 
     function assignMeAsConsumer() public {

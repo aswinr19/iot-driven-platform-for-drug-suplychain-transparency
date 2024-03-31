@@ -1,8 +1,7 @@
 // SPDX-License-Identifier: MIT
-
 pragma solidity ^0.8.9;
 
-import 'openzeppelin/contracts/access/AccessControl.sol'
+import "@openzeppelin/contracts/access/AccessControl.sol";
 
 contract Distributor is AccessControl {
   bytes32 public constant  Distributor = keccak256("DISTRIBUTOR");
@@ -10,7 +9,7 @@ contract Distributor is AccessControl {
  event DistributorAdded(address indexed account);
  event DistributorRemoved(address indexed account);
 
- constructor() internal {
+ constructor() {
     _addDistributor(msg.sender);
  }
 
@@ -24,7 +23,7 @@ contract Distributor is AccessControl {
  }
 
  function amIDistributor() public view returns (bool) {
-   return hasRole(msg.sender,Distributor);
+   return hasRole(Distributor,msg.sender);
  }
 
  function assignMeAsDistributor() public {
@@ -35,7 +34,7 @@ contract Distributor is AccessControl {
    _removeDistributor(msg.sender);
  }
 
- function _addDistributor(address acccount) internal {
+ function _addDistributor(address account) internal {
    _grantRole(Distributor,account);
    emit DistributorAdded(account);
  }

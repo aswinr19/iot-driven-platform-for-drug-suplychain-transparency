@@ -1,16 +1,17 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
-import 'openzeppelin/contracts/access/AccessControl.sol'
+import "@openzeppelin/contracts/access/AccessControl.sol";
 
-contract Manufacturer is AccessControl { 
-  bytes32 public constant  Consumer = keccak256("CONSUMER");
+contract Manufacturer is AccessControl {
+  bytes32 public constant Manufacturer = keccak256("MANUFACTURER");
 
-  event ManufacturerAdded(address indexed account);
-  event ManufacturerRemoved(address indexed account);
+    event ManufacturerAdded(address indexed account);
+    event ManufacturerRemoved(address indexed account);
 
-  constructor () internal {
-    _addManufacturer(rmsg.sender);
+
+  constructor ()  {
+    _addManufacturer(msg.sender);
   }
 
   modifier onlyManufacturer() {
@@ -19,11 +20,11 @@ contract Manufacturer is AccessControl {
   }
 
     function isManufacturer(address account) public view returns (bool) {
-       return hasRole(account,Manufacturer); 
+       return hasRole(Manufacturer,account); 
     }
 
     function amIManufacturer() public view returns (bool) {
-       return hasRole(msg.sender,Manufacturer);
+       return hasRole(Manufacturer,msg.sender);
     }
 
     function assignMeAsManufacturer() public {
