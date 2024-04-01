@@ -23,6 +23,5 @@ contract MainChain is Ownable, SupplyChain {
         address payable developerId = address(uint160(owner()));
         uint developerBounty = price*1 /100;
         developerId.transfer(developerBounty);
-
     }
 }

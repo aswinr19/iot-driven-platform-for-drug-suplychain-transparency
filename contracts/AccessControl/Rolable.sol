@@ -1,3 +1,4 @@
+//SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
 import './Roles/Consumer.sol';
@@ -19,7 +20,7 @@ contract Rolable is Consumer, Designer, Distributor, Manufacturer, Regulator, Re
   ) {
     consumer = amIConsumer();
     designer = amIDesigner();
-    distributor = amiIDistributor();
+    distributor = amIDistributor();
     manufacturer = amIManufacturer();
     regulator = amIRegulator();
     retailer = amIRetailer();

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+/ SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
@@ -30,7 +30,7 @@ contract Designer is AccessControl {
     _addDesigner(msg.sender);
   }
 
-  function renounceMeFromConsumer() public {
+  function renounceMeFromDesigner() public {
     _removeDesigner(msg.sender);
   }
 

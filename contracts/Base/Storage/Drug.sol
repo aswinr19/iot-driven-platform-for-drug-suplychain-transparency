@@ -1,5 +1,4 @@
 //SPDX-License-Identifier: MIT
-
 pragma solidity ^0.8.9;
 
 contract Drug {
@@ -22,7 +21,7 @@ contract Drug {
   struct EnvUpdateObj {
     uint timeStamp;
     uint humidity;
-    unit temperature;
+    uint temperature;
     address updaterAddress;
   }
   
@@ -58,7 +57,7 @@ contract Drug {
   }
 
   modifier isPacked(uint _slu) {
-      uint firstPKU = stockLouds[_slu}[0];
+      uint firstPKU = stockLouds[_slu][0];
       require(dItems[firstPKU].state == DrugState.Packed);
     _;
   }
@@ -103,7 +102,7 @@ contract Drug {
     modifier onlyManufacturerOrDistributorOf(uint _slu) {
         uint firstPKU = stockLouds[_slu][0];
         bool isManuf = dItems[firstPKU].manufacturerId == msg.sender;
-        bool isDistr = dItems[firstPKU].deistributorId == msg.sender;
+        bool isDistr = dItems[firstPKU].distributerId == msg.sender;
         require(isManuf || isDistr);
         _;
     }
@@ -125,18 +124,18 @@ contract Drug {
         _;
     }
 
-    constructor() public {
+    constructor()  {
         slu = 0;
         pku = 0;
     }
 
     function manufacturDrugsLoud(uint _udpc, uint quantity) public {
         uint _slu = ++slu;
-        DrugItem memory newDrugItem;
+        DrugItem storage newDrugItem;
         newDrugItem.udpc = _udpc;
         newDrugItem.slu = _slu;
         newDrugItem.state = DrugState.Manufactured;
-        newDrugItem.currentOwnerId = msg.sender;
+        newDrugItem.currentOwnerId = payable(msg.sender);
         newDrugItem.manufacturerId = msg.sender;
         newDrugItem.envUpdateCounter = 0;
         for (uint i = 0; i < quantity; i++) {
@@ -158,7 +157,7 @@ contract Drug {
         for (uint i = 0; i < quantity; i++) {
             uint _pku = stockLouds[_slu][i];
             dItems[_pku].state = DrugState.Packed;
-            dItems[_pku].packingTimeStamp = now;
+            dItems[_pku].packingTimeStamp = block.timestamp;
         }
         emit Packed(_slu);
     }
@@ -180,16 +179,15 @@ contract Drug {
     function buyDrugsLoud(uint _slu, address _receiver)
         public
         payable
-        drugLoudforSale(_slu)
+        drugLoudForSale(_slu)
     {
         uint quantity = stockLouds[_slu].length;
         for (uint i = 0; i < quantity; i++) {
             uint _pku = stockLouds[_slu][i];
             dItems[_pku].state = DrugState.Sold;
-            dItems[_pku].currentOwnerId = msg.sender;
-            dItems[_pku].deistributorId = msg.sender;
+            dItems[_pku].currentOwnerId = payable(msg.sender);
+            dItems[_pku].distributerId = msg.sender;
             dItems[_pku].retailerId = _receiver;
-
         }
         emit Sold(_slu);
     }
@@ -217,15 +215,14 @@ contract Drug {
         onlyManufacturerOrDistributorOf(_slu)
     {
         uint quantity = stockLouds[_slu].length;
-        EnvUpdateOpj memory _envUpdate = EnvUpdateOpj(
-            now,
+        EnvUpdateObj memory _envUpdate = EnvUpdateObj(
+           block.timestamp, 
             _humidity,
             _temprture,
             msg.sender
         );
         for (uint i = 0; i < quantity; i++) {
             uint _pku = stockLouds[_slu][i];
-
             dItems[_pku].envHistory[dItems[_pku].envUpdateCounter] = _envUpdate;
             dItems[_pku].envUpdateCounter ++;
         }
@@ -243,7 +240,6 @@ contract Drug {
         uint quantity = stockLouds[_slu].length;
         for (uint i = 0; i < quantity; i++) {
             uint _pku = stockLouds[_slu][i];
-
             dItems[_pku].state = DrugState.Received;
         }
         emit Received(_slu);
@@ -259,16 +255,14 @@ contract Drug {
         onlyRetailerOf(_slu)
     {
         uint quantity = stockLouds[_slu].length;
-        EnvUpdateOpj memory _envUpdate = EnvUpdateOpj(
-            now,
+        EnvUpdateObj memory _envUpdate = EnvUpdateObj(
+            block.timestamp,
             _humidity,
             _temprture,
             msg.sender
         );
-
         for (uint i = 0; i < quantity; i++) {
             uint _pku = stockLouds[_slu][i];
-
             if (dItems[_pku].state != DrugState.Purchased) {
                 dItems[_pku].envHistory[dItems[_pku].envUpdateCounter] = _envUpdate;
                 dItems[_pku].envUpdateCounter ++;
@@ -284,8 +278,7 @@ contract Drug {
         isDrugEnvTracked(_pku)
     {
         dItems[_pku].state = DrugState.Purchased;
-        dItems[_pku].currentOwnerId = msg.sender;
-
+        dItems[_pku].currentOwnerId = payable(msg.sender);
         emit Purchased(_pku);
     }
     
@@ -304,7 +297,6 @@ contract Drug {
         )
     {
         require(_slu <= slu && _slu != 0, 'Given SLU Not Created Yet!');
-
         uint sampleItemPKU = stockLouds[_slu][stockLouds[_slu].length-1];
         (
             _udpc,
@@ -318,7 +310,6 @@ contract Drug {
             ,
             
         ) = fetchDrugItemData(sampleItemPKU);
-
         quantity = stockLouds[_slu].length;
     }
 
@@ -361,7 +352,7 @@ contract Drug {
 
         currentOwner = _drugItem.currentOwnerId;
         manufacturerId = _drugItem.manufacturerId;
-        deistributorId = _drugItem.deistributorId;
+        deistributorId = _drugItem.distributerId;
         retailerId = _drugItem.retailerId;
         price = _drugItem.price;
         packingTimeStamp = _drugItem.packingTimeStamp;
@@ -397,9 +388,9 @@ contract Drug {
         uint[] memory _humiditys = new uint[](numberOfupdate);
         address[] memory _updaterAddresses = new address[](numberOfupdate);
         for (uint i = 0; i < _drugItem.envUpdateCounter; i++) {
-            EnvUpdateOpj storage _envUpdate = _drugItem.envHistory[i];
+            EnvUpdateObj storage _envUpdate = _drugItem.envHistory[i];
             _timeStamps[i] = _envUpdate.timeStamp;
-            _temprtures[i] = _envUpdate.temprture;
+            _temprtures[i] = _envUpdate.temperature;
             _humiditys[i] = _envUpdate.humidity;
             _updaterAddresses[i] = _envUpdate.updaterAddress;
         }

@@ -63,7 +63,7 @@ contract DrugDesign {
         uint _price = dDItems[_udpc].salePrice;
         uint amountToReturn = msg.value - _price;
         if (amountToReturn != 0)
-            address(msg.sender).transfer(amountToReturn);
+            payable(address(msg.sender)).transfer(amountToReturn);
     }
 
     modifier isOwned(uint _udpc) {
@@ -106,7 +106,7 @@ contract DrugDesign {
         _;
     }
 
-    constructor() public {
+    constructor() {
         udpc = 0;
     }
 
@@ -119,9 +119,9 @@ contract DrugDesign {
         public
     {
         udpc ++;
-        DrugDesignItem memory newDDItem;
+        DrugDesignItem storage newDDItem;
         newDDItem.udpc = udpc;
-        newDDItem.currentOwner = msg.sender;
+        newDDItem.currentOwner = payable(msg.sender);
         newDDItem.designerId = msg.sender;
         newDDItem.designerName = _designerName;
         newDDItem.state = DrugDesignState.Owned;
@@ -203,8 +203,8 @@ contract DrugDesign {
         checkDrugDesignPaymentValue(_udpc)
     {
         dDItems[_udpc].state = DrugDesignState.Approved;
-        dDItems[_udpc].currentOwner = msg.sender;
-        dDItems[_udpc].manufacturers.owner = msg.sender;
+        dDItems[_udpc].currentOwner = payable(msg.sender);
+        dDItems[_udpc].manufacturers.owner = payable(msg.sender);
         emit DrugDesignPurchased(_udpc);
     }
 
@@ -224,7 +224,7 @@ contract DrugDesign {
         isApproved(_udpc)
         isPartnerOpened(_udpc)
     {
-        dDItems[_udpc].manufacturers.add(msg.sender, _name, 0);
+        dDItems[_udpc].manufacturers.add(payable(msg.sender), _name, 0);
 
         emit PartnerGained(_udpc);
     }
