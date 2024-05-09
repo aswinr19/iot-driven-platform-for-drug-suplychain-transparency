@@ -142,7 +142,6 @@ contract Drug {
             uint _pku = ++pku;
             newDrugItem.pku = _pku;
             dItems[_pku] = newDrugItem;
-            
             stockLouds[_slu].push(_pku);
         }
         emit Manufactured(_slu);
