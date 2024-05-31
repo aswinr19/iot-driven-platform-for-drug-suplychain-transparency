@@ -128,9 +128,11 @@ contract Drug {
         slu = 0;
         pku = 0;
     }
-
+//manufacture 'quantity' number of drugs with the same slu and different pku and push it to
+//dItems and stockLouds for fetching later
     function manufacturDrugsLoud(uint _udpc, uint quantity) public {
         uint _slu = ++slu;
+       /* 
         DrugItem storage newDrugItem;
         newDrugItem.udpc = _udpc;
         newDrugItem.slu = _slu;
@@ -138,10 +140,20 @@ contract Drug {
         newDrugItem.currentOwnerId = payable(msg.sender);
         newDrugItem.manufacturerId = msg.sender;
         newDrugItem.envUpdateCounter = 0;
+       */
+
         for (uint i = 0; i < quantity; i++) {
             uint _pku = ++pku;
-            newDrugItem.pku = _pku;
-            dItems[_pku] = newDrugItem;
+            //newDrugItem.pku = _pku;
+          
+            dItems[_pku].pku = _pku;
+            dItems[_pku].udpc = _udpc;
+            dItems[_pku].slu= _slu;
+            dItems[_pku].state = DrugState.Manufactured;
+            dItems[_pku].currentOwnerId = payable(msg.sender);
+            dItems[_pku].manufacturerId = msg.sender;
+            dItems[_pku].envUpdateCounter = 0;
+           //dItems[_pku] = newDrugItem;
             stockLouds[_slu].push(_pku);
         }
         emit Manufactured(_slu);
