@@ -104,7 +104,7 @@ library Partnerships {
         uint count = 0;
         for (uint i = 0; i < partnership.partnersIndex; i++) {
             if (partnership.partners[i].partnerID != address(0)) {
-                count ++;
+                count++;
             }
         }
         return count;

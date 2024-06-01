@@ -1,7 +1,5 @@
 //SPDX-License-Identifier: MIT
-
 pragma solidity ^0.8.9;
-
 import '../../utils/Partnership.sol';
 
 contract DrugDesign {
@@ -58,7 +56,7 @@ contract DrugDesign {
     event PartnerClosed(uint udpc);
 
     modifier checkDrugDesignPaymentValue(uint _udpc) {
-        require(msg.value >= dDItems[_udpc].salePrice, "Not Enough!");
+        require(msg.value >= dDItems[_udpc].salePrice, "Not enough!");
         _;
         uint _price = dDItems[_udpc].salePrice;
         uint amountToReturn = msg.value - _price;
@@ -118,7 +116,19 @@ contract DrugDesign {
     )
         public
     {
-        udpc ++;
+        udpc++;
+
+       dDItems[udpc].udpc = udpc;
+       dDItems[udpc].currentOwner = payable(msg.sender);
+       dDItems[udpc].designerId = msg.sender;
+       dDItems[udpc].designerName = _designerName;
+       dDItems[udpc].state = DrugDesignState.Owned;
+       dDItems[udpc].metaData = DrugDesignMeta(_drugName, _description, _notes);
+       dDItems[udpc].salePrice = 0;
+       dDItems[udpc].manufacturers.partnersIndex = 1;
+        
+       emit Owned(udpc);
+        /*
         DrugDesignItem storage newDDItem;
         newDDItem.udpc = udpc;
         newDDItem.currentOwner = payable(msg.sender);
@@ -129,7 +139,7 @@ contract DrugDesign {
         newDDItem.salePrice = 0;
         newDDItem.manufacturers.partnersIndex = 1;
         dDItems[udpc] = newDDItem;
-        emit Owned(udpc);
+        */
     }
 
     function addTestCase(
@@ -141,7 +151,7 @@ contract DrugDesign {
         public
         onlyOwnerOf(_udpc)
     {
-        require(_udpc <= udpc, 'Given UDPC Not Created Yet!');
+        require(_udpc <= udpc, 'Invalid udpc!');
         DrugDesignTestCase memory _ddtc = DrugDesignTestCase(
             msg.sender,
             block.timestamp,
@@ -150,7 +160,7 @@ contract DrugDesign {
             _notes
         );
         dDItems[_udpc].testCases[dDItems[_udpc].testIndexed] = _ddtc;
-        dDItems[_udpc].testIndexed ++;
+        dDItems[_udpc].testIndexed++;
         if (dDItems[_udpc].state == DrugDesignState.Owned)
             dDItems[_udpc].state = DrugDesignState.Tested;
         emit TestCaseAdded(_udpc);
@@ -164,7 +174,7 @@ contract DrugDesign {
     )
         public
     {
-        require(_udpc <= udpc, 'Given UDPC Not Created Yet!');
+        require(_udpc <= udpc, 'Invalid udpc!');
         DrugDesignTestCase memory _ddtc = DrugDesignTestCase(
             msg.sender,
             block.timestamp,
@@ -173,7 +183,7 @@ contract DrugDesign {
             _notes
         );
         dDItems[_udpc].testCases[dDItems[_udpc].testIndexed] = _ddtc;
-        dDItems[_udpc].testIndexed ++;
+        dDItems[_udpc].testIndexed++;
         if (dDItems[_udpc].state == DrugDesignState.Owned)
             dDItems[_udpc].state = DrugDesignState.Tested;
 
@@ -213,7 +223,7 @@ contract DrugDesign {
         isApproved(_udpc)
         onlyOwnerOf(_udpc)
     {
-        require(_shares <= 100, "Most be less than %100");
+        require(_shares <= 100, "Must be less than %100");
         dDItems[_udpc].manufacturers.defultSharesPresntage = _shares;
         dDItems[_udpc].manufacturers.state = Partnerships.PartnershipState.Opened;
         emit UpForPartnered(_udpc);

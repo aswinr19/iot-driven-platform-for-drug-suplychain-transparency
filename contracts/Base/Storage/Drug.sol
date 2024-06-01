@@ -2,6 +2,10 @@
 pragma solidity ^0.8.9;
 
 contract Drug {
+  /* 
+     PKU - Product Kepping Unit - used to uniquely identify an individual drug
+    SLU - Stock Loud Unit - used uniquely identify a batch of drugs
+  */ 
   uint pku;
   uint slu;
 
@@ -235,7 +239,7 @@ contract Drug {
         for (uint i = 0; i < quantity; i++) {
             uint _pku = stockLouds[_slu][i];
             dItems[_pku].envHistory[dItems[_pku].envUpdateCounter] = _envUpdate;
-            dItems[_pku].envUpdateCounter ++;
+            dItems[_pku].envUpdateCounter++;
         }
         emit EnvUpdated(_slu);
     }
@@ -276,7 +280,7 @@ contract Drug {
             uint _pku = stockLouds[_slu][i];
             if (dItems[_pku].state != DrugState.Purchased) {
                 dItems[_pku].envHistory[dItems[_pku].envUpdateCounter] = _envUpdate;
-                dItems[_pku].envUpdateCounter ++;
+                dItems[_pku].envUpdateCounter++;
             }
         }
         emit EnvUpdated(_slu);
@@ -302,12 +306,12 @@ contract Drug {
             string memory state,
             address currentOwner,
             address manufacturerId,
-            address deistributorId,
+            address distributorId,
             address retailerId,
             uint price
         )
     {
-        require(_slu <= slu && _slu != 0, 'Given SLU Not Created Yet!');
+        require(_slu <= slu && _slu != 0, 'Invalid slu!');
         uint sampleItemPKU = stockLouds[_slu][stockLouds[_slu].length-1];
         (
             _udpc,
@@ -315,7 +319,7 @@ contract Drug {
             state,
             currentOwner,
             manufacturerId,
-            deistributorId,
+            distributorId,
             retailerId,
             price,
             ,
@@ -333,14 +337,14 @@ contract Drug {
             string memory state,
             address currentOwner,
             address manufacturerId,
-            address deistributorId,
+            address distributorId,
             address retailerId,
             uint price,
             uint packingTimeStamp,
             uint numberOfEnvUpdate
         )
     {
-        require(_pku <= pku && _pku != 0, 'Given PKU Not Created Yet!');
+        require(_pku <= pku && _pku != 0, 'Invalid pku!');
         DrugItem  storage _drugItem = dItems[_pku];
 
         _udpc = _drugItem.udpc;
@@ -363,7 +367,7 @@ contract Drug {
 
         currentOwner = _drugItem.currentOwnerId;
         manufacturerId = _drugItem.manufacturerId;
-        deistributorId = _drugItem.distributerId;
+        distributorId = _drugItem.distributerId;
         retailerId = _drugItem.retailerId;
         price = _drugItem.price;
         packingTimeStamp = _drugItem.packingTimeStamp;
