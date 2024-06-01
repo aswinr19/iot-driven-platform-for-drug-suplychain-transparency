@@ -4,7 +4,7 @@ pragma solidity ^0.8.9;
 import "@openzeppelin/contracts/access/AccessControl.sol";
 
 contract Distributor is AccessControl {
-  bytes32 public constant  Distributor = keccak256("DISTRIBUTOR");
+  bytes32 public immutable Distributor = keccak256("DISTRIBUTOR");
 
  event DistributorAdded(address indexed account);
  event DistributorRemoved(address indexed account);

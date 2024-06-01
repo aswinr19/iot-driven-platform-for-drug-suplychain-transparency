@@ -1,15 +1,15 @@
-/ SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
 
 contract Designer is AccessControl {
-  bytes32 public constant  Designer = keccak256("DESIGNER");
+  bytes32 public immutable Designer = keccak256("DESIGNER");
   
   event DesignerAdded(address indexed account);
   event DesignerRemoved(address indexed account);
 
-  constructor() internal {
+  constructor() {
     _addDesigner(msg.sender);
   }
 
@@ -23,7 +23,7 @@ contract Designer is AccessControl {
   }
 
   function amIDesigner() public view returns (bool) {
-    return hasRole(msg.sender,Designer);
+    return hasRole(Designer,msg.sender);
   }
 
   function assignMeAsDesigner() public {

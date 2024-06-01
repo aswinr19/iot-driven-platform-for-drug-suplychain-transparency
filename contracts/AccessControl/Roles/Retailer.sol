@@ -4,7 +4,7 @@ pragma solidity ^0.8.9;
 import "@openzeppelin/contracts/access/AccessControl.sol";
 
 contract Retailer is AccessControl { 
-  bytes32 public constant Retailer = keccak256("RETAILER");
+  bytes32 public immutable Retailer = keccak256("RETAILER");
 
   event RetailerAdded(address indexed account);
   event RetailerRemoved(address indexed account);
