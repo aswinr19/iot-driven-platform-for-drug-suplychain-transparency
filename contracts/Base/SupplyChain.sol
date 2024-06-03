@@ -8,8 +8,8 @@ import '../AccessControl/Rolable.sol';
 
 contract SupplyChain is Pausable, Drug, DrugDesign, Rolable {
 
-   constructor() public {
-    }
+//   constructor() public {
+//   }
 
     function designDrug(
         string memory _designerName,
@@ -18,6 +18,8 @@ contract SupplyChain is Pausable, Drug, DrugDesign, Rolable {
         string memory _notes
     )
         public
+        virtual 
+        override
         onlyDesigner()
         whenNotPaused()
     {
@@ -36,6 +38,8 @@ contract SupplyChain is Pausable, Drug, DrugDesign, Rolable {
         string memory _notes
     )
         public
+        virtual 
+        override
         onlyRegulator()
     {
         super.addTestCaseByRegulaor(
@@ -48,6 +52,8 @@ contract SupplyChain is Pausable, Drug, DrugDesign, Rolable {
 
     function approveDrug(uint _udpc)
         public
+        virtual 
+        override
         onlyRegulator()
         whenNotPaused()
     {
@@ -56,6 +62,8 @@ contract SupplyChain is Pausable, Drug, DrugDesign, Rolable {
 
     function purchaseDrugDesign(uint _udpc)
         public
+        virtual 
+        override
         payable
         onlyManufacturer()
     {
@@ -64,6 +72,8 @@ contract SupplyChain is Pausable, Drug, DrugDesign, Rolable {
 
     function buildPartnerContract(uint _udpc, string memory _name)
         public
+        virtual 
+        override
         onlyManufacturer()
         whenNotPaused()
     {
@@ -72,6 +82,8 @@ contract SupplyChain is Pausable, Drug, DrugDesign, Rolable {
 
     function manufacturDrugsLoud(uint _udpc, uint quantity)
         public
+        virtual 
+        override
         onlyManufacturer()
         onlyManufacturPartnerOf(_udpc)
     {
@@ -80,12 +92,14 @@ contract SupplyChain is Pausable, Drug, DrugDesign, Rolable {
 
     function buyDrugsLoud(uint _slu, address _receiver)
         public
+        virtual 
+        override
         payable
         onlyDistributor()
         whenNotPaused()
     {
         require(isRetailer(_receiver));
-        DrugItem memory sampleUnit = dItems[stockLouds[_slu][0]];
+        DrugItem storage sampleUnit = dItems[stockLouds[_slu][0]];
         uint _udpc = sampleUnit.udpc;
         uint price = sampleUnit.price;
         uint quantity = stockLouds[_slu].length;
@@ -115,6 +129,8 @@ contract SupplyChain is Pausable, Drug, DrugDesign, Rolable {
 
     function purchaseDrug (uint _pku)
         public
+        virtual 
+        override
         payable
         onlyConsumer()
         whenNotPaused()
