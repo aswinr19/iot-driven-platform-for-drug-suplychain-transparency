@@ -105,12 +105,12 @@ contract SupplyChain is Pausable, Drug, DrugDesign, Rolable {
         uint quantity = stockLouds[_slu].length;
         uint totalPrice = price*quantity;
         
-        address payable sallerId = address(sampleUnit.currentOwnerId);
+        address payable sallerId = payable(address(sampleUnit.currentOwnerId));
 
         require(msg.value >= totalPrice, "Not Enough!");
         uint amountToReturn = msg.value - totalPrice;
         if (amountToReturn != 0)
-            address(msg.sender).transfer(amountToReturn);
+            payable(address(msg.sender)).transfer(amountToReturn);
 
         super.buyDrugsLoud(_slu, _receiver);
         

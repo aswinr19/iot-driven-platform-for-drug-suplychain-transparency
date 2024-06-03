@@ -115,6 +115,7 @@ contract DrugDesign {
         string memory _notes
     )
         public
+        virtual
     {
         udpc++;
 
@@ -173,6 +174,7 @@ contract DrugDesign {
         string memory _notes
     )
         public
+        virtual
     {
         require(_udpc <= udpc, 'Invalid udpc!');
         DrugDesignTestCase memory _ddtc = DrugDesignTestCase(
@@ -190,7 +192,7 @@ contract DrugDesign {
         emit TestCaseAdded(_udpc);
     }
 
-    function approveDrug(uint _udpc) public isTested(_udpc) {
+    function approveDrug(uint _udpc) public virtual isTested(_udpc) {
         dDItems[_udpc].state = DrugDesignState.Approved;
         emit Approved(_udpc);
     }
@@ -208,6 +210,7 @@ contract DrugDesign {
 
     function purchaseDrugDesign(uint _udpc)
         public
+        virtual
         payable
         drugDesignForSale(_udpc)
         checkDrugDesignPaymentValue(_udpc)
@@ -230,7 +233,7 @@ contract DrugDesign {
     }
 
     function buildPartnerContract(uint _udpc, string memory _name)
-        public
+        public virtual
         isApproved(_udpc)
         isPartnerOpened(_udpc)
     {
