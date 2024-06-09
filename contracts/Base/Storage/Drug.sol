@@ -134,7 +134,7 @@ contract Drug {
     }
 //manufacture 'quantity' number of drugs with the same slu and different pku and push it to
 //dItems and stockLouds for fetching later
-    function manufacturDrugsLoud(uint _udpc, uint quantity) public {
+    function manufacturDrugsLoud(uint _udpc, uint quantity) public virtual {
         uint _slu = ++slu;
        /* 
         DrugItem storage newDrugItem;
@@ -194,6 +194,7 @@ contract Drug {
     function buyDrugsLoud(uint _slu, address _receiver)
         public
         payable
+        virtual
         drugLoudForSale(_slu)
     {
         uint quantity = stockLouds[_slu].length;
@@ -289,6 +290,7 @@ contract Drug {
     function purchaseDrug (uint _pku)
         public
         payable
+        virtual
         isDrugReceived(_pku)
         isDrugEnvTracked(_pku)
     {

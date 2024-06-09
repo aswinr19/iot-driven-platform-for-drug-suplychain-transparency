@@ -8,8 +8,8 @@ import '../AccessControl/Rolable.sol';
 
 contract SupplyChain is Pausable, Drug, DrugDesign, Rolable {
 
-//   constructor() public {
-//   }
+   constructor() {
+   }
 
     function designDrug(
         string memory _designerName,
@@ -103,7 +103,7 @@ contract SupplyChain is Pausable, Drug, DrugDesign, Rolable {
         uint _udpc = sampleUnit.udpc;
         uint price = sampleUnit.price;
         uint quantity = stockLouds[_slu].length;
-        uint totalPrice = price*quantity;
+        uint totalPrice = price * quantity;
         
         address payable sallerId = payable(address(sampleUnit.currentOwnerId));
 
@@ -118,11 +118,11 @@ contract SupplyChain is Pausable, Drug, DrugDesign, Rolable {
             sallerId.transfer(totalPrice);
         }
         else {
-            uint shareOfSallerPresntage = dDItems[_udpc].manufacturers.sharesOf(sallerId);
-            uint shareOfSaller = (shareOfSallerPresntage*totalPrice)/100;
-            address payable orignalSallerId = dDItems[_udpc].manufacturers.owner;
-            sallerId.transfer(shareOfSaller);
-            orignalSallerId.transfer(totalPrice - shareOfSaller);
+       //     uint shareOfSellerPersentage = dDItems[_udpc].manufacturers.sharesOf(sallerId);
+        //    uint shareOfSeller = (shareOfSellerPersentage * totalPrice) / 100;
+         //   address payable orignalSallerId = dDItems[_udpc].manufacturers.owner;
+          //  sallerId.transfer(shareOfSeller);
+           // orignalSallerId.transfer(totalPrice - shareOfSeller);
         }
         
     }
@@ -138,14 +138,14 @@ contract SupplyChain is Pausable, Drug, DrugDesign, Rolable {
         uint price = dItems[_pku].price;
         address payable sallerId = dItems[_pku].currentOwnerId;
 
-        address payable retailerId = address(uint160(dItems[_pku].retailerId));
-        uint retialerBounty = (price*5) /100;
-        uint developerBounty = (price*1) /100; 
+        address payable retailerId = payable(address(uint160(dItems[_pku].retailerId)));
+        uint retialerBounty = (price * 5) / 100;
+        uint developerBounty = (price * 1) / 100; 
 
         require(msg.value >= price, "Not Enough!");
         uint amountToReturn = msg.value - price;
         if (amountToReturn != 0)
-            address(msg.sender).transfer(amountToReturn);
+            payable(address(msg.sender)).transfer(amountToReturn);
 
         super.purchaseDrug(_pku);
 
