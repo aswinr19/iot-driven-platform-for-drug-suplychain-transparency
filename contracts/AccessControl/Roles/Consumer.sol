@@ -4,7 +4,7 @@ pragma solidity ^0.8.9;
 import "@openzeppelin/contracts/access/AccessControl.sol";
 
 contract Consumer is AccessControl {
-  bytes32 public immutable Consumer = keccak256("CONSUMER");
+  bytes32 public immutable CONSUMER_ROLE = keccak256("CONSUMER");
 
   event ConsumerAdded(address indexed account);
   event ConsumerRemoved(address indexed account);
@@ -19,11 +19,11 @@ contract Consumer is AccessControl {
   }
 
     function isConsumer(address account) public view returns (bool) {
-       return hasRole(Consumer,account); 
+       return hasRole(CONSUMER_ROLE,account); 
     }
 
     function amIConsumer() public view returns (bool) {
-       return hasRole(Consumer,msg.sender);
+       return hasRole(CONSUMER_ROLE,msg.sender);
     }
 
     function assignMeAsConsumer() public {
@@ -35,12 +35,12 @@ contract Consumer is AccessControl {
     }
 
     function _addConsumer(address account) internal {
-        _grantRole(Consumer,account);
+        _grantRole(CONSUMER_ROLE,account);
         emit ConsumerAdded(account);
     }
 
     function _removeConsumer(address account) internal {
-        _revokeRole(Consumer,account);
+        _revokeRole(CONSUMER_ROLE,account);
         emit ConsumerRemoved(account);
     }
 }

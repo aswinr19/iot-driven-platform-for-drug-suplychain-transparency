@@ -4,7 +4,7 @@ pragma solidity ^0.8.9;
 import "@openzeppelin/contracts/access/AccessControl.sol";
 
 contract Retailer is AccessControl { 
-  bytes32 public immutable Retailer = keccak256("RETAILER");
+  bytes32 public immutable RETAILER_ROLE = keccak256("RETAILER");
 
   event RetailerAdded(address indexed account);
   event RetailerRemoved(address indexed account);
@@ -19,11 +19,11 @@ contract Retailer is AccessControl {
   }
 
     function isRetailer(address account) public view returns (bool) {
-       return hasRole(Retailer,account); 
+       return hasRole(RETAILER_ROLE,account); 
     }
 
     function amIRetailer() public view returns (bool) {
-       return hasRole(Retailer,msg.sender);
+       return hasRole(RETAILER_ROLE,msg.sender);
     }
 
     function assignMeAsRetailer() public {
@@ -35,12 +35,12 @@ contract Retailer is AccessControl {
     }
 
     function _addRetailer(address account) internal {
-        _grantRole(Retailer,account);
+        _grantRole(RETAILER_ROLE,account);
         emit RetailerAdded(account);
     }
 
     function _removeRetailer(address account) internal {
-        _revokeRole(Retailer,account);
+        _revokeRole(RETAILER_ROLE,account);
         emit RetailerRemoved(account);
     }
 }

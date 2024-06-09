@@ -4,7 +4,7 @@ pragma solidity ^0.8.9;
 import "@openzeppelin/contracts/access/AccessControl.sol";
 
 contract Distributor is AccessControl {
-  bytes32 public immutable Distributor = keccak256("DISTRIBUTOR");
+  bytes32 public immutable DISTRIBUTOR_ROLE = keccak256("DISTRIBUTOR");
 
  event DistributorAdded(address indexed account);
  event DistributorRemoved(address indexed account);
@@ -19,11 +19,11 @@ contract Distributor is AccessControl {
  }
 
  function isDistributor(address account) public view returns (bool) {
-   return hasRole(Distributor,account);
+   return hasRole(DISTRIBUTOR_ROLE,account);
  }
 
  function amIDistributor() public view returns (bool) {
-   return hasRole(Distributor,msg.sender);
+   return hasRole(DISTRIBUTOR_ROLE,msg.sender);
  }
 
  function assignMeAsDistributor() public {
@@ -35,12 +35,12 @@ contract Distributor is AccessControl {
  }
 
  function _addDistributor(address account) internal {
-   _grantRole(Distributor,account);
+   _grantRole(DISTRIBUTOR_ROLE,account);
    emit DistributorAdded(account);
  }
 
  function _removeDistributor(address account) internal {
-   _revokeRole(Distributor,account);
+   _revokeRole(DISTRIBUTOR_ROLE,account);
    emit DistributorRemoved(account);
  }
 }

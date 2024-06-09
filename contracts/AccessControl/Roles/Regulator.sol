@@ -4,7 +4,7 @@ pragma solidity ^0.8.9;
 import "@openzeppelin/contracts/access/AccessControl.sol";
 
 contract Regulator is AccessControl {
-  bytes32 public immutable Regulator = keccak256("REGULATOR");
+  bytes32 public immutable REGULATOR_ROLE = keccak256("REGULATOR");
 
   event RegulatorAdded(address indexed account);
   event RegulatorRemoved(address indexed account);
@@ -19,11 +19,11 @@ contract Regulator is AccessControl {
   }
 
     function isRegulator(address account) public view returns (bool) {
-       return hasRole(Regulator,account); 
+       return hasRole( REGULATOR_ROLE,account); 
     }
 
     function amIRegulator() public view returns (bool) {
-       return hasRole(Regulator,msg.sender);
+       return hasRole(REGULATOR_ROLE,msg.sender);
     }
 
     function assignMeAsRegulator() public {
@@ -35,12 +35,12 @@ contract Regulator is AccessControl {
     }
 
     function _addRegulator(address account) internal {
-        _grantRole(Regulator,account);
+        _grantRole(REGULATOR_ROLE,account);
         emit RegulatorAdded(account);
     }
 
     function _removeRegulator(address account) internal {
-        _revokeRole(Regulator,account);
+        _revokeRole(REGULATOR_ROLE,account);
         emit RegulatorRemoved(account);
     }
 }

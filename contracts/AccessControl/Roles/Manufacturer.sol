@@ -4,11 +4,10 @@ pragma solidity ^0.8.9;
 import "@openzeppelin/contracts/access/AccessControl.sol";
 
 contract Manufacturer is AccessControl {
-  bytes32 public immutable Manufacturer = keccak256("MANUFACTURER");
+  bytes32 public immutable MANUFACTURER_ROLE = keccak256("MANUFACTURER");
 
     event ManufacturerAdded(address indexed account);
     event ManufacturerRemoved(address indexed account);
-
 
   constructor ()  {
     _addManufacturer(msg.sender);
@@ -20,11 +19,11 @@ contract Manufacturer is AccessControl {
   }
 
     function isManufacturer(address account) public view returns (bool) {
-       return hasRole(Manufacturer,account); 
+       return hasRole(MANUFACTURER_ROLE,account); 
     }
 
     function amIManufacturer() public view returns (bool) {
-       return hasRole(Manufacturer,msg.sender);
+       return hasRole( MANUFACTURER_ROLE,msg.sender);
     }
 
     function assignMeAsManufacturer() public {
@@ -36,12 +35,12 @@ contract Manufacturer is AccessControl {
     }
 
     function _addManufacturer(address account) internal {
-        _grantRole(Manufacturer,account);
+        _grantRole(MANUFACTURER_ROLE,account);
         emit ManufacturerAdded(account);
     }
 
     function _removeManufacturer(address account) internal {
-        _revokeRole(Manufacturer,account);
+        _revokeRole(MANUFACTURER_ROLE,account);
         emit ManufacturerRemoved(account);
     }
 }

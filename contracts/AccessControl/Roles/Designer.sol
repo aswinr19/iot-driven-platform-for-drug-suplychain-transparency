@@ -4,7 +4,7 @@ pragma solidity ^0.8.9;
 import "@openzeppelin/contracts/access/AccessControl.sol";
 
 contract Designer is AccessControl {
-  bytes32 public immutable Designer = keccak256("DESIGNER");
+  bytes32 public immutable DESIGNER_ROLE = keccak256("DESIGNER");
   
   event DesignerAdded(address indexed account);
   event DesignerRemoved(address indexed account);
@@ -19,11 +19,11 @@ contract Designer is AccessControl {
   }
 
   function isDesigner(address account) public view returns (bool) {
-    return hasRole(Designer,account);
+    return hasRole(DESIGNER_ROLE,account);
   }
 
   function amIDesigner() public view returns (bool) {
-    return hasRole(Designer,msg.sender);
+    return hasRole(DESIGNER_ROLE,msg.sender);
   }
 
   function assignMeAsDesigner() public {
@@ -35,12 +35,12 @@ contract Designer is AccessControl {
   }
 
   function _addDesigner(address account) internal {
-    _grantRole(Designer,account);
+    _grantRole(DESIGNER_ROLE,account);
     emit DesignerAdded(account);
   }
 
   function _removeDesigner(address account) internal {
-    _revokeRole(Designer,account);
+    _revokeRole(DESIGNER_ROLE,account);
     emit DesignerRemoved(account);
   }
 }
