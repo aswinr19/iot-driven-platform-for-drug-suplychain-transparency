@@ -1,6 +1,7 @@
-import type { Metadata } from "next";
+import type { Metadata } from 'next';
 import "./globals.css";
-import Nav from '../components/Nav';
+import Nav from '../components/nav';
+import { MainChainProvider } from '../context/MainChain';
 
 export const metadata: Metadata = {
   title: "IoT Driven Platform For Drug Supplychain Trannsparency",
@@ -14,8 +15,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <MainChainProvider>
       <Nav />
       <body>{children}</body>
+      </MainChainProvider>
     </html>
   );
 }
