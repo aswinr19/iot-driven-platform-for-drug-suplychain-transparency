@@ -17,11 +17,34 @@ export const MainChainProvider = ({ children }) => {
   
     try {
       if( !window.ethereum) return setOpenError(true), setError('Install metamask');
-    } catch(err) {}
+
+      const accounts = await window.ethereum.request({ 
+        method: 'eth_accounts'
+      });
+
+      if(accounts.length) setCurrentAccount(accounts[0]);
+      else console.log('No account found!');
+
+    } catch(err) {
+      console.log('Something went wrong while connecting to account!');
+    }
   };
 
+  useEffect(() => {
+    checkIfWalletIsConnected();
+  }, []);
+
   const connectWallet = async () => {
-    try {} catch(err) {}
+    try {
+        if(!window.ethereum) return console.log('Install metamask!');
+        
+        const accounts = await window.ethereum.request({ 
+          method: 'eth_requestAccounts'
+      }); 
+      setCurrentAccount(accounts[0]);
+    } catch(err) {
+      console.log('Error while connecting to account!');
+    }
   };
   const disconnectWallet = () => {
       setCurrentAccount(null);
@@ -87,5 +110,13 @@ export const MainChainProvider = ({ children }) => {
   const addTxToLogs = async () => {};
 
   const addToLogs = async () => {};
+
+  return (
+      <MainChainContext.Provider
+        value={{}}
+    >
+        {children}
+      </MainChainContext.Provider >
+  );
 };
 
