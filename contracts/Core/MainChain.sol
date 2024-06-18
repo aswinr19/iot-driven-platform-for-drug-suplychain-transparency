@@ -6,7 +6,7 @@ import '../Base/SupplyChain.sol';
 
 contract MainChain is Ownable, SupplyChain {
  
-  constructor() Ownable() SupplyChain()  {}
+  constructor() Ownable(msg.sender) SupplyChain()  {}
 
   //function kill() public onlyOwner {
   //  selfdestruct(msg.sender);
@@ -21,7 +21,7 @@ contract MainChain is Ownable, SupplyChain {
 
         uint price = dItems[_pku].price;
         address payable developerId = payable(owner());
-        uint developerBounty = price * 1 /100;
+        uint developerBounty = price * 1 / 100;
         developerId.transfer(developerBounty);
     }
 }
