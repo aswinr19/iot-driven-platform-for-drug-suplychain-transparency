@@ -1,17 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import Web3Modal from 'web3modal';
 import { ethers } from 'ethers';
-import { mainChainABI, mainChainAddress } from './constants';
+import { mainChainABI, mainChainAddress } from './Constants';
 
 const fetchContract = (signerOrProvider) => {
   new ethers.Contract( mainChainAddress, mainChainABI, signerOrProvider);
 };
 
-export const MainChainContext = React.createContext();
+export const MainChainContext = React.createContext(null);
 
 export const MainChainProvider = ({ children }) => {
   const title: string = 'Supply Chain Contract';
   const [currentAccount, setCurrentAccount] = useState<string | null>('');
+  const [logs, setLogs] = useState<string | null>('');
 
   const checkIfWalletIsConnected = async () => {
   
@@ -49,74 +50,510 @@ export const MainChainProvider = ({ children }) => {
   const disconnectWallet = () => {
       setCurrentAccount(null);
   };
+
   const currentAccountRoles = async () => {
-    
+  
+    const web3Modal = new Web3Modal();
+    const connection = await web3Modal.connect();
+    const provider = new ethers.BrowserProvider(connection);
+    const signer = await provider.getSigner();
+    const contract = fetchContract(signer);
+
+    try {
+      const transaction = await contract.whoAmI(currentAccount);
+
+      await transaction.wait();
+
+      addToLogs(transaction);
+    } catch(err) {
+      console.log(`Contract call failed ${ err }`);
+    }
   };
 
   const addRoleToMe = async (role: string) => {
+   
+    const web3Modal = new Web3Modal();
+    const connection = await web3Modal.connect();
+    const provider = new ethers.BrowserProvider(connection);
+    const signer = await provider.getSigner();
+    const contract = fetchContract(signer);
+
+    let transaction;
+
+    try {
+      switch(role){
+        case 'designer': 
+          transaction = await contract.assignMeAsDesigner(currentAccount);
+          break;
+        case 'regulator':
+          transaction = await contract.addRegulator(currentAccount);
+          break;
+        case 'manufacturer':
+          transaction = await contract.assignMeAsManufacturer(currentAccount);
+        break;
+        case 'distributor':
+          transaction = await contract.assignMeAsDistributor(currentAccount);
+        break;
+        case 'retailer':
+          transaction = await contract.assignMeAsRetailer(currentAccount);
+        break;
+        case 'consumer':
+          transaction = await contract.assignMeAsConsumer(currentAccount);
+        break;
+      }
+
+      await transaction.wait();
+      
+      addTxToLogs(transaction);
+      currentAccountRoles();
+    } catch(err) {
+      setErrMessage(err.message);
+    }
+  };
+
+  const removeFromMe = async (role: string) => {
+    
+    const web3Modal = new Web3Modal();
+    const connection = await web3Modal.connect();
+    const provider = new ethers.BrowserProvider(connection);
+    const signer = await provider.getSigner();
+    const contract = fetchContract(signer);
+
+    let transaction;
+
+    try {
+      switch(role){
+        case 'designer': 
+          transaction = await contract.renounceMeFromDesigner(currentAccount);
+          break;
+        case 'regulator':
+          transaction = await contract.renounceMeFromRegulator(currentAccount);
+          break;
+        case 'manufacturer':
+          transaction = await contract.renounceMeFromManufacturer(currentAccount);
+        break;
+        case 'distributor':
+          transaction = await contract.renounceMeFromDistributor(currentAccount);
+        break;
+        case 'retailer':
+          transaction = await contract.renounceMeFromRetailer(currentAccount);
+        break;
+        case 'consumer':
+          transaction = await contract.renounceMeFromConsumer(currentAccount);
+        break;
+      }
+
+      await transaction.wait();
+      
+      addTxToLogs(transaction);
+      currentAccountRoles();
+    } catch(err) {
+      setErrMessage(err.message);
+    }
 
   };
 
-  const removeRoleFromMe = async (role: string) => {
+  const addRegulator = async () => {
+    try {
+      const transaction = await contract.addRegulator(regulatorToBeAdded);
+      await transaction.wait();
 
+      addTxToLogs(transaction);
+
+    } catch(err) { setErrMessage(err.message); }
   };
 
-  const addRegulator = async () => {};
+  const addDrugDesign = async () => {
+  
+    try {
+        const transaction = await contract.designDrug(
+        drugDesgignerName,
+        drugDesignName,
+        drugDesignDescription,
+        drugDrsignNotes
+      );
 
-  const addDrugDesign = async () => {};
+        await transaction.wait();
+    } catch(err) { setErrMessage(err.message); }
+  };
 
-  const addDrugTest = async () => {};
+  const addDrugTest = async () => {
+    try {
+      const transaction = await contract.addTestCase(
+        drugTestUDPC,
+        drugTestDesc,
+        drugTestPass,
+        drugTestNotes
+      );
+
+      await transaction.wait();
+      addTxToLogs(transaction);
+
+    } catch(err) { 
+      setErrMessage(err.message);
+    }
+  };
 
   const addDrugTestByRegulator = async () => {};
-
-  const approveDrug = async () => {};
-
-  const sellDrugDesign = async () => {};
-
-  const buyDrugDesign = async () => {};
-
-  const updatePartnerState = async () => {};
-
-  const addPartner = async () => {};
-
-  const assignPartner = async () => {};
-
-  const manufactureDrugLoad = async () => {};
-
-  const packDrugLoad = async () => {};
-
-  const buyDrugLoad = async () => {};
+      try{
+      const transaction = await contract.addTestCaseByRegulator(
+        drugTestUDPC,
+      drugTestDesc,
+      drugTestPass,
+      DrugTestNotes
+    );
+    await transaction.wait();
+    addTxToLogs(transaction);
+  } catch(err) {
+    seErrMessage(err.message);
+  }
   
-  const shipDrugLoad = async () => {};
+  const approveDrug = async () => {
+  try{
+      const transaction = await contract.approveDrug(drugApproveUDPC);
+    await transaction.wait();
+      addTxToLogs(transaction);
+  } catch(err) {
+    seErrMessage(err.message);
+  }
+  };
 
-  const receiveDrugLoad = async () => {};
+  const sellDrugDesign = async () => {
+ 
+    try{
+      const priceInWei = ;
+      const transaction = await contract.upForSale(sellDrugUDPC, priceInWei);
+    await transaction.wait();
+      addTxToLogs(transaction);
+  } catch(err) {
+    seErrMessage(err.message);
+  }
+  };
 
-  const updateShipEnv = async () => {};
+  const buyDrugDesign = async () => {
+    
+    try{
+      const priceInWei = ;
+      const transaction = await contract.purchaseDrugDesign(buyDrugUDPC);
 
-  const updateStockEnv = async () => {};
+    await transaction.wait();
+  } catch(err) {
+    seErrMessage(err.message);
+  }
+  };
 
-  const purchaseDrug = async () => {};
+  const updatePartnerState = async (state: string) => {
+    try{
+      let transaction;
 
-  const fetchDrugDesignData = async () => {};
+      switch(state) {
+        case 'close': 
+          transaction = await contract.closeManufactPartnership(partnerStateUDPC, currentAccount);
+          break;
+        case 'open':
+         transaction = await contract.openManufacPartnership(
+            partnerStateUDPC,
+            partnerStateShare,
+            currentAccount
+          );
+          break;
+        case 'restrict':
+          transaction = await contract.restrictManufactPartnership(partnerStateUDPC, currentAccount);
+        break;
+      }
+    await transaction.wait();
 
-  const fetchDrugLoadData = async () => {};
+      addTxToLogs(transaction);
+  } catch(err) {
+    seErrMessage(err.message);
+  }
+  };
 
-  const getDrugLoadPKUs = async () => {};
+  const addPartner = async () => {
+  
+    try{
+      const transaction = await contract.buildRestrictPartnerContract(
+        addPartnerUDPC,
+        addPartnerAddress,
+        addPartnerName,
+        addPartnerShare
+        );
+    await transaction.wait();
+      addtxToLogs(transaction);
+  } catch(err) {
+    seErrMessage(err.message);
+  }
+};
 
-  const fetchDrugData = async () => {};
+  const assignPartner = async () => {
+  
+    try{
+      const transaction = await contract.buildPartnerContract(
+        buildPartnerUDPC,
+        buildPartnerName,
+        currentAccount
+      );
 
-  const fetchEnvHistory = async () => {};
+    await transaction.wait();
 
-  const addTxToLogs = async () => {};
+    addTxToLogs(transaction);
+  } catch(err) {
+    seErrMessage(err.message);
+  }
+  };
 
-  const addToLogs = async () => {};
+  const manufactureDrugLoad = async () => {
+
+  try{
+      const transaction = await contract.manufacureDrugsLoud(
+        manufactureUDPC
+        manufactureQuantity
+        currentAccount
+      );
+
+    await transaction.wait();
+
+    addTxToLogs(transaction);
+  } catch(err) {
+    seErrMessage(err.message);
+  }
+};
+
+  const packDrugLoad = async () => {
+  
+    try{
+      const transaction = await contract.packDrugsLoud(
+        packSLU,
+        currentAccount
+      );
+
+    await transaction.wait();
+    addTxToLogs(transaction);
+  } catch(err) {
+    seErrMessage(err.message);
+  }
+};
+
+  const addDrugLoad = async () => {
+
+  try {
+      const priceInWei = ;
+      const transaction = await contract.addDrugsLoud(
+        addSLU,
+      priceInWei,
+      currentAccount
+      );
+      
+      await transaction.wait();
+      addTxToLogs(transaction);
+    } catch(err) {
+    setErrMessage(err.message);
+    }
+ };
+  const buyDrugLoad = async () => {
+
+    try {
+      const valueInWei = ;
+      const retailerAccount;
+      const retailerAddress;
+      const transaction = await contract.buyDrugsLoud(
+        buySLU,
+        retailerAccount,
+        currentAccount
+      );
+
+    await transaction.wait();
+    addTxToLogs(transaction);
+    } catch(err) {
+    seErrMessage(err.message);
+  }
+ };
+  
+  const shipDrugLoad = async () => {
+
+    try {
+      const transaction = await contract.shipDrugsLoud(
+        shipSLU,
+        currentAccount
+      );
+
+    await transaction.wait();
+    addTxToLogs(transaction);
+  } catch(err) {
+    seErrMessage(err.message);
+  }
+ };
+
+  const receiveDrugLoad = async () => {
+  
+    try {
+      const transaction = await contract.receiveDrugsLoud(
+        receiveSLU,
+        currentAccount
+      );
+
+    await transaction.wait();
+    addTxToLogs(transaction);
+  } catch(err) {
+    seErrMessage(err.message);
+  }
+ };
+
+  const updateShipEnv = async () => {
+
+    try {
+      const transaction = await contract.updateDrugsLoudShippmentEnv(
+        shipEnvSLU,
+        shipEnvHumidity,
+        shipEnvTemperature,
+        currentAccount
+      );
+
+    await transaction.wait();
+    addTxToLogs(transaction);
+  } catch(err) {
+    seErrMessage(err.message);
+  }
+};
+
+  const updateStockEnv = async () => {
+
+    try {
+      const transaction = await contract.updateDrugsLoudStockEnv(
+        stockEnvSLU,
+        stockEnvHumidity,
+        stockEnvTemperature,
+        currentAccount
+      );
+
+    await transaction.wait();
+    addTxToLogs(transation);
+  } catch(err) {
+    seErrMessage(err.message);
+  }
+ };
+
+  const purchaseDrug = async () => {
+  
+    try {
+      const valueInWei = ;
+      const transaction = await contract.purchaseDrug(
+        purchasePKU,
+        currentAccount,
+        valueInWei
+      );
+
+    await transaction.wait();
+    addTxToLogs(transaction);
+  } catch(err) {
+    seErrMessage(err.message);
+  }
+ };
+
+  const fetchDrugDesignData = async () => {
+
+    try {
+      const transaction = await contract.fetchDrugDesignData(
+        udpc,
+        currentAccount
+      );
+
+    await transaction.wait();
+    addTxToLogs(transaction);
+  } catch(err) {
+    seErrMessage(err.message);
+  }
+ };
+
+  const fetchDrugLoadData = async () => {
+
+    try {
+      const transaction = await contract.fetchDrugLoudData(
+        slu,
+        currentAccount
+      );
+
+    await transaction.wait();
+    addTxToLogs(transaction);
+  } catch(err) {
+    seErrMessage(err.message);
+  }
+ };
+
+  const getDrugLoadPKUs = async () => {
+
+    try {
+      const transaction = await contract.fetchLoudPKUs(
+        slu,
+        currentAccount
+      );
+
+    await transaction.wait();
+    addTxToLogs(transaction);
+  } catch(err) {
+    seErrMessage(err.message);
+  }
+ };
+
+  const fetchDrugData = async () => {
+    
+    try {
+      const transaction = await contract.fetchDrugItemData(
+        fetchDrugPKU,
+        currentAddress
+      );
+
+    await transaction.wait();
+    addToLogs(transaction);
+  } catch(err) {
+    seErrMessage(err.message);
+  }
+};
+
+  const fetchEnvHistory = async () => {
+
+    try {
+      const transaction = await contract.fetchEnvHistory(
+        fetchDrugPKU,
+        currentAccount
+      );
+    await transaction.wait();
+    addToLogs(transaction);
+  } catch(err) {
+    seErrMessage(err.message);
+  }
+ };
+
+  const addTxToLogs = async (tx) => {
+    const txHash = tx.transactionHash;
+    const eventName = Object.keys(tx.events)[0];
+    const eventValueName = Object.keys(tx.events[eventName]['returnValues'])[1];
+    const eventValue = tx.events[eventName]['returnValues'][eventValueName];
+
+    let updatedLogs = []
+    const newLogHash = `$|>>Transaction Hash: ${txHash}`
+    const newLogEvent = `|----|Event: ${eventName} (${eventValueName}: ${eventValue})`;
+
+    updatedLogs.push(newLogHash + newLogEvent, ...logs);
+    setLogs(updatedLogs);
+  };
+
+  const addToLogs = async (logObject) => {
+    let updatedLogs = [];
+    const dataKeys = Object.keys(logObject);
+    const numberOfData = dataKeys.length;
+    let logy = ''
+
+    for(let i = (numberOfData / 2); i< numberOfData; i++) {
+      logy += dataKeys[i] + ': ' + logObject[dataKeys[i]] + ', ';
+    }
+
+    updatedLogs.push(logy, ...logs);
+    setLogs(updatedLogs);
+  };
 
   return (
-      <MainChainContext.Provider
-        value={{}}
-    >
-        {children}
-      </MainChainContext.Provider >
+    <> </> 
   );
 };
 
