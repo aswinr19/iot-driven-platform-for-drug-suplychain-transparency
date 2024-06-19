@@ -12,7 +12,7 @@ export const MainChainContext = React.createContext(null);
 export const MainChainProvider = ({ children }) => {
   const title: string = 'Supply Chain Contract';
   const [currentAccount, setCurrentAccount] = useState<string | null>('');
-  const [logs, setLogs] = useState<string | null>('');
+  const [logs, setLogs] = useState<string[] | null>([]);
 
   const checkIfWalletIsConnected = async () => {
   
@@ -154,6 +154,13 @@ export const MainChainProvider = ({ children }) => {
   };
 
   const addRegulator = async () => {
+    
+    const web3Modal = new Web3Modal();
+    const connection = await web3Modal.connect();
+    const provider = new ethers.BrowserProvider(connection);
+    const signer = await provider.getSigner();
+    const contract = fetchContract(signer);
+
     try {
       const transaction = await contract.addRegulator(regulatorToBeAdded);
       await transaction.wait();
@@ -164,7 +171,13 @@ export const MainChainProvider = ({ children }) => {
   };
 
   const addDrugDesign = async () => {
-  
+
+    const web3Modal = new Web3Modal();
+    const connection = await web3Modal.connect();
+    const provider = new ethers.BrowserProvider(connection);
+    const signer = await provider.getSigner();
+    const contract = fetchContract(signer);
+
     try {
         const transaction = await contract.designDrug(
         drugDesgignerName,
@@ -178,6 +191,14 @@ export const MainChainProvider = ({ children }) => {
   };
 
   const addDrugTest = async () => {
+    const web3Modal = new Web3Modal();
+    const connection = await web3Modal.connect();
+    const provider = new ethers.BrowserProvider(connection);
+    const signer = await provider.getSigner();
+    const contract = fetchContract(signer);
+
+
+
     try {
       const transaction = await contract.addTestCase(
         drugTestUDPC,
@@ -195,7 +216,16 @@ export const MainChainProvider = ({ children }) => {
   };
 
   const addDrugTestByRegulator = async () => {};
-      try{
+
+    const web3Modal = new Web3Modal();
+    const connection = await web3Modal.connect();
+    const provider = new ethers.BrowserProvider(connection);
+    const signer = await provider.getSigner();
+    const contract = fetchContract(signer);
+
+
+
+  try{
       const transaction = await contract.addTestCaseByRegulator(
         drugTestUDPC,
       drugTestDesc,
@@ -209,7 +239,15 @@ export const MainChainProvider = ({ children }) => {
   }
   
   const approveDrug = async () => {
-  try{
+    const web3Modal = new Web3Modal();
+    const connection = await web3Modal.connect();
+    const provider = new ethers.BrowserProvider(connection);
+    const signer = await provider.getSigner();
+    const contract = fetchContract(signer);
+
+
+
+    try{
       const transaction = await contract.approveDrug(drugApproveUDPC);
     await transaction.wait();
       addTxToLogs(transaction);
@@ -219,11 +257,17 @@ export const MainChainProvider = ({ children }) => {
   };
 
   const sellDrugDesign = async () => {
- 
+
+    const web3Modal = new Web3Modal();
+    const connection = await web3Modal.connect();
+    const provider = new ethers.BrowserProvider(connection);
+    const signer = await provider.getSigner();
+    const contract = fetchContract(signer);
+
     try{
-      const priceInWei = ;
+      const priceInWei = await ethers.parseEther("");
       const transaction = await contract.upForSale(sellDrugUDPC, priceInWei);
-    await transaction.wait();
+      await transaction.wait();
       addTxToLogs(transaction);
   } catch(err) {
     seErrMessage(err.message);
@@ -231,9 +275,16 @@ export const MainChainProvider = ({ children }) => {
   };
 
   const buyDrugDesign = async () => {
-    
+
+    const web3Modal = new Web3Modal();
+    const connection = await web3Modal.connect();
+    const provider = new ethers.BrowserProvider(connection);
+    const signer = await provider.getSigner();
+    const contract = fetchContract(signer);
+
+  
     try{
-      const priceInWei = ;
+      const priceInWei = await ethers.parseEther("");
       const transaction = await contract.purchaseDrugDesign(buyDrugUDPC);
 
     await transaction.wait();
@@ -243,7 +294,15 @@ export const MainChainProvider = ({ children }) => {
   };
 
   const updatePartnerState = async (state: string) => {
+  
+    const web3Modal = new Web3Modal();
+    const connection = await web3Modal.connect();
+    const provider = new ethers.BrowserProvider(connection);
+    const signer = await provider.getSigner();
+    const contract = fetchContract(signer);
+
     try{
+
       let transaction;
 
       switch(state) {
@@ -261,7 +320,8 @@ export const MainChainProvider = ({ children }) => {
           transaction = await contract.restrictManufactPartnership(partnerStateUDPC, currentAccount);
         break;
       }
-    await transaction.wait();
+    
+      await transaction.wait();
 
       addTxToLogs(transaction);
   } catch(err) {
@@ -270,7 +330,14 @@ export const MainChainProvider = ({ children }) => {
   };
 
   const addPartner = async () => {
-  
+
+    const web3Modal = new Web3Modal();
+    const connection = await web3Modal.connect();
+    const provider = new ethers.BrowserProvider(connection);
+    const signer = await provider.getSigner();
+    const contract = fetchContract(signer);
+
+
     try{
       const transaction = await contract.buildRestrictPartnerContract(
         addPartnerUDPC,
@@ -286,7 +353,13 @@ export const MainChainProvider = ({ children }) => {
 };
 
   const assignPartner = async () => {
-  
+
+    const web3Modal = new Web3Modal();
+    const connection = await web3Modal.connect();
+    const provider = new ethers.BrowserProvider(connection);
+    const signer = await provider.getSigner();
+    const contract = fetchContract(signer);
+
     try{
       const transaction = await contract.buildPartnerContract(
         buildPartnerUDPC,
@@ -304,6 +377,12 @@ export const MainChainProvider = ({ children }) => {
 
   const manufactureDrugLoad = async () => {
 
+    const web3Modal = new Web3Modal();
+    const connection = await web3Modal.connect();
+    const provider = new ethers.BrowserProvider(connection);
+    const signer = await provider.getSigner();
+    const contract = fetchContract(signer);
+
   try{
       const transaction = await contract.manufacureDrugsLoud(
         manufactureUDPC
@@ -320,7 +399,13 @@ export const MainChainProvider = ({ children }) => {
 };
 
   const packDrugLoad = async () => {
-  
+
+     const web3Modal = new Web3Modal();
+    const connection = await web3Modal.connect();
+    const provider = new ethers.BrowserProvider(connection);
+    const signer = await provider.getSigner();
+    const contract = fetchContract(signer);
+ 
     try{
       const transaction = await contract.packDrugsLoud(
         packSLU,
@@ -336,8 +421,14 @@ export const MainChainProvider = ({ children }) => {
 
   const addDrugLoad = async () => {
 
+    const web3Modal = new Web3Modal();
+    const connection = await web3Modal.connect();
+    const provider = new ethers.BrowserProvider(connection);
+    const signer = await provider.getSigner();
+    const contract = fetchContract(signer);
+
   try {
-      const priceInWei = ;
+      const priceInWei = await ethers.parseEther("");
       const transaction = await contract.addDrugsLoud(
         addSLU,
       priceInWei,
@@ -352,8 +443,14 @@ export const MainChainProvider = ({ children }) => {
  };
   const buyDrugLoad = async () => {
 
+    const web3Modal = new Web3Modal();
+    const connection = await web3Modal.connect();
+    const provider = new ethers.BrowserProvider(connection);
+    const signer = await provider.getSigner();
+    const contract = fetchContract(signer);
+
     try {
-      const valueInWei = ;
+      const valueInWei = await ethers.parseEther("");
       const retailerAccount;
       const retailerAddress;
       const transaction = await contract.buyDrugsLoud(
@@ -371,6 +468,12 @@ export const MainChainProvider = ({ children }) => {
   
   const shipDrugLoad = async () => {
 
+    const web3Modal = new Web3Modal();
+    const connection = await web3Modal.connect();
+    const provider = new ethers.BrowserProvider(connection);
+    const signer = await provider.getSigner();
+    const contract = fetchContract(signer);
+
     try {
       const transaction = await contract.shipDrugsLoud(
         shipSLU,
@@ -385,7 +488,13 @@ export const MainChainProvider = ({ children }) => {
  };
 
   const receiveDrugLoad = async () => {
-  
+
+    const web3Modal = new Web3Modal();
+    const connection = await web3Modal.connect();
+    const provider = new ethers.BrowserProvider(connection);
+    const signer = await provider.getSigner();
+    const contract = fetchContract(signer);
+
     try {
       const transaction = await contract.receiveDrugsLoud(
         receiveSLU,
@@ -400,6 +509,12 @@ export const MainChainProvider = ({ children }) => {
  };
 
   const updateShipEnv = async () => {
+
+    const web3Modal = new Web3Modal();
+    const connection = await web3Modal.connect();
+    const provider = new ethers.BrowserProvider(connection);
+    const signer = await provider.getSigner();
+    const contract = fetchContract(signer);
 
     try {
       const transaction = await contract.updateDrugsLoudShippmentEnv(
@@ -418,6 +533,12 @@ export const MainChainProvider = ({ children }) => {
 
   const updateStockEnv = async () => {
 
+    const web3Modal = new Web3Modal();
+    const connection = await web3Modal.connect();
+    const provider = new ethers.BrowserProvider(connection);
+    const signer = await provider.getSigner();
+    const contract = fetchContract(signer);
+
     try {
       const transaction = await contract.updateDrugsLoudStockEnv(
         stockEnvSLU,
@@ -434,7 +555,13 @@ export const MainChainProvider = ({ children }) => {
  };
 
   const purchaseDrug = async () => {
-  
+
+    const web3Modal = new Web3Modal();
+    const connection = await web3Modal.connect();
+    const provider = new ethers.BrowserProvider(connection);
+    const signer = await provider.getSigner();
+    const contract = fetchContract(signer);
+ 
     try {
       const valueInWei = ;
       const transaction = await contract.purchaseDrug(
@@ -452,6 +579,12 @@ export const MainChainProvider = ({ children }) => {
 
   const fetchDrugDesignData = async () => {
 
+    const web3Modal = new Web3Modal();
+    const connection = await web3Modal.connect();
+    const provider = new ethers.BrowserProvider(connection);
+    const signer = await provider.getSigner();
+    const contract = fetchContract(signer);
+
     try {
       const transaction = await contract.fetchDrugDesignData(
         udpc,
@@ -466,6 +599,12 @@ export const MainChainProvider = ({ children }) => {
  };
 
   const fetchDrugLoadData = async () => {
+
+    const web3Modal = new Web3Modal();
+    const connection = await web3Modal.connect();
+    const provider = new ethers.BrowserProvider(connection);
+    const signer = await provider.getSigner();
+    const contract = fetchContract(signer);
 
     try {
       const transaction = await contract.fetchDrugLoudData(
@@ -482,6 +621,12 @@ export const MainChainProvider = ({ children }) => {
 
   const getDrugLoadPKUs = async () => {
 
+    const web3Modal = new Web3Modal();
+    const connection = await web3Modal.connect();
+    const provider = new ethers.BrowserProvider(connection);
+    const signer = await provider.getSigner();
+    const contract = fetchContract(signer);
+
     try {
       const transaction = await contract.fetchLoudPKUs(
         slu,
@@ -496,7 +641,13 @@ export const MainChainProvider = ({ children }) => {
  };
 
   const fetchDrugData = async () => {
-    
+
+    const web3Modal = new Web3Modal();
+    const connection = await web3Modal.connect();
+    const provider = new ethers.BrowserProvider(connection);
+    const signer = await provider.getSigner();
+    const contract = fetchContract(signer);
+
     try {
       const transaction = await contract.fetchDrugItemData(
         fetchDrugPKU,
@@ -512,6 +663,12 @@ export const MainChainProvider = ({ children }) => {
 
   const fetchEnvHistory = async () => {
 
+    const web3Modal = new Web3Modal();
+    const connection = await web3Modal.connect();
+    const provider = new ethers.BrowserProvider(connection);
+    const signer = await provider.getSigner();
+    const contract = fetchContract(signer);
+
     try {
       const transaction = await contract.fetchEnvHistory(
         fetchDrugPKU,
@@ -525,6 +682,7 @@ export const MainChainProvider = ({ children }) => {
  };
 
   const addTxToLogs = async (tx) => {
+
     const txHash = tx.transactionHash;
     const eventName = Object.keys(tx.events)[0];
     const eventValueName = Object.keys(tx.events[eventName]['returnValues'])[1];
@@ -539,6 +697,7 @@ export const MainChainProvider = ({ children }) => {
   };
 
   const addToLogs = async (logObject) => {
+    
     let updatedLogs = [];
     const dataKeys = Object.keys(logObject);
     const numberOfData = dataKeys.length;
