@@ -1,13 +1,18 @@
 'use client';
 
 import React, { useState, useEffect, useContext } from 'react';
-import { MainChainContext } from '../context/MainChain';
+import { MainchainContext } from '../context/MainChain';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 
 export default function Home() {
-  const { currentAccount, connectWallet, disconnectWallet } = useContext(MainChainContext);
+  const { currentAccount, connectWallet, } = useContext(MainchainContext);
   const [logs, setLogs] = useState<string[]>([]);
+  const [roles, setRoles] = useState([])
+	const [activeTab, setActiveTab] = useState('1')
+	const [isLoading, setIsLoading] = useState(true)
+	const [errMessage, setErrMessage] = useState('')
+
 
   return (
     <>

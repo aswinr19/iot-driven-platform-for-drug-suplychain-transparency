@@ -3,21 +3,42 @@ import Web3Modal from 'web3modal';
 import { ethers } from 'ethers';
 import { mainChainABI, mainChainAddress } from './Constants';
 
-const fetchContract = (signerOrProvider) => {
+const fetchContract = (signerOrProvider: any) => {
   new ethers.Contract( mainChainAddress, mainChainABI, signerOrProvider);
 };
 
-export const MainChainContext = React.createContext(null);
+export const MainchainContext = React.createContext(null);
 
-export const MainChainProvider = ({ children }) => {
-  const title: string = 'Supply Chain Contract';
+type Role = {
+  role: string,
+  isAssign: boolean
+};
+interface MyContract extends ethers.Contract {
+  whoAmI(overrides?: ethers.CallOverrides): Promise<Record<string, boolean>>;
+  assignMeAsDesigner(overrides?: ethers.Overrides): Promise<ethers.ContractTransaction>;
+  addRegulator(account: string, overrides?: ethers.Overrides): Promise<ethers.ContractTransaction>;
+  assignMeAsManufacturer(overrides?: ethers.Overrides): Promise<ethers.ContractTransaction>;
+  assignMeAsDistributor(overrides?: ethers.Overrides): Promise<ethers.ContractTransaction>;
+  assignMeAsRetailer(overrides?: ethers.Overrides): Promise<ethers.ContractTransaction>;
+  assignMeAsConsumer(overrides?: ethers.Overrides): Promise<ethers.ContractTransaction>;
+  addRegulator(address: string, overrides?: ethers.Overrides): Promise<ethers.ContractTransaction>;
+  upForSale(udpc: string, price: ethers.BigNumber, overrides?: ethers.Overrides): Promise<ethers.ContractTransaction>;
+  purchaseDrugDesign(udpc: string, overrides?: ethers.PayableOverrides): Promise<ethers.ContractTransaction>;
+  fetchDrugLoaudData(slu: string, overrides?: ethers.CallOverrides): Promise<any>;
+}
+
+export const MainchainProvider = ({ children }) => {
+
+  const title: string = 'Drug Supply Chain Contract';
+	const [roles, setRoles] = useState<Role[]>([]);
   const [currentAccount, setCurrentAccount] = useState<string | null>('');
   const [logs, setLogs] = useState<string[] | null>([]);
 
   const checkIfWalletIsConnected = async () => {
   
     try {
-      if( !window.ethereum) return setOpenError(true), setError('Install metamask');
+      //if( !window.ethereum) return setOpenError(true), setError('Install metamask');
+      if( !window.ethereum) return console.log('Install metamask!');
 
       const accounts = await window.ethereum.request({ 
         method: 'eth_accounts'
@@ -51,73 +72,101 @@ export const MainChainProvider = ({ children }) => {
       setCurrentAccount(null);
   };
 
-  const currentAccountRoles = async () => {
-  
-    const web3Modal = new Web3Modal();
-    const connection = await web3Modal.connect();
-    const provider = new ethers.BrowserProvider(connection);
-    const signer = await provider.getSigner();
-    const contract = fetchContract(signer);
+  const currentAccountRoles = async (): Promise<void> => {
+
+    const provider = new ethers.JsonRpcProvider();
+    const contract: MyContract = fetchContract(provider);
 
     try {
-      const transaction = await contract.whoAmI(currentAccount);
+      const accounts: string[] = window.ethereum.request({
+       method: "eth_accounts",
+      });
+      const currentAccount: string = accounts[0];
 
-      await transaction.wait();
+      const myRoles = await contract.whoAmI({ from: currentAccount });
+      await myRoles.wait();
 
-      addToLogs(transaction);
+      addToLogs(myRoles);
+      
+      const keys: string[] = Object.keys(myRoles);
+		  const values: boolean[] = Object.values(myRoles);
+      let updatedRoles: Role[] = [];
+		  for (var i = 6; i < 12; i++) {
+			  updatedRoles.push({role: keys[i], isAssign: values[i]})
+		  } 
+
+		 /* 
+      const updatedRoles: Role[] = Object.entries(myRoles)
+      .slice(6,12)
+      .map(([role,isAssign]) => ({ role, isAssign }));
+		 
+      */
+      setRoles(updatedRoles)
+      
+      console.log(`Roles fetched successfully - ${myRoles}`);
     } catch(err) {
-      console.log(`Contract call failed ${ err }`);
+
+      console.log(`Roles fetche failed - ${err}`);
     }
   };
 
-  const addRoleToMe = async (role: string) => {
+  const addRoleToMe = async (role: string): Promise<void> => {
    
-    const web3Modal = new Web3Modal();
-    const connection = await web3Modal.connect();
-    const provider = new ethers.BrowserProvider(connection);
-    const signer = await provider.getSigner();
-    const contract = fetchContract(signer);
+    const provider = new ethers.JsonRpcProvider();
+    const contract = fetchContract(provider);
 
-    let transaction;
+    const accounts = window.ethereum.request({
+       method: "eth_accounts",
+      });
+    const currentAccount = accounts[0];
+
+    let transaction: ethers.ContractTransaction;
 
     try {
       switch(role){
         case 'designer': 
-          transaction = await contract.assignMeAsDesigner(currentAccount);
+          transaction = await contract.assignMeAsDesigner({ from: currentAccount });
           break;
         case 'regulator':
-          transaction = await contract.addRegulator(currentAccount);
+          transaction = await contract.addRegulator({ from: currentAccount });
           break;
         case 'manufacturer':
-          transaction = await contract.assignMeAsManufacturer(currentAccount);
+          transaction = await contract.assignMeAsManufacturer({ from: currentAccount });
         break;
         case 'distributor':
-          transaction = await contract.assignMeAsDistributor(currentAccount);
+          transaction = await contract.assignMeAsDistributor({ from: currentAccount });
         break;
         case 'retailer':
-          transaction = await contract.assignMeAsRetailer(currentAccount);
+          transaction = await contract.assignMeAsRetailer({ from: currentAccount });
         break;
         case 'consumer':
-          transaction = await contract.assignMeAsConsumer(currentAccount);
+          transaction = await contract.assignMeAsConsumer({ from: currentAccount });
         break;
+        default: 
+          throw new Error(`Unknown role - ${role}`);
       }
 
       await transaction.wait();
-      
+     
+      console.log(`Contract call success ${transaction}`);
       addTxToLogs(transaction);
       currentAccountRoles();
     } catch(err) {
-      setErrMessage(err.message);
+      console.log(`Contract call failed! ${err}`);
+      //setErrMessage(err.message);
     }
   };
 
   const removeFromMe = async (role: string) => {
     
-    const web3Modal = new Web3Modal();
-    const connection = await web3Modal.connect();
-    const provider = new ethers.BrowserProvider(connection);
-    const signer = await provider.getSigner();
-    const contract = fetchContract(signer);
+    const provider = new ethers.JsonRpcProvider();
+    const contract = fetchContract(provider);
+
+    const accounts = window.ethereum.request({
+       method: "eth_accounts",
+      });
+    const currentAccount = accounts[0];
+
 
     let transaction;
 
@@ -127,28 +176,30 @@ export const MainChainProvider = ({ children }) => {
           transaction = await contract.renounceMeFromDesigner(currentAccount);
           break;
         case 'regulator':
-          transaction = await contract.renounceMeFromRegulator(currentAccount);
+          transaction = await contract.renounceMeFromRegulator({ from: currentAccount });
           break;
         case 'manufacturer':
-          transaction = await contract.renounceMeFromManufacturer(currentAccount);
+          transaction = await contract.renounceMeFromManufacturer({ from: currentAccount });
         break;
         case 'distributor':
-          transaction = await contract.renounceMeFromDistributor(currentAccount);
+          transaction = await contract.renounceMeFromDistributor({ from: currentAccount });
         break;
         case 'retailer':
-          transaction = await contract.renounceMeFromRetailer(currentAccount);
+          transaction = await contract.renounceMeFromRetailer({ from: currentAccount });
         break;
         case 'consumer':
-          transaction = await contract.renounceMeFromConsumer(currentAccount);
+          transaction = await contract.renounceMeFromConsumer({ from: currentAccount });
         break;
       }
 
       await transaction.wait();
+      console.log(`Contract call success ${transaction}`);
       
       addTxToLogs(transaction);
       currentAccountRoles();
     } catch(err) {
-      setErrMessage(err.message);
+      console.log(`Contract call failed! ${err}`);
+     // setErrMessage(err.message);
     }
 
   };
@@ -712,7 +763,18 @@ export const MainChainProvider = ({ children }) => {
   };
 
   return (
-    <> </> 
+  <MainchainContext.Provider
+      value={{
+        currentAccount,
+        checkIfWalletIsConnected,
+        connectWallet,
+        disconnectWallet,
+        addRoleToMe,,
+        addRoleToMer
+      }}
+    >
+    { children }
+  </MainchainContext.Provider>
   );
 };
 
