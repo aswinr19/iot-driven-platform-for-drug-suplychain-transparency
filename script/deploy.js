@@ -7,7 +7,7 @@ async function main() {
   
   const MainChain = await hre.ethers.deployContract("Mainchain", {
     libraries: { 
-      Partnership: Partnerships.target
+      Partnerships: Partnerships.target
     }
   });
   await MainChain.waitForDeployment();
