@@ -3,6 +3,7 @@ pragma solidity ^0.8.24;
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
 
+//Err 5 - Not a regulator!
 contract Regulator is AccessControl {
   bytes32 public immutable REGULATOR_ROLE = keccak256("REGULATOR");
 
@@ -14,7 +15,7 @@ contract Regulator is AccessControl {
   }
 
   modifier onlyRegulator() {
-    require(isRegulator(msg.sender), 'Not a regulator!');
+    require(isRegulator(msg.sender), '5');
     _; 
   }
 

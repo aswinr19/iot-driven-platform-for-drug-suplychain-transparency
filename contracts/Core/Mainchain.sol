@@ -1,10 +1,10 @@
 //SPDX-License-Identifier: MIT
-pragma solidity ^0.8.9;
+pragma solidity ^0.8.24;
 
 import '@openzeppelin/contracts/access/Ownable.sol';
 import '../Base/SupplyChain.sol';
 
-contract MainChain is Ownable, SupplyChain {
+contract Mainchain is Ownable, SupplyChain {
  
   constructor() Ownable(msg.sender) SupplyChain()  {}
 

@@ -3,6 +3,7 @@ pragma solidity ^0.8.24;
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
 
+// Err: 2 - Not a designer!
 contract Designer is AccessControl {
   bytes32 public immutable DESIGNER_ROLE = keccak256("DESIGNER");
   
@@ -14,7 +15,7 @@ contract Designer is AccessControl {
   }
 
   modifier onlyDesigner() {
-    require(isDesigner(msg.sender),'Not a designer!');
+    require(isDesigner(msg.sender),'2');
     _;
   }
 

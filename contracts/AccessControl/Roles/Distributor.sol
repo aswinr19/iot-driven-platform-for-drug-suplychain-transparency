@@ -3,6 +3,7 @@ pragma solidity ^0.8.24;
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
 
+//Err 3 - Not a distributor!
 contract Distributor is AccessControl {
   bytes32 public immutable DISTRIBUTOR_ROLE = keccak256("DISTRIBUTOR");
 
@@ -14,7 +15,7 @@ contract Distributor is AccessControl {
  }
 
  modifier onlyDistributor() {
-   require(isDistributor(msg.sender), 'Not a distributor!');
+   require(isDistributor(msg.sender), '3');
   _;
  }
 

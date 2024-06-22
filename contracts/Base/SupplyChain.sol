@@ -6,6 +6,7 @@ import './Storage/Drug.sol';
 import './Storage/DrugDesign.sol';
 import '../AccessControl/Rolable.sol';
 
+//Err 9 - Not enough (price too low)!
 contract SupplyChain is Pausable, Drug, DrugDesign, Rolable {
 
    constructor() {
@@ -107,7 +108,7 @@ contract SupplyChain is Pausable, Drug, DrugDesign, Rolable {
         
         address payable sallerId = payable(address(sampleUnit.currentOwnerId));
 
-        require(msg.value >= totalPrice, "Not Enough!");
+        require(msg.value >= totalPrice, '9');
         uint amountToReturn = msg.value - totalPrice;
         if (amountToReturn != 0)
             payable(address(msg.sender)).transfer(amountToReturn);
@@ -142,7 +143,7 @@ contract SupplyChain is Pausable, Drug, DrugDesign, Rolable {
         uint retialerBounty = (price * 5) / 100;
         uint developerBounty = (price * 1) / 100; 
 
-        require(msg.value >= price, "Not Enough!");
+        require(msg.value >= price, '9');
         uint amountToReturn = msg.value - price;
         if (amountToReturn != 0)
             payable(address(msg.sender)).transfer(amountToReturn);

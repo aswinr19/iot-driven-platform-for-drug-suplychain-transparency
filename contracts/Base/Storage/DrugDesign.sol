@@ -1,7 +1,12 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
-import '../../utils/Partnership.sol';
+import '../../utils/Partnerships.sol';
 
+//Err 9 - Not enough (price too low)!
+//Err 10 - Invalid udpc!
+//Err 11 - Shares must be less than %100
+//Err 12 - Given UDPC not created yet!
+//Err 13 - Test case not created yet!
 contract DrugDesign {
    using Partnerships for Partnerships.Partnership;
 
@@ -56,7 +61,7 @@ contract DrugDesign {
     event PartnerClosed(uint udpc);
 
     modifier checkDrugDesignPaymentValue(uint _udpc) {
-        require(msg.value >= dDItems[_udpc].salePrice, "Not enough!");
+        require(msg.value >= dDItems[_udpc].salePrice, '9');
         _;
         uint _price = dDItems[_udpc].salePrice;
         uint amountToReturn = msg.value - _price;
@@ -152,7 +157,7 @@ contract DrugDesign {
         public
         onlyOwnerOf(_udpc)
     {
-        require(_udpc <= udpc, 'Invalid udpc!');
+        require(_udpc <= udpc, '10');
         DrugDesignTestCase memory _ddtc = DrugDesignTestCase(
             msg.sender,
             block.timestamp,
@@ -176,7 +181,7 @@ contract DrugDesign {
         public
         virtual
     {
-        require(_udpc <= udpc, 'Invalid udpc!');
+        require(_udpc <= udpc, '10');
         DrugDesignTestCase memory _ddtc = DrugDesignTestCase(
             msg.sender,
             block.timestamp,
@@ -226,7 +231,7 @@ contract DrugDesign {
         isApproved(_udpc)
         onlyOwnerOf(_udpc)
     {
-        require(_shares <= 100, "Must be less than %100");
+        require(_shares <= 100, '11');
         dDItems[_udpc].manufacturers.defultSharesPresntage = _shares;
         dDItems[_udpc].manufacturers.state = Partnerships.PartnershipState.Opened;
         emit UpForPartnered(_udpc);
@@ -272,7 +277,7 @@ contract DrugDesign {
         onlyOwnerOf(_udpc)
         isPartnerRestricted(_udpc)
     {
-        require(_shares <= 100, "Most be less than %100");
+        require(_shares <= 100, '11');
         dDItems[_udpc].manufacturers.add(_partner, _name, _shares);
         emit RestrictPartnerTransfered(_udpc, _partner);
     }
@@ -294,7 +299,7 @@ contract DrugDesign {
             uint numberOfManufacturers
         )
     {
-        require(_udpc <= udpc, 'Given UDPC Not Created Yet!');
+        require(_udpc <= udpc, '12');
         currentOwner = dDItems[_udpc].currentOwner;
         designerId = dDItems[_udpc].designerId;
         designerName = dDItems[_udpc].designerName;
@@ -330,7 +335,7 @@ contract DrugDesign {
             string memory notes
         )
     {
-        require(_udpc <= udpc, 'Given UDPC Not Created Yet!');
+        require(_udpc <= udpc, '12');
         (name, description, notes) = (
             dDItems[_udpc].metaData.name,
             dDItems[_udpc].metaData.description,
@@ -347,8 +352,8 @@ contract DrugDesign {
             string  memory notes
         )
     {
-        require(_udpc <= udpc, 'Given UDPC Not Created Yet!');
-        require(_testIndex < dDItems[_udpc].testIndexed, 'Test Case Not Created Yet!');
+        require(_udpc <= udpc, '12');
+        require(_testIndex < dDItems[_udpc].testIndexed, '13');
         
         (description, isPassed, notes) = (
             dDItems[_udpc].testCases[_testIndex].description,
@@ -365,3 +370,4 @@ contract DrugDesign {
         return dDItems[_udpc].manufacturers.sharesOf(_manufacturerId);
     }
 }
+

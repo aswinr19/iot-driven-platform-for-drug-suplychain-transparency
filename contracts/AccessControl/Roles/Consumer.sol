@@ -3,6 +3,7 @@ pragma solidity ^0.8.24;
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
 
+// Err: 1 - Not a consumer!
 contract Consumer is AccessControl {
   bytes32 public immutable CONSUMER_ROLE = keccak256("CONSUMER");
 
@@ -14,7 +15,7 @@ contract Consumer is AccessControl {
   }
 
   modifier onlyConsumer() {
-    require(isConsumer(msg.sender), 'Not a consumer!');
+    require(isConsumer(msg.sender), '1');
     _;
   }
 

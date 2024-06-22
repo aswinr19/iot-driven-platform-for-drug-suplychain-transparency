@@ -2,6 +2,7 @@
 pragma solidity ^0.8.24;
 import "@openzeppelin/contracts/access/AccessControl.sol";
 
+//Err 4 - Not a manufacturer!
 contract Manufacturer is AccessControl {
   bytes32 public immutable MANUFACTURER_ROLE = keccak256("MANUFACTURER");
 
@@ -13,7 +14,7 @@ contract Manufacturer is AccessControl {
   }
 
   modifier onlyManufacturer() {
-    require(isManufacturer(msg.sender), 'Not a manufacturer!');
+    require(isManufacturer(msg.sender), '4');
     _; 
   }
 

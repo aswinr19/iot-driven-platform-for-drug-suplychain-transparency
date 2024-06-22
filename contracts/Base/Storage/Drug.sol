@@ -1,6 +1,8 @@
 //SPDX-License-Identifier: MIT
-pragma solidity ^0.8.9;
+pragma solidity ^0.8.24;
 
+//Err 7 - Invalid slu!
+//Err 8 - Invalid pku!
 contract Drug {
   /* 
      PKU - Product Kepping Unit - used to uniquely identify an individual drug
@@ -313,7 +315,7 @@ contract Drug {
             uint price
         )
     {
-        require(_slu <= slu && _slu != 0, 'Invalid slu!');
+        require(_slu <= slu && _slu != 0, '7');
         uint sampleItemPKU = stockLouds[_slu][stockLouds[_slu].length-1];
         (
             _udpc,
@@ -346,7 +348,7 @@ contract Drug {
             uint numberOfEnvUpdate
         )
     {
-        require(_pku <= pku && _pku != 0, 'Invalid pku!');
+        require(_pku <= pku && _pku != 0, '8');
         DrugItem  storage _drugItem = dItems[_pku];
 
         _udpc = _drugItem.udpc;
@@ -418,5 +420,4 @@ contract Drug {
             _updaterAddresses
         );
     }
-
 }

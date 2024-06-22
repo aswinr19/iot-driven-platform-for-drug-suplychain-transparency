@@ -33,7 +33,7 @@ library Partnerships {
         string memory name,
         uint _shares
     )
-        internal
+        public
     {
         uint shares = partnership.defultSharesPresntage;
         require(account != address(0));
@@ -57,7 +57,7 @@ library Partnerships {
         partnership.partnersIndex += 1;
     }
 
-    function remove(Partnership storage partnership, address account) internal {
+    function remove(Partnership storage partnership, address account) public {
         require(account != address(0));
         require(has(partnership, account));
 
@@ -66,13 +66,13 @@ library Partnerships {
         delete partnership.indexOfPartners[account];
     }
 
-    function has(Partnership storage partnership, address account) internal view returns(bool) {
+    function has(Partnership storage partnership, address account) public view returns(bool) {
         require(account != address(0));
 
         return partnership.bearer[account];
     }
 
-    function allActive(Partnership storage partnership) internal view returns(Partner[] memory) {
+    function allActive(Partnership storage partnership) public view returns(Partner[] memory) {
         Partner[] memory _partners = new Partner[](partnership.partnersIndex);
         uint _index = 0;
         for (uint i = 1; i < partnership.partnersIndex; i++) {
@@ -84,14 +84,14 @@ library Partnerships {
         return _partners;
     }
 
-    function sharesOf(Partnership storage partnership, address account) internal view returns(uint) {
+    function sharesOf(Partnership storage partnership, address account) public view returns(uint) {
         require(account != address(0));
         require(has(partnership, account));
         uint indexOfPartner = partnership.indexOfPartners[account];
         return partnership.partners[indexOfPartner].shares;
     }
 
-    function partnershipState(Partnership storage partnership) internal view returns(string memory) {
+    function partnershipState(Partnership storage partnership) public view returns(string memory) {
         if (partnership.state == PartnershipState.Opened)
             return 'Open';
         else if (partnership.state == PartnershipState.Closed)
@@ -100,7 +100,7 @@ library Partnerships {
             return 'Restrict'; 
     }
 
-    function numberOfActive(Partnership storage partnership) internal view returns(uint) {
+    function numberOfActive(Partnership storage partnership) public view returns(uint) {
         uint count = 0;
         for (uint i = 0; i < partnership.partnersIndex; i++) {
             if (partnership.partners[i].partnerID != address(0)) {
