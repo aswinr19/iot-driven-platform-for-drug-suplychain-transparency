@@ -1,18 +1,17 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect, useContext } from 'react';
-import { MainchainContext } from '../context/MainChain';
-import { Button } from '@/components/ui/button';
-import Link from 'next/link';
+import React, { useState, useEffect, useContext } from "react";
+import { MainchainContext } from "../context/MainChain";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export default function Home() {
-  const { currentAccount, connectWallet, } = useContext(MainchainContext);
+  const { currentAccount, connectWallet } = useContext(MainchainContext);
   const [logs, setLogs] = useState<string[]>([]);
-  const [roles, setRoles] = useState([])
-	const [activeTab, setActiveTab] = useState('1')
-	const [isLoading, setIsLoading] = useState(true)
-	const [errMessage, setErrMessage] = useState('')
-
+  const [roles, setRoles] = useState([]);
+  const [activeTab, setActiveTab] = useState("1");
+  const [isLoading, setIsLoading] = useState(true);
+  const [errMessage, setErrMessage] = useState("");
 
   return (
     <>
@@ -53,7 +52,83 @@ export default function Home() {
       </header>
 
       <main className="grid grid-cols-1 gap-4 p-4 md:grid-cols-2 lg:grid-cols-3 lg:p-6">
-     </main>
+        <div>
+          {state.networkId === 4 || state.networkId >= 5 ? (
+            <Alert style={{ textAlign: "center" }} color="success">
+              Active Account: {state.account}, --- Network ID: {state.networkId}
+            </Alert>
+          ) : (
+            <Alert style={{ textAlign: "center" }} color="danger">
+              You should use MetaMask and pick Rinkeby Network to be able to use
+              contract functionality.
+            </Alert>
+          )}
+          <h1 className="display-1" style={{ marginLeft: "80px" }}>
+            <span role="img" aria-label="stars">
+              {" "}
+              💊💉{" "}
+            </span>
+            Drug'nDrugz
+          </h1>
+          <Nav tabs style={{ justifyContent: "center" }}>
+            <NavItem>
+              <NavLink
+                active={state.activeTab === "1"}
+                href="#"
+                onClick={() => handleSetActiveTab("1")}
+              >
+                My Roles
+              </NavLink>
+            </NavItem>
+            {/* ... (other NavItems) */}
+          </Nav>
+          <TabContent activeTab={state.activeTab}>
+            <TabPane tabId="1">
+              <Box m={5} p={10}>
+                <Flex style={{ justifyContent: "center" }}>
+                  {state.roles.map((role: Role, index: number) => (
+                    <Box key={index} Flex>
+                      <Icon
+                        size="30"
+                        name={role.isAssign ? "Beenhere" : "Cancel"}
+                      />
+                      <Button
+                        p={3}
+                        m={1}
+                        onClick={() => handleAddMeTo(role.role)}
+                      >
+                        Assign {role.role}
+                      </Button>
+                      <Button
+                        p={3}
+                        m={1}
+                        onClick={() => handleRemoveMeFrom(role.role)}
+                      >
+                        Remove {role.role}
+                      </Button>
+                    </Box>
+                  ))}
+                </Flex>
+                {/* ... (rest of the UI components) */}
+              </Box>
+            </TabPane>
+            {/* ... (other TabPanes) */}
+          </TabContent>
+
+          <Box>
+            <Card color="green" bg="black" height={"auto"}>
+              <Heading>LOGS:</Heading>
+              {state.logs.map((log, index) => (
+                <Text.p key={index} color="green">
+                  {log}
+                </Text.p>
+              ))}
+              <Heading color="red">ERROR:</Heading>
+              <Text color="red">{state.errMessage}</Text>
+            </Card>
+          </Box>
+        </div>
+      </main>
     </>
-);
+  );
 }

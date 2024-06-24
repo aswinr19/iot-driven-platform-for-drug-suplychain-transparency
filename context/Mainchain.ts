@@ -4,7 +4,7 @@ import { ethers } from 'ethers';
 import { mainChainABI, mainChainAddress } from './Constants';
 
 const fetchContract = (signerOrProvider: any) => {
-  new ethers.Contract( mainChainAddress, mainChainABI, signerOrProvider);
+  new ethers.Contract(mainChainAddress, mainChainABI, signerOrProvider);
 };
 
 export const MainchainContext = React.createContext(null);
@@ -13,42 +13,44 @@ type Role = {
   role: string,
   isAssign: boolean
 };
-interface MyContract extends ethers.Contract {
-  whoAmI(overrides?: ethers.CallOverrides): Promise<Record<string, boolean>>;
-  assignMeAsDesigner(overrides?: ethers.Overrides): Promise<ethers.ContractTransaction>;
-  addRegulator(account: string, overrides?: ethers.Overrides): Promise<ethers.ContractTransaction>;
-  assignMeAsManufacturer(overrides?: ethers.Overrides): Promise<ethers.ContractTransaction>;
-  assignMeAsDistributor(overrides?: ethers.Overrides): Promise<ethers.ContractTransaction>;
-  assignMeAsRetailer(overrides?: ethers.Overrides): Promise<ethers.ContractTransaction>;
-  assignMeAsConsumer(overrides?: ethers.Overrides): Promise<ethers.ContractTransaction>;
-  addRegulator(address: string, overrides?: ethers.Overrides): Promise<ethers.ContractTransaction>;
-  upForSale(udpc: string, price: ethers.BigNumber, overrides?: ethers.Overrides): Promise<ethers.ContractTransaction>;
-  purchaseDrugDesign(udpc: string, overrides?: ethers.PayableOverrides): Promise<ethers.ContractTransaction>;
-  fetchDrugLoaudData(slu: string, overrides?: ethers.CallOverrides): Promise<any>;
-}
 
 export const MainchainProvider = ({ children }) => {
 
-  const title: string = 'Drug Supply Chain Contract';
-	const [roles, setRoles] = useState<Role[]>([]);
+  const title: string = 'Drug supply Chain Contract';
+  const [provider, setProvider] = useState<null>(null);
+  const [signer, setSigner] = useState<ethers.Signer | null>(null);
+  const [contract, setContract] = useState<ethers.Contract | null>(null);
+  const [roles, setRoles] = useState<Role[]>([]);
   const [currentAccount, setCurrentAccount] = useState<string | null>('');
   const [logs, setLogs] = useState<string[] | null>([]);
+  const [error, setError] = useState<string>('');
+  const [openError, setOpenError] = useState<boolean>(false);
+
+  const web3Modal = new Web3Modal();
+  const connection = await web3Modal.connect();
+  const prvdr = new ethers.BrowserProvider(connection);
+  const sgnr = await provider.getSigner();
+  const cntrct = fetchContract(signer);
+
+  setProvider(prvdr);
+  setSigner(sgnr);
+  setContract(cntrct);
 
   const checkIfWalletIsConnected = async () => {
-  
-    try {
-      //if( !window.ethereum) return setOpenError(true), setError('Install metamask');
-      if( !window.ethereum) return console.log('Install metamask!');
 
-      const accounts = await window.ethereum.request({ 
+    try {
+      if (!window.ethereum) return setOpenError(true), setError('Install metamask'), console.log('Install metamask!');
+      //    if( !window.ethereum) return console.log('Install metamask!');
+
+      const accounts = await window.ethereum.request({
         method: 'eth_accounts'
       });
 
-      if(accounts.length) setCurrentAccount(accounts[0]);
+      if (accounts.length) setCurrentAccount(accounts[0]);
       else console.log('No account found!');
 
-    } catch(err) {
-      console.log('Something went wrong while connecting to account!');
+    } catch (err) {
+      console.log(`Something went wrong while connecting to account! ${err}`);
     }
   };
 
@@ -58,73 +60,59 @@ export const MainchainProvider = ({ children }) => {
 
   const connectWallet = async () => {
     try {
-        if(!window.ethereum) return console.log('Install metamask!');
-        
-        const accounts = await window.ethereum.request({ 
-          method: 'eth_requestAccounts'
-      }); 
+      if (!window.ethereum) return setOpenError(true), setError('Install metamask'), console.log('Install metamask!');
+      const accounts = await window.ethereum.request({
+        method: 'eth_requestAccounts'
+      });
       setCurrentAccount(accounts[0]);
-    } catch(err) {
-      console.log('Error while connecting to account!');
+    } catch (err) {
+      console.log(`Error while connecting to account! ${err}`);
     }
   };
   const disconnectWallet = () => {
-      setCurrentAccount(null);
+    setCurrentAccount(null);
   };
 
   const currentAccountRoles = async (): Promise<void> => {
 
-    const provider = new ethers.JsonRpcProvider();
-    const contract: MyContract = fetchContract(provider);
+    if (!contract) return;
 
     try {
-      const accounts: string[] = window.ethereum.request({
-       method: "eth_accounts",
-      });
-      const currentAccount: string = accounts[0];
-
       const myRoles = await contract.whoAmI({ from: currentAccount });
       await myRoles.wait();
 
       addToLogs(myRoles);
-      
+
       const keys: string[] = Object.keys(myRoles);
-		  const values: boolean[] = Object.values(myRoles);
+      const values: boolean[] = Object.values(myRoles);
       let updatedRoles: Role[] = [];
-		  for (var i = 6; i < 12; i++) {
-			  updatedRoles.push({role: keys[i], isAssign: values[i]})
-		  } 
+      for (var i = 6; i < 12; i++) {
+        updatedRoles.push({ role: keys[i], isAssign: values[i] })
+      }
 
-		 /* 
-      const updatedRoles: Role[] = Object.entries(myRoles)
-      .slice(6,12)
-      .map(([role,isAssign]) => ({ role, isAssign }));
-		 
-      */
+      /* 
+       const updatedRoles: Role[] = Object.entries(myRoles)
+       .slice(6,12)
+       .map(([role,isAssign]) => ({ role, isAssign }));
+       */
       setRoles(updatedRoles)
-      
-      console.log(`Roles fetched successfully - ${myRoles}`);
-    } catch(err) {
 
-      console.log(`Roles fetche failed - ${err}`);
+      console.log(`Roles fetched successfully - ${myRoles}`);
+    } catch (err) {
+      setError(`Roles fetch failed!`);
+      console.log(`Roles fetch failed! - ${err}`);
     }
   };
 
   const addRoleToMe = async (role: string): Promise<void> => {
-   
-    const provider = new ethers.JsonRpcProvider();
-    const contract = fetchContract(provider);
 
-    const accounts = window.ethereum.request({
-       method: "eth_accounts",
-      });
-    const currentAccount = accounts[0];
+    if (!contract) return;
 
     let transaction: ethers.ContractTransaction;
 
     try {
-      switch(role){
-        case 'designer': 
+      switch (role) {
+        case 'designer':
           transaction = await contract.assignMeAsDesigner({ from: currentAccount });
           break;
         case 'regulator':
@@ -132,47 +120,39 @@ export const MainchainProvider = ({ children }) => {
           break;
         case 'manufacturer':
           transaction = await contract.assignMeAsManufacturer({ from: currentAccount });
-        break;
+          break;
         case 'distributor':
           transaction = await contract.assignMeAsDistributor({ from: currentAccount });
-        break;
+          break;
         case 'retailer':
           transaction = await contract.assignMeAsRetailer({ from: currentAccount });
-        break;
+          break;
         case 'consumer':
           transaction = await contract.assignMeAsConsumer({ from: currentAccount });
-        break;
-        default: 
+          break;
+        default:
           throw new Error(`Unknown role - ${role}`);
       }
 
       await transaction.wait();
-     
-      console.log(`Contract call success ${transaction}`);
+
+      console.log(`Added role successfully ${transaction}`);
       addTxToLogs(transaction);
       currentAccountRoles();
-    } catch(err) {
-      console.log(`Contract call failed! ${err}`);
-      //setErrMessage(err.message);
+    } catch (err) {
+      setError(`Couldn't add role!`);
+      console.log(`Couldn't add role! ${err}`);
     }
   };
 
-  const removeFromMe = async (role: string) => {
-    
-    const provider = new ethers.JsonRpcProvider();
-    const contract = fetchContract(provider);
+  const removeFromMe = async (role: string): Promise<void> => {
 
-    const accounts = window.ethereum.request({
-       method: "eth_accounts",
-      });
-    const currentAccount = accounts[0];
-
-
+    if (!contract) return;
     let transaction;
 
     try {
-      switch(role){
-        case 'designer': 
+      switch (role) {
+        case 'designer':
           transaction = await contract.renounceMeFromDesigner(currentAccount);
           break;
         case 'regulator':
@@ -180,325 +160,299 @@ export const MainchainProvider = ({ children }) => {
           break;
         case 'manufacturer':
           transaction = await contract.renounceMeFromManufacturer({ from: currentAccount });
-        break;
+          break;
         case 'distributor':
           transaction = await contract.renounceMeFromDistributor({ from: currentAccount });
-        break;
+          break;
         case 'retailer':
           transaction = await contract.renounceMeFromRetailer({ from: currentAccount });
-        break;
+          break;
         case 'consumer':
           transaction = await contract.renounceMeFromConsumer({ from: currentAccount });
-        break;
+          break;
       }
 
       await transaction.wait();
-      console.log(`Contract call success ${transaction}`);
-      
+      console.log(`Successfully removed role ${transaction}`);
+
       addTxToLogs(transaction);
       currentAccountRoles();
-    } catch(err) {
-      console.log(`Contract call failed! ${err}`);
-     // setErrMessage(err.message);
+    } catch (err) {
+      console.log(`Role removal failed! ${err}`);
+      setError(`Role romoval failed!`);
     }
-
   };
 
-  const addRegulator = async () => {
-    
-    const web3Modal = new Web3Modal();
-    const connection = await web3Modal.connect();
-    const provider = new ethers.BrowserProvider(connection);
-    const signer = await provider.getSigner();
-    const contract = fetchContract(signer);
+  const addRegulator = async (regulatorToBeAdded): Promise<void> => {
+
+    if (!contract) return;
 
     try {
-      const transaction = await contract.addRegulator(regulatorToBeAdded);
+      const transaction = await contract.addRegulator(regulatorToBeAdded, {from: currentAccount});
       await transaction.wait();
 
+      console.log(`Successfully added regulator ${transaction}`);
       addTxToLogs(transaction);
 
-    } catch(err) { setErrMessage(err.message); }
+    } catch (err) {
+      console.log(`Failed to add regulator ${err}`);
+      setError(`Failed to add regulator`);
+    }
   };
 
-  const addDrugDesign = async () => {
+  const addDrugDesign = async ( drugDesgignerName,drugDesignName,drugDesignDescription,drugDrsignNotes) => {
 
-    const web3Modal = new Web3Modal();
-    const connection = await web3Modal.connect();
-    const provider = new ethers.BrowserProvider(connection);
-    const signer = await provider.getSigner();
-    const contract = fetchContract(signer);
+    if (!contract) return;
 
     try {
-        const transaction = await contract.designDrug(
+      const transaction = await contract.designDrug(
         drugDesgignerName,
         drugDesignName,
         drugDesignDescription,
-        drugDrsignNotes
+        drugDrsignNotes,
+        { from: currentAccount}
       );
 
-        await transaction.wait();
-    } catch(err) { setErrMessage(err.message); }
+      await transaction.wait();
+
+      console.log(`Drug design added successfully ${transaction}`);
+    } catch (err) {
+      console.log(`Failed to add drug design ${err}`);
+      setError(`Failed to add drug design!`);
+    }
   };
 
-  const addDrugTest = async () => {
-    const web3Modal = new Web3Modal();
-    const connection = await web3Modal.connect();
-    const provider = new ethers.BrowserProvider(connection);
-    const signer = await provider.getSigner();
-    const contract = fetchContract(signer);
+  const addDrugTest = async (): Promise<void> => {
 
-
+    if (!contract) return;
 
     try {
       const transaction = await contract.addTestCase(
         drugTestUDPC,
         drugTestDesc,
         drugTestPass,
-        drugTestNotes
+        drugTestNotes,
+        { from: currentAccount}
       );
 
       await transaction.wait();
       addTxToLogs(transaction);
 
-    } catch(err) { 
-      setErrMessage(err.message);
+      console.log(`Drug test added successfully ${transaction}`);
+    } catch (err) {
+      console.log(`Failed to add drug test ${err}`);
+      setError(`Failed to add regulator`);
     }
   };
 
-  const addDrugTestByRegulator = async () => {};
+  const addDrugTestByRegulator = async (): Promise<void> => { };
 
-    const web3Modal = new Web3Modal();
-    const connection = await web3Modal.connect();
-    const provider = new ethers.BrowserProvider(connection);
-    const signer = await provider.getSigner();
-    const contract = fetchContract(signer);
+  if (!contract) return;
 
-
-
-  try{
-      const transaction = await contract.addTestCaseByRegulator(
-        drugTestUDPC,
+  try {
+    const transaction = await contract.addTestCaseByRegulator(
+      drugTestUDPC,
       drugTestDesc,
       drugTestPass,
-      DrugTestNotes
+      DrugTestNotes,
+      { from: currentAccount}
     );
     await transaction.wait();
+    console.log(`Drug test by regulator added successfully ${transaction}`);
     addTxToLogs(transaction);
-  } catch(err) {
-    seErrMessage(err.message);
-  }
-  
-  const approveDrug = async () => {
-    const web3Modal = new Web3Modal();
-    const connection = await web3Modal.connect();
-    const provider = new ethers.BrowserProvider(connection);
-    const signer = await provider.getSigner();
-    const contract = fetchContract(signer);
-
-
-
-    try{
-      const transaction = await contract.approveDrug(drugApproveUDPC);
-    await transaction.wait();
-      addTxToLogs(transaction);
-  } catch(err) {
-    seErrMessage(err.message);
-  }
+  } catch (err) {
+    console.log(`Failed to add regulator ${err}`);
+    setError(`Failed to add regulator`);
   };
 
-  const sellDrugDesign = async () => {
+  const approveDrug = async (): Promise<void> => {
 
-    const web3Modal = new Web3Modal();
-    const connection = await web3Modal.connect();
-    const provider = new ethers.BrowserProvider(connection);
-    const signer = await provider.getSigner();
-    const contract = fetchContract(signer);
+    if (!contract) return;
 
-    try{
-      const priceInWei = await ethers.parseEther("");
-      const transaction = await contract.upForSale(sellDrugUDPC, priceInWei);
+    try {
+      const transaction = await contract.approveDrug(drugApproveUDPC, { from: currentAccount});
       await transaction.wait();
+
+      console.log(`Drug approved successfully ${transaction}`);
       addTxToLogs(transaction);
-  } catch(err) {
-    seErrMessage(err.message);
-  }
+    } catch (err) {
+      console.log(`Failed to add regulator ${err}`);
+      setError(`Failed to add regulator`);
+    }
   };
 
-  const buyDrugDesign = async () => {
+  const sellDrugDesign = async (): Promise<void> => {
 
-    const web3Modal = new Web3Modal();
-    const connection = await web3Modal.connect();
-    const provider = new ethers.BrowserProvider(connection);
-    const signer = await provider.getSigner();
-    const contract = fetchContract(signer);
+    if (!contract) return;
 
-  
-    try{
+    try {
       const priceInWei = await ethers.parseEther("");
-      const transaction = await contract.purchaseDrugDesign(buyDrugUDPC);
+      const transaction = await contract.upForSale(sellDrugUDPC, priceInWei, { from: currentAccount});
+      await transaction.wait();
 
-    await transaction.wait();
-  } catch(err) {
-    seErrMessage(err.message);
-  }
+      console.log(`Drug design sold successfully ${transaction}`);
+      addTxToLogs(transaction);
+    } catch (err) {
+      console.log(`Failed to add regulator ${err}`);
+      setError(`Failed to add regulator`);
+    }
   };
 
-  const updatePartnerState = async (state: string) => {
-  
-    const web3Modal = new Web3Modal();
-    const connection = await web3Modal.connect();
-    const provider = new ethers.BrowserProvider(connection);
-    const signer = await provider.getSigner();
-    const contract = fetchContract(signer);
+  const buyDrugDesign = async (): Promise<void> => {
 
-    try{
+    if (!contract) return;
+
+    try {
+      const priceInWei = ethers.parseEther("");
+      const transaction = await contract.purchaseDrugDesign(buyDrugUDPC, { from: currentAccount, value: priceInWei});
+
+      await transaction.wait();
+      console.log(`Drug desugn bought successfully ${transaction}`);
+    } catch (err) {
+      console.log(`Failed to add regulator ${err}`);
+      setError(`Failed to add regulator`);
+    }
+  };
+
+  const updatePartnerState = async (state: string): Promise<void> => {
+
+    if (!contract) return;
+
+    try {
 
       let transaction;
 
-      switch(state) {
-        case 'close': 
-          transaction = await contract.closeManufactPartnership(partnerStateUDPC, currentAccount);
+      switch (state) {
+        case 'close':
+          transaction = await contract.closeManufactPartnership(partnerStateUDPC, { from: currentAccount});
           break;
         case 'open':
-         transaction = await contract.openManufacPartnership(
+          transaction = await contract.openManufacPartnership(
             partnerStateUDPC,
             partnerStateShare,
-            currentAccount
+            { from: currentAccount}
           );
           break;
         case 'restrict':
-          transaction = await contract.restrictManufactPartnership(partnerStateUDPC, currentAccount);
-        break;
+          transaction = await contract.restrictManufactPartnership(partnerStateUDPC, { from: currentAccount});
+          break;
       }
-    
+
       await transaction.wait();
 
+      console.log(`Updated partner state successfully ${transaction}`);
       addTxToLogs(transaction);
-  } catch(err) {
-    seErrMessage(err.message);
-  }
+    } catch (err) {
+      setError(`Couldn't add partner state!`);
+      console.log(`Couldn't add role! ${err}`);
+    }
   };
 
-  const addPartner = async () => {
+  const addPartner = async (): Promise<void> => {
 
-    const web3Modal = new Web3Modal();
-    const connection = await web3Modal.connect();
-    const provider = new ethers.BrowserProvider(connection);
-    const signer = await provider.getSigner();
-    const contract = fetchContract(signer);
+    if (!contract) return;
 
-
-    try{
+    try {
       const transaction = await contract.buildRestrictPartnerContract(
         addPartnerUDPC,
         addPartnerAddress,
         addPartnerName,
-        addPartnerShare
-        );
-    await transaction.wait();
+        addPartnerShare,
+        { from: currentAccount}
+      );
+      await transaction.wait();
+      console.log(`Partner added successfully ${transaction}`);
       addtxToLogs(transaction);
-  } catch(err) {
-    seErrMessage(err.message);
-  }
-};
+    } catch (err) {
+      setError(`Couldn't add partner!`);
+      console.log(`Couldn't add partner! ${err}`);
+    }
+  };
 
-  const assignPartner = async () => {
+  const assignPartner = async (): Promise<void> => {
 
-    const web3Modal = new Web3Modal();
-    const connection = await web3Modal.connect();
-    const provider = new ethers.BrowserProvider(connection);
-    const signer = await provider.getSigner();
-    const contract = fetchContract(signer);
+    if (!contract) return;
 
-    try{
+    try {
       const transaction = await contract.buildPartnerContract(
         buildPartnerUDPC,
         buildPartnerName,
-        currentAccount
+        { from: currentAccount}
       );
 
-    await transaction.wait();
+      await transaction.wait();
 
-    addTxToLogs(transaction);
-  } catch(err) {
-    seErrMessage(err.message);
-  }
+      console.log(`Partner assigned successfully ${transaction}`);
+      addTxToLogs(transaction);
+    } catch (err) {
+      setError(`Couldn't assign partner`);
+      console.log(`Couldn't assign partner! ${err}`);
+    }
   };
 
-  const manufactureDrugLoad = async () => {
+  const manufactureDrugLoad = async (): Promise<void> => {
 
-    const web3Modal = new Web3Modal();
-    const connection = await web3Modal.connect();
-    const provider = new ethers.BrowserProvider(connection);
-    const signer = await provider.getSigner();
-    const contract = fetchContract(signer);
+    if (!contract) return;
 
-  try{
+    try {
       const transaction = await contract.manufacureDrugsLoud(
         manufactureUDPC
         manufactureQuantity
-        currentAccount
+        { from: currentAccount}
       );
 
-    await transaction.wait();
+      await transaction.wait();
 
-    addTxToLogs(transaction);
-  } catch(err) {
-    seErrMessage(err.message);
-  }
-};
+      console.log(`Manufacturer added successfully ${transaction}`);
+      addTxToLogs(transaction);
+    } catch (err) {
+      setError(`Couldn't add manufacturer!`);
+      console.log(`Couldn't add manufacturer! ${err}`);
+    }
+  };
 
-  const packDrugLoad = async () => {
+  const packDrugLoad = async (): Promise<void> => {
 
-     const web3Modal = new Web3Modal();
-    const connection = await web3Modal.connect();
-    const provider = new ethers.BrowserProvider(connection);
-    const signer = await provider.getSigner();
-    const contract = fetchContract(signer);
- 
-    try{
+    if (!contract) return;
+
+    try {
       const transaction = await contract.packDrugsLoud(
         packSLU,
-        currentAccount
+        { from: currentAccount}
       );
 
-    await transaction.wait();
-    addTxToLogs(transaction);
-  } catch(err) {
-    seErrMessage(err.message);
-  }
-};
+      await transaction.wait();
+      console.log(`Drug load packed successfully ${transaction}`);
+      addTxToLogs(transaction);
+    } catch (err) {
+      setError(`Couldn't pack drug load!`);
+      console.log(`Couldn't pack drug load! ${err}`);
+    }
+  };
 
-  const addDrugLoad = async () => {
+  const addDrugLoad = async (): Promise<void> => {
 
-    const web3Modal = new Web3Modal();
-    const connection = await web3Modal.connect();
-    const provider = new ethers.BrowserProvider(connection);
-    const signer = await provider.getSigner();
-    const contract = fetchContract(signer);
+    if (!contract) return;
 
-  try {
-      const priceInWei = await ethers.parseEther("");
+    try {
+      const priceInWei = ethers.parseEther("");
       const transaction = await contract.addDrugsLoud(
         addSLU,
-      priceInWei,
-      currentAccount
+        priceInWei,
+        { from: currentAccount}
       );
-      
-      await transaction.wait();
-      addTxToLogs(transaction);
-    } catch(err) {
-    setErrMessage(err.message);
-    }
- };
-  const buyDrugLoad = async () => {
 
-    const web3Modal = new Web3Modal();
-    const connection = await web3Modal.connect();
-    const provider = new ethers.BrowserProvider(connection);
-    const signer = await provider.getSigner();
-    const contract = fetchContract(signer);
+      await transaction.wait();
+      console.log(`Drug load added successfully ${transaction}`);
+      addTxToLogs(transaction);
+    } catch (err) {
+      setError(`Couldn't add drug load!`);
+      console.log(`Couldn't add drug load! ${err}`);
+    }
+  };
+  const buyDrugLoad = async (): Promise<void> => {
+
+    if (!contract) return;
 
     try {
       const valueInWei = await ethers.parseEther("");
@@ -507,230 +461,218 @@ export const MainchainProvider = ({ children }) => {
       const transaction = await contract.buyDrugsLoud(
         buySLU,
         retailerAccount,
-        currentAccount
+        { from: currentAccount,
+          value: valueInWei
+        }
       );
 
-    await transaction.wait();
-    addTxToLogs(transaction);
-    } catch(err) {
-    seErrMessage(err.message);
-  }
- };
-  
-  const shipDrugLoad = async () => {
+      await transaction.wait();
 
-    const web3Modal = new Web3Modal();
-    const connection = await web3Modal.connect();
-    const provider = new ethers.BrowserProvider(connection);
-    const signer = await provider.getSigner();
-    const contract = fetchContract(signer);
+      console.log(`Drug load bought successfully ${transaction}`);
+      addTxToLogs(transaction);
+    } catch (err) {
+      setError(`Couldn't buy drug load!`);
+      console.log(`Couldn't buy drug load! ${err}`);
+    }
+  };
+
+  const shipDrugLoad = async (): Promise<void> => {
+
+    if (!contract) return;
 
     try {
       const transaction = await contract.shipDrugsLoud(
         shipSLU,
-        currentAccount
+        { from: currentAccount}
       );
 
-    await transaction.wait();
-    addTxToLogs(transaction);
-  } catch(err) {
-    seErrMessage(err.message);
-  }
- };
+      await transaction.wait();
 
-  const receiveDrugLoad = async () => {
+      console.log(`Drug load shipped successfully ${transaction}`);
+      addTxToLogs(transaction);
+    } catch (err) {
+      setError(`Couldn't ship drug load!`);
+      console.log(`Couldn't ship drug load! ${err}`);
+    }
+  };
 
-    const web3Modal = new Web3Modal();
-    const connection = await web3Modal.connect();
-    const provider = new ethers.BrowserProvider(connection);
-    const signer = await provider.getSigner();
-    const contract = fetchContract(signer);
+  const receiveDrugLoad = async (): Promise<void> => {
+
+    if (!contract) return;
 
     try {
       const transaction = await contract.receiveDrugsLoud(
         receiveSLU,
-        currentAccount
+        { from: currentAccount}
       );
 
-    await transaction.wait();
-    addTxToLogs(transaction);
-  } catch(err) {
-    seErrMessage(err.message);
-  }
- };
+      await transaction.wait();
 
-  const updateShipEnv = async () => {
+      console.log(`Drug load received successfully ${transaction}`);
+      addTxToLogs(transaction);
+    } catch (err) {
+      setError(`Couldn't drug load received!`);
+      console.log(`Couldn't add role! ${err}`);
+    }
+  };
 
-    const web3Modal = new Web3Modal();
-    const connection = await web3Modal.connect();
-    const provider = new ethers.BrowserProvider(connection);
-    const signer = await provider.getSigner();
-    const contract = fetchContract(signer);
+  const updateShipEnv = async (shipEnvSLU,shipEnvHumidity,shipEnvTemperature): Promise<void> => {
+
+    if (!contract) return;
 
     try {
       const transaction = await contract.updateDrugsLoudShippmentEnv(
         shipEnvSLU,
         shipEnvHumidity,
         shipEnvTemperature,
-        currentAccount
-      );
+      { from: currentAccount});
 
-    await transaction.wait();
-    addTxToLogs(transaction);
-  } catch(err) {
-    seErrMessage(err.message);
-  }
-};
+      await transaction.wait();
+      console.log(`Updated ship environment successfully ${transaction}`);
+      addTxToLogs(transaction);
+    } catch (err) {
+      setError(`Couldn't updated ship environment!`);
+      console.log(`Couldn't updated ship environment! ${err}`);
+    }
+  };
 
-  const updateStockEnv = async () => {
+  const updateStockEnv = async (): Promise<void> => {
 
-    const web3Modal = new Web3Modal();
-    const connection = await web3Modal.connect();
-    const provider = new ethers.BrowserProvider(connection);
-    const signer = await provider.getSigner();
-    const contract = fetchContract(signer);
+    if (!contract) return;
 
     try {
       const transaction = await contract.updateDrugsLoudStockEnv(
         stockEnvSLU,
         stockEnvHumidity,
         stockEnvTemperature,
-        currentAccount
+        { from: currentAccount}
       );
 
-    await transaction.wait();
-    addTxToLogs(transation);
-  } catch(err) {
-    seErrMessage(err.message);
-  }
- };
+      await transaction.wait();
+      console.log(`Updated stock environment successfully ${transaction}`);
+      addTxToLogs(transaction);
+    } catch (err) {
+      setError(`Couldn't update stock environment!`);
+      console.log(`Couldn't update stock environment! ${err}`);
+    }
+  };
 
-  const purchaseDrug = async () => {
+  const purchaseDrug = async (): Promise<void> => {
 
-    const web3Modal = new Web3Modal();
-    const connection = await web3Modal.connect();
-    const provider = new ethers.BrowserProvider(connection);
-    const signer = await provider.getSigner();
-    const contract = fetchContract(signer);
- 
+    if (!contract) return;
+
     try {
       const valueInWei = ;
       const transaction = await contract.purchaseDrug(
         purchasePKU,
-        currentAccount,
-        valueInWei
+        { from: currentAccount,
+          value: valueInWei
+        }
       );
 
-    await transaction.wait();
-    addTxToLogs(transaction);
-  } catch(err) {
-    seErrMessage(err.message);
-  }
- };
+      await transaction.wait();
+      console.log(`Purchased drug successfully ${transaction}`);
+      addTxToLogs(transaction);
+    } catch (err) {
+      setError(`Couldn't purchase drug!`);
+      console.log(`Couldn't purchase drug! ${err}`);
+    }
+  };
 
-  const fetchDrugDesignData = async () => {
+  const fetchDrugDesignData = async (): Promise<void> => {
 
-    const web3Modal = new Web3Modal();
-    const connection = await web3Modal.connect();
-    const provider = new ethers.BrowserProvider(connection);
-    const signer = await provider.getSigner();
-    const contract = fetchContract(signer);
+    if (!contract) return;
 
     try {
       const transaction = await contract.fetchDrugDesignData(
         udpc,
-        currentAccount
+        { from: currentAccount}
       );
 
-    await transaction.wait();
-    addTxToLogs(transaction);
-  } catch(err) {
-    seErrMessage(err.message);
-  }
- };
+      await transaction.wait();
+      console.log(`Fetched drug design successfully ${transaction}`);
+      addTxToLogs(transaction);
+    } catch (err) {
+      setError(`Couldn't fetch drug design!`);
+      console.log(`Couldn't fetch drug design! ${err}`);
+    }
+  };
 
-  const fetchDrugLoadData = async () => {
+  const fetchDrugLoadData = async (): Promise<void> => {
 
-    const web3Modal = new Web3Modal();
-    const connection = await web3Modal.connect();
-    const provider = new ethers.BrowserProvider(connection);
-    const signer = await provider.getSigner();
-    const contract = fetchContract(signer);
+    if (!contract) return;
 
     try {
       const transaction = await contract.fetchDrugLoudData(
         slu,
-        currentAccount
+        { from: currentAccount}
       );
 
-    await transaction.wait();
-    addTxToLogs(transaction);
-  } catch(err) {
-    seErrMessage(err.message);
-  }
- };
+      await transaction.wait();
 
-  const getDrugLoadPKUs = async () => {
+      console.log(`Fetched drug load data successfully ${transaction}`);
+      addTxToLogs(transaction);
+    } catch (err) {
+      setError(`Couldn't fetched drug load data!`);
+      console.log(`Couldn't  fetched drug load data! ${err}`);
+    }
+  };
 
-    const web3Modal = new Web3Modal();
-    const connection = await web3Modal.connect();
-    const provider = new ethers.BrowserProvider(connection);
-    const signer = await provider.getSigner();
-    const contract = fetchContract(signer);
+  const getDrugLoadPKUs = async (): Promise<void> => {
+
+    if (!contract) return;
 
     try {
       const transaction = await contract.fetchLoudPKUs(
         slu,
-        currentAccount
+        { from: currentAccount}
       );
 
-    await transaction.wait();
-    addTxToLogs(transaction);
-  } catch(err) {
-    seErrMessage(err.message);
-  }
- };
+      await transaction.wait();
+      console.log(`Fetched drug load pku's successfully ${transaction}`);
+      addTxToLogs(transaction);
+    } catch (err) {
+      setError(`Couldn't fetched drug load pku's!`);
+      console.log(`Couldn't fetched drug load pku's! ${err}`);
+    }
+  };
 
-  const fetchDrugData = async () => {
+  const fetchDrugData = async (): Promise<void> => {
 
-    const web3Modal = new Web3Modal();
-    const connection = await web3Modal.connect();
-    const provider = new ethers.BrowserProvider(connection);
-    const signer = await provider.getSigner();
-    const contract = fetchContract(signer);
+    if (!contract) return;
 
     try {
       const transaction = await contract.fetchDrugItemData(
         fetchDrugPKU,
-        currentAddress
+        { from: currentAccount}
       );
 
-    await transaction.wait();
-    addToLogs(transaction);
-  } catch(err) {
-    seErrMessage(err.message);
-  }
-};
+      await transaction.wait();
+      console.log(`Fetched drug data successfully ${transaction}`);
+      addToLogs(transaction);
+    } catch (err) {
+      setError(`Couldn't fetch drug data !`);
+      console.log(`Couldn't fetch drug data! ${err}`);
+    }
+  };
 
-  const fetchEnvHistory = async () => {
+  const fetchEnvHistory = async (): Promise<void> => {
 
-    const web3Modal = new Web3Modal();
-    const connection = await web3Modal.connect();
-    const provider = new ethers.BrowserProvider(connection);
-    const signer = await provider.getSigner();
-    const contract = fetchContract(signer);
+    if (!contract) return;
 
     try {
       const transaction = await contract.fetchEnvHistory(
         fetchDrugPKU,
-        currentAccount
+        { from: currentAccount}
       );
-    await transaction.wait();
-    addToLogs(transaction);
-  } catch(err) {
-    seErrMessage(err.message);
-  }
- };
+      await transaction.wait();
+      console.log(`Fetched env history successfully ${transaction}`);
+      addToLogs(transaction);
+    } catch (err) {
+      setError(`Couldn't fetched env history`);
+      console.log(`Couldn't fetch env history! ${err}`);
+    }
+  };
 
   const addTxToLogs = async (tx) => {
 
@@ -748,13 +690,13 @@ export const MainchainProvider = ({ children }) => {
   };
 
   const addToLogs = async (logObject) => {
-    
+
     let updatedLogs = [];
     const dataKeys = Object.keys(logObject);
     const numberOfData = dataKeys.length;
     let logy = ''
 
-    for(let i = (numberOfData / 2); i< numberOfData; i++) {
+    for (let i = (numberOfData / 2); i < numberOfData; i++) {
       logy += dataKeys[i] + ': ' + logObject[dataKeys[i]] + ', ';
     }
 
@@ -763,18 +705,42 @@ export const MainchainProvider = ({ children }) => {
   };
 
   return (
-  <MainchainContext.Provider
-      value={{
-        currentAccount,
-        checkIfWalletIsConnected,
-        connectWallet,
-        disconnectWallet,
-        addRoleToMe,,
-        addRoleToMer
-      }}
+    <MainchainContext.Provider
+      value= {{
+      currentAccount,
+      checkIfWalletIsConnected,
+      connectWallet,
+      disconnectWallet,
+      addRoleToMe,
+      removeFromMe,
+      addRegulator,
+      addDrugDesign,
+      addDrugTest,
+      addDrugTestByRegulator,
+      approveDrug,
+      sellDrugDesign,
+      buyDrugDesign,
+      updatePartnerState,
+      addPartner,
+      assignPartner,
+      manufactureDrugLoad,
+      packDrugLoad,
+      addDrugLoad,
+      buyDrugLoad,
+      shipDrugLoad,
+      receiveDrugLoad, updateShipEnv,
+      updateStockEnv,
+      purchaseDrug,
+      fetchDrugDesignData,
+      fetchDrugLoadData,
+      getDrugLoadPKUs,
+      fetchDrugData,
+      fetchEnvHistory
+  }
+}
     >
-    { children }
-  </MainchainContext.Provider>
+  { children }
+  < /MainchainContext.Provider>
   );
 };
 
