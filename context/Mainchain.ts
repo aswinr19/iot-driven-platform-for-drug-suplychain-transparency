@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Web3Modal from 'web3modal';
 import { ethers } from 'ethers';
 import { mainChainABI, mainChainAddress } from './Constants';
+import { BrowserProvider } from 'ethers';
 
 const fetchContract = (signerOrProvider: any) => {
   new ethers.Contract(mainChainAddress, mainChainABI, signerOrProvider);
@@ -17,7 +18,7 @@ type Role = {
 export const MainchainProvider = ({ children }) => {
 
   const title: string = 'Drug supply Chain Contract';
-  const [provider, setProvider] = useState<null>(null);
+  const [provider, setProvider] = useState<BrowserProvider>();
   const [signer, setSigner] = useState<ethers.Signer | null>(null);
   const [contract, setContract] = useState<ethers.Contract | null>(null);
   const [roles, setRoles] = useState<Role[]>([]);
@@ -29,12 +30,42 @@ export const MainchainProvider = ({ children }) => {
   const web3Modal = new Web3Modal();
   const connection = await web3Modal.connect();
   const prvdr = new ethers.BrowserProvider(connection);
-  const sgnr = await provider.getSigner();
-  const cntrct = fetchContract(signer);
+  const sgnr = await prvdr.getSigner();
+  const cntrct = fetchContract(sgnr);
 
   setProvider(prvdr);
   setSigner(sgnr);
   setContract(cntrct);
+
+  const addTxToLogs = async (tx) => {
+
+    const txHash = tx.transactionHash;
+    const eventName = Object.keys(tx.events)[0];
+    const eventValueName = Object.keys(tx.events[eventName]['returnValues'])[1];
+    const eventValue = tx.events[eventName]['returnValues'][eventValueName];
+
+    let updatedLogs = []
+    const newLogHash = `$|>>Transaction Hash: ${txHash}`
+    const newLogEvent = `|----|Event: ${eventName} (${eventValueName}: ${eventValue})`;
+
+    updatedLogs.push(newLogHash + newLogEvent, ...logs);
+    setLogs(updatedLogs);
+  };
+
+  const addToLogs = async (logObject) => {
+
+    let updatedLogs = [];
+    const dataKeys = Object.keys(logObject);
+    const numberOfData = dataKeys.length;
+    let logy = ''
+
+    for (let i = (numberOfData / 2); i < numberOfData; i++) {
+      logy += dataKeys[i] + ': ' + logObject[dataKeys[i]] + ', ';
+    }
+
+    updatedLogs.push(logy, ...logs);
+    setLogs(updatedLogs);
+  };
 
   const checkIfWalletIsConnected = async () => {
 
@@ -108,7 +139,7 @@ export const MainchainProvider = ({ children }) => {
 
     if (!contract) return;
 
-    let transaction: ethers.ContractTransaction;
+    let transaction;
 
     try {
       switch (role) {
@@ -183,12 +214,12 @@ export const MainchainProvider = ({ children }) => {
     }
   };
 
-  const addRegulator = async (regulatorToBeAdded): Promise<void> => {
+  const addRegulator = async (regulatorToBeAdded: string): Promise<void> => {
 
     if (!contract) return;
 
     try {
-      const transaction = await contract.addRegulator(regulatorToBeAdded, {from: currentAccount});
+      const transaction = await contract.addRegulator(regulatorToBeAdded, { from: currentAccount });
       await transaction.wait();
 
       console.log(`Successfully added regulator ${transaction}`);
@@ -200,7 +231,8 @@ export const MainchainProvider = ({ children }) => {
     }
   };
 
-  const addDrugDesign = async ( drugDesgignerName,drugDesignName,drugDesignDescription,drugDrsignNotes) => {
+  const addDrugDesign = async (drugDesgignerName: string, drugDesignName: string, 
+    drugDesignDescription: string, drugDrsignNotes: string) => {
 
     if (!contract) return;
 
@@ -210,7 +242,7 @@ export const MainchainProvider = ({ children }) => {
         drugDesignName,
         drugDesignDescription,
         drugDrsignNotes,
-        { from: currentAccount}
+        { from: currentAccount }
       );
 
       await transaction.wait();
@@ -222,7 +254,8 @@ export const MainchainProvider = ({ children }) => {
     }
   };
 
-  const addDrugTest = async (): Promise<void> => {
+  const addDrugTest = async (drugTestUDPC: string, drugTestDesc: string,
+    drugTestPass: string,drugTestNotes: string): Promise<void> => {
 
     if (!contract) return;
 
@@ -232,7 +265,7 @@ export const MainchainProvider = ({ children }) => {
         drugTestDesc,
         drugTestPass,
         drugTestNotes,
-        { from: currentAccount}
+        { from: currentAccount }
       );
 
       await transaction.wait();
@@ -245,7 +278,8 @@ export const MainchainProvider = ({ children }) => {
     }
   };
 
-  const addDrugTestByRegulator = async (): Promise<void> => { };
+  const addDrugTestByRegulator = async (drugTestUDPC: string,drugTestDesc: string,
+    drugTestPass: string,DrugTestNotes: string,): Promise<void> => { 
 
   if (!contract) return;
 
@@ -255,7 +289,7 @@ export const MainchainProvider = ({ children }) => {
       drugTestDesc,
       drugTestPass,
       DrugTestNotes,
-      { from: currentAccount}
+      { from: currentAccount }
     );
     await transaction.wait();
     console.log(`Drug test by regulator added successfully ${transaction}`);
@@ -265,12 +299,12 @@ export const MainchainProvider = ({ children }) => {
     setError(`Failed to add regulator`);
   };
 
-  const approveDrug = async (): Promise<void> => {
+  const approveDrug = async (drugApproveUDPC: string): Promise<void> => {
 
     if (!contract) return;
 
     try {
-      const transaction = await contract.approveDrug(drugApproveUDPC, { from: currentAccount});
+      const transaction = await contract.approveDrug(drugApproveUDPC, { from: currentAccount });
       await transaction.wait();
 
       console.log(`Drug approved successfully ${transaction}`);
@@ -281,13 +315,13 @@ export const MainchainProvider = ({ children }) => {
     }
   };
 
-  const sellDrugDesign = async (): Promise<void> => {
+  const sellDrugDesign = async (sellDrugUDPC: string, price: number): Promise<void> => {
 
     if (!contract) return;
 
     try {
-      const priceInWei = await ethers.parseEther("");
-      const transaction = await contract.upForSale(sellDrugUDPC, priceInWei, { from: currentAccount});
+      const priceInWei =  ethers.parseEther("");
+      const transaction = await contract.upForSale(sellDrugUDPC, priceInWei, { from: currentAccount });
       await transaction.wait();
 
       console.log(`Drug design sold successfully ${transaction}`);
@@ -298,13 +332,13 @@ export const MainchainProvider = ({ children }) => {
     }
   };
 
-  const buyDrugDesign = async (): Promise<void> => {
+  const buyDrugDesign = async (buyDrugUDPC: string, price: number): Promise<void> => {
 
     if (!contract) return;
 
     try {
       const priceInWei = ethers.parseEther("");
-      const transaction = await contract.purchaseDrugDesign(buyDrugUDPC, { from: currentAccount, value: priceInWei});
+      const transaction = await contract.purchaseDrugDesign(buyDrugUDPC, { from: currentAccount, value: priceInWei });
 
       await transaction.wait();
       console.log(`Drug desugn bought successfully ${transaction}`);
@@ -314,7 +348,7 @@ export const MainchainProvider = ({ children }) => {
     }
   };
 
-  const updatePartnerState = async (state: string): Promise<void> => {
+  const updatePartnerState = async (state: string, partnerStateUDPC: string,partnerStateShare: string ): Promise<void> => {
 
     if (!contract) return;
 
@@ -324,17 +358,17 @@ export const MainchainProvider = ({ children }) => {
 
       switch (state) {
         case 'close':
-          transaction = await contract.closeManufactPartnership(partnerStateUDPC, { from: currentAccount});
+          transaction = await contract.closeManufactPartnership(partnerStateUDPC, { from: currentAccount });
           break;
         case 'open':
           transaction = await contract.openManufacPartnership(
             partnerStateUDPC,
             partnerStateShare,
-            { from: currentAccount}
+            { from: currentAccount }
           );
           break;
         case 'restrict':
-          transaction = await contract.restrictManufactPartnership(partnerStateUDPC, { from: currentAccount});
+          transaction = await contract.restrictManufactPartnership(partnerStateUDPC, { from: currentAccount });
           break;
       }
 
@@ -348,7 +382,8 @@ export const MainchainProvider = ({ children }) => {
     }
   };
 
-  const addPartner = async (): Promise<void> => {
+  const addPartner = async (addPartnerUDPC: string,addPartnerAddress: string,
+    addPartnerName: string,addPartnerShare: string): Promise<void> => {
 
     if (!contract) return;
 
@@ -358,18 +393,18 @@ export const MainchainProvider = ({ children }) => {
         addPartnerAddress,
         addPartnerName,
         addPartnerShare,
-        { from: currentAccount}
+        { from: currentAccount }
       );
       await transaction.wait();
       console.log(`Partner added successfully ${transaction}`);
-      addtxToLogs(transaction);
+      addTxToLogs(transaction);
     } catch (err) {
       setError(`Couldn't add partner!`);
       console.log(`Couldn't add partner! ${err}`);
     }
   };
 
-  const assignPartner = async (): Promise<void> => {
+  const assignPartner = async (buildPartnerUDPC: string, buildPartnerName: string): Promise<void> => {
 
     if (!contract) return;
 
@@ -377,7 +412,7 @@ export const MainchainProvider = ({ children }) => {
       const transaction = await contract.buildPartnerContract(
         buildPartnerUDPC,
         buildPartnerName,
-        { from: currentAccount}
+        { from: currentAccount }
       );
 
       await transaction.wait();
@@ -390,15 +425,15 @@ export const MainchainProvider = ({ children }) => {
     }
   };
 
-  const manufactureDrugLoad = async (): Promise<void> => {
+  const manufactureDrugLoad = async (manufactureUDPC: string,manufactureQuantity: string): Promise<void> => {
 
     if (!contract) return;
 
     try {
       const transaction = await contract.manufacureDrugsLoud(
-        manufactureUDPC
-        manufactureQuantity
-        { from: currentAccount}
+        manufactureUDPC,
+        manufactureQuantity,
+        { from: currentAccount }
       );
 
       await transaction.wait();
@@ -411,14 +446,14 @@ export const MainchainProvider = ({ children }) => {
     }
   };
 
-  const packDrugLoad = async (): Promise<void> => {
+  const packDrugLoad = async (packSLU: string): Promise<void> => {
 
     if (!contract) return;
 
     try {
       const transaction = await contract.packDrugsLoud(
         packSLU,
-        { from: currentAccount}
+        { from: currentAccount }
       );
 
       await transaction.wait();
@@ -430,7 +465,7 @@ export const MainchainProvider = ({ children }) => {
     }
   };
 
-  const addDrugLoad = async (): Promise<void> => {
+  const addDrugLoad = async (addSLU: string, price: number): Promise<void> => {
 
     if (!contract) return;
 
@@ -439,7 +474,7 @@ export const MainchainProvider = ({ children }) => {
       const transaction = await contract.addDrugsLoud(
         addSLU,
         priceInWei,
-        { from: currentAccount}
+        { from: currentAccount }
       );
 
       await transaction.wait();
@@ -450,18 +485,19 @@ export const MainchainProvider = ({ children }) => {
       console.log(`Couldn't add drug load! ${err}`);
     }
   };
-  const buyDrugLoad = async (): Promise<void> => {
+  const buyDrugLoad = async (retailerAddress: string, buySLU: string): Promise<void> => {
 
     if (!contract) return;
 
     try {
-      const valueInWei = await ethers.parseEther("");
-      const retailerAccount;
-      const retailerAddress;
+      const valueInWei =  ethers.parseEther("");
+      // const retailerAddress;
+      const retailerAccount: string;
       const transaction = await contract.buyDrugsLoud(
         buySLU,
         retailerAccount,
-        { from: currentAccount,
+        {
+          from: currentAccount,
           value: valueInWei
         }
       );
@@ -476,14 +512,14 @@ export const MainchainProvider = ({ children }) => {
     }
   };
 
-  const shipDrugLoad = async (): Promise<void> => {
+  const shipDrugLoad = async (shipSLU: string): Promise<void> => {
 
     if (!contract) return;
 
     try {
       const transaction = await contract.shipDrugsLoud(
         shipSLU,
-        { from: currentAccount}
+        { from: currentAccount }
       );
 
       await transaction.wait();
@@ -496,14 +532,14 @@ export const MainchainProvider = ({ children }) => {
     }
   };
 
-  const receiveDrugLoad = async (): Promise<void> => {
+  const receiveDrugLoad = async (receiveSLU: string): Promise<void> => {
 
     if (!contract) return;
 
     try {
       const transaction = await contract.receiveDrugsLoud(
         receiveSLU,
-        { from: currentAccount}
+        { from: currentAccount }
       );
 
       await transaction.wait();
@@ -516,7 +552,7 @@ export const MainchainProvider = ({ children }) => {
     }
   };
 
-  const updateShipEnv = async (shipEnvSLU,shipEnvHumidity,shipEnvTemperature): Promise<void> => {
+  const updateShipEnv = async (shipEnvSLU: string, shipEnvHumidity: string, shipEnvTemperature: string): Promise<void> => {
 
     if (!contract) return;
 
@@ -525,7 +561,7 @@ export const MainchainProvider = ({ children }) => {
         shipEnvSLU,
         shipEnvHumidity,
         shipEnvTemperature,
-      { from: currentAccount});
+        { from: currentAccount });
 
       await transaction.wait();
       console.log(`Updated ship environment successfully ${transaction}`);
@@ -536,7 +572,7 @@ export const MainchainProvider = ({ children }) => {
     }
   };
 
-  const updateStockEnv = async (): Promise<void> => {
+  const updateStockEnv = async (stockEnvSLU: string,stockEnvHumidity: string,stockEnvTemperature: string): Promise<void> => {
 
     if (!contract) return;
 
@@ -545,7 +581,7 @@ export const MainchainProvider = ({ children }) => {
         stockEnvSLU,
         stockEnvHumidity,
         stockEnvTemperature,
-        { from: currentAccount}
+        { from: currentAccount }
       );
 
       await transaction.wait();
@@ -557,15 +593,16 @@ export const MainchainProvider = ({ children }) => {
     }
   };
 
-  const purchaseDrug = async (): Promise<void> => {
+  const purchaseDrug = async (purchasePKU: string, price: number): Promise<void> => {
 
     if (!contract) return;
 
     try {
-      const valueInWei = ;
+      const valueInWei = ethers.parseEther("");
       const transaction = await contract.purchaseDrug(
         purchasePKU,
-        { from: currentAccount,
+        {
+          from: currentAccount,
           value: valueInWei
         }
       );
@@ -579,14 +616,14 @@ export const MainchainProvider = ({ children }) => {
     }
   };
 
-  const fetchDrugDesignData = async (): Promise<void> => {
+  const fetchDrugDesignData = async (udpc: string): Promise<void> => {
 
     if (!contract) return;
 
     try {
       const transaction = await contract.fetchDrugDesignData(
         udpc,
-        { from: currentAccount}
+        { from: currentAccount }
       );
 
       await transaction.wait();
@@ -598,14 +635,14 @@ export const MainchainProvider = ({ children }) => {
     }
   };
 
-  const fetchDrugLoadData = async (): Promise<void> => {
+  const fetchDrugLoadData = async (slu: string): Promise<void> => {
 
     if (!contract) return;
 
     try {
       const transaction = await contract.fetchDrugLoudData(
         slu,
-        { from: currentAccount}
+        { from: currentAccount }
       );
 
       await transaction.wait();
@@ -618,14 +655,14 @@ export const MainchainProvider = ({ children }) => {
     }
   };
 
-  const getDrugLoadPKUs = async (): Promise<void> => {
+  const getDrugLoadPKUs = async (slu: string): Promise<void> => {
 
     if (!contract) return;
 
     try {
       const transaction = await contract.fetchLoudPKUs(
         slu,
-        { from: currentAccount}
+        { from: currentAccount }
       );
 
       await transaction.wait();
@@ -637,14 +674,14 @@ export const MainchainProvider = ({ children }) => {
     }
   };
 
-  const fetchDrugData = async (): Promise<void> => {
+  const fetchDrugData = async (fetchDrugPKU: string): Promise<void> => {
 
     if (!contract) return;
 
     try {
       const transaction = await contract.fetchDrugItemData(
         fetchDrugPKU,
-        { from: currentAccount}
+        { from: currentAccount }
       );
 
       await transaction.wait();
@@ -656,14 +693,14 @@ export const MainchainProvider = ({ children }) => {
     }
   };
 
-  const fetchEnvHistory = async (): Promise<void> => {
+  const fetchEnvHistory = async (fetchDrugPKU: string): Promise<void> => {
 
     if (!contract) return;
 
     try {
       const transaction = await contract.fetchEnvHistory(
         fetchDrugPKU,
-        { from: currentAccount}
+        { from: currentAccount }
       );
       await transaction.wait();
       console.log(`Fetched env history successfully ${transaction}`);
@@ -674,35 +711,7 @@ export const MainchainProvider = ({ children }) => {
     }
   };
 
-  const addTxToLogs = async (tx) => {
 
-    const txHash = tx.transactionHash;
-    const eventName = Object.keys(tx.events)[0];
-    const eventValueName = Object.keys(tx.events[eventName]['returnValues'])[1];
-    const eventValue = tx.events[eventName]['returnValues'][eventValueName];
-
-    let updatedLogs = []
-    const newLogHash = `$|>>Transaction Hash: ${txHash}`
-    const newLogEvent = `|----|Event: ${eventName} (${eventValueName}: ${eventValue})`;
-
-    updatedLogs.push(newLogHash + newLogEvent, ...logs);
-    setLogs(updatedLogs);
-  };
-
-  const addToLogs = async (logObject) => {
-
-    let updatedLogs = [];
-    const dataKeys = Object.keys(logObject);
-    const numberOfData = dataKeys.length;
-    let logy = ''
-
-    for (let i = (numberOfData / 2); i < numberOfData; i++) {
-      logy += dataKeys[i] + ': ' + logObject[dataKeys[i]] + ', ';
-    }
-
-    updatedLogs.push(logy, ...logs);
-    setLogs(updatedLogs);
-  };
 
   return (
     <MainchainContext.Provider
@@ -740,7 +749,7 @@ export const MainchainProvider = ({ children }) => {
 }
     >
   { children }
-  < /MainchainContext.Provider>
+  </MainchainContext.Provider>
   );
 };
 
