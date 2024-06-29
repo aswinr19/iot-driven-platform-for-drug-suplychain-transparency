@@ -1,17 +1,58 @@
 "use client";
 
 import React, { useState, useEffect, useContext } from "react";
-import { MainchainContext } from "../context/Mainchain";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { MainchainContext } from "../context/Mainchain";
 
 export default function Home() {
-  const { currentAccount, connectWallet, disconnectWallet } = useContext(MainchainContext);
-  const [logs, setLogs] = useState<string[]>([]);
-  const [roles, setRoles] = useState([]);
-  const [activeTab, setActiveTab] = useState("1");
-  const [isLoading, setIsLoading] = useState(true);
-  const [errMessage, setErrMessage] = useState("");
+  const { 
+        currentAccount, 
+        connectWallet, 
+        disconnectWallet,
+        checkIfWalletIsConnected,
+        addRoleToMe,
+        removeFromMe,
+        addRegulator,
+        addDrugDesign,
+        addDrugTest,
+        addDrugTestByRegulator,
+        approveDrug,
+        sellDrugDesign,
+        buyDrugDesign,
+        updatePartnerState,
+        addPartner,
+        assignPartner,
+        manufactureDrugLoad,
+        packDrugLoad,
+        addDrugLoad,
+        buyDrugLoad,
+        shipDrugLoad,
+        receiveDrugLoad,
+        updateShipEnv,
+        updateStockEnv,
+        purchaseDrug,
+        fetchDrugDesignData,
+        fetchDrugLoadData,
+        getDrugLoadPKUs,
+        fetchDrugData,
+        fetchEnvHistory
+ } = useContext(MainchainContext);
+ 
+  const [roles, setRoles] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [errMessage, setErrMessage] = useState<string>("");
+  // const [activeTab, setActiveTab] = useState("1");
+  // const [logs, setLogs] = useState<string[]>([]);
+
+  //   useEffect(() => {
+  //      const checkWallet = async () => {
+  //       await checkIfWalletIsConnected();
+  //     }
+
+  //   checkWallet();
+  // }, []);
+
 
   return (
     <>
@@ -24,16 +65,19 @@ export default function Home() {
             <span>Drug Supplychain</span>
           </Link>
           <Link className="font-bold" href="#">
-            All reports
+           My Roles 
           </Link>
           <Link className="text-gray-500 dark:text-gray-400" href="#">
-            My reports
+           Drug Design 
           </Link>
           <Link className="text-gray-500 dark:text-gray-400" href="#">
-            Auctions
+            Drug Loads 
           </Link>
           <Link className="text-gray-500 dark:text-gray-400" href="/create">
-            Create Report
+            Drug 
+          </Link>
+          <Link className="text-gray-500 dark:text-gray-400" href="/create">
+           Fetch Data 
           </Link>
         </nav>
 
@@ -50,8 +94,15 @@ export default function Home() {
           </Button>
         )}
       </header>
-
-     
+      <div>
+        {roles.map((role) => {
+          <div>
+            <Button onClick={ () => addRoleToMe(role.role) }>Assign {role.role} </Button>
+            <Button onClick={ () => removeRoleFromMe(role.role) }>Remove {role.role} </Button>
+            <Button onClick={ () => currentAccountRoles() }>Who am i ?</Button>
+          </div>
+        })}
+    </div> 
     </>
   );
 }

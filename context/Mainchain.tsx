@@ -3,16 +3,50 @@ import Web3Modal from 'web3modal';
 import { ethers } from 'ethers';
 import { mainChainABI, mainChainAddress } from './Constants';
 
-const fetchContract = (signerOrProvider: ethers.Signer | ethers.Provider): ethers.Contract => {
-  return new ethers.Contract(mainChainAddress, mainChainABI, signerOrProvider);
-};
 
-export const MainchainContext = React.createContext(null);
+interface MainchainContextType {
+  currentAccount: string | null;
+  connectWallet: () => Promise<void>;
+  disconnectWallet: () => void;
+  checkIfWalletIsConnected: () => Promise<void>;
+  addRoleToMe: (role: string) => Promise<void>;
+  removeRoleFromMe: (role: string) => Promise<void>;
+  addRegulator: (regulatorToBeAdded: string) => Promise<void>;
+  addDrugDesign: (drugDesgignerName: string, drugDesignName: string, drugDesignDescription: string, drugDrsignNotes: string) => Promise<void>;
+  addDrugTest: (drugTestUDPC: string, drugTestDesc: string, drugTestPass: string, drugTestNotes: string) => Promise<void>;
+  addDrugTestByRegulator: (drugTestUDPC: string, drugTestDesc: string, drugTestPass: string, DrugTestNotes: string) => Promise<void>;
+  approveDrug: (drugApproveUDPC: string) => Promise<void>;
+  sellDrugDesign: (sellDrugUDPC: string, price: number) => Promise<void>;
+  buyDrugDesign: (buyDrugUDPC: string, price: number) => Promise<void>;
+  updatePartnerState: (state: string, partnerStateUDPC: string, partnerStateShare: string) => Promise<void>;
+  addPartner: (addPartnerUDPC: string, addPartnerAddress: string, addPartnerName: string, addPartnerShare: string) => Promise<void>;
+  assignPartner: (buildPartnerUDPC: string, buildPartnerName: string) => Promise<void>;
+  manufactureDrugLoad: (manufactureUDPC: string, manufactureQuantity: string) => Promise<void>;
+  packDrugLoad: (packSLU: string) => Promise<void>;
+  addDrugLoad: (addSLU: string, price: number) => Promise<void>;
+  buyDrugLoad: (retailerAddress: string, buySLU: string) => Promise<void>;
+  shipDrugLoad: (shipSLU: string) => Promise<void>;
+  receiveDrugLoad: (receiveSLU: string) => Promise<void>;
+  updateShipEnv: (shipEnvSLU: string, shipEnvHumidity: string, shipEnvTemperature: string) => Promise<void>;
+  updateStockEnv: (stockEnvSLU: string, stockEnvHumidity: string, stockEnvTemperature: string) => Promise<void>;
+  purchaseDrug: (purchasePKU: string, price: number) => Promise<void>;
+  fetchDrugDesignData: (udpc: string) => Promise<void>;
+  fetchDrugLoadData: (slu: string) => Promise<void>;
+  getDrugLoadPKUs: (slu: string) => Promise<void>;
+  fetchDrugData: (fetchDrugPKU: string) => Promise<void>;
+  fetchEnvHistory: (fetchDrugPKU: string) => Promise<void>;
+};
 
 type Role = {
   role: string,
   isAssign: boolean
 };
+
+const fetchContract = (signerOrProvider: ethers.Signer | ethers.Provider): ethers.Contract => {
+  return new ethers.Contract(mainChainAddress, mainChainABI, signerOrProvider);
+};
+
+export const MainchainContext = React.createContext<MainchainContextType | null>(null);
 
 export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
@@ -167,7 +201,7 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     }
   };
 
-  const removeFromMe = async (role: string): Promise<void> => {
+  const removeRoleFromMe = async (role: string): Promise<void> => {
 
     if (!contract) return;
     let transaction;
@@ -288,6 +322,7 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     } catch (err) {
       console.log(`Failed to add regulator ${err}`);
       setError(`Failed to add regulator`);
+    }
     };
 
     const approveDrug = async (drugApproveUDPC: string): Promise<void> => {
@@ -720,32 +755,15 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       }
     };
   
-    useEffect(() => {
-       const checkWallet = async () => {
-        await checkIfWalletIsConnected();
-      }
-
-    checkWallet();
-  }, []);
-  }
-
   return (
-    <div>hello world</div>
-  );
-}
-/* 
-
-    
-    
-    return (
-      <MainchainContext.Provider
-      value= {{
-      currentAccount,
-        checkIfWalletIsConnected,
+    <MainchainContext.Provider
+      value={{
+        currentAccount,
         connectWallet,
         disconnectWallet,
+        checkIfWalletIsConnected,
         addRoleToMe,
-        removeFromMe,
+        removeRoleFromMe,
         addRegulator,
         addDrugDesign,
         addDrugTest,
@@ -772,7 +790,6 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         fetchEnvHistory
     }}>
     { children }
-    < /MainchainContext.Provider>
+    </MainchainContext.Provider>
   );
-
-*/
+}
