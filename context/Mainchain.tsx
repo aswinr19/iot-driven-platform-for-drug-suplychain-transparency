@@ -1,52 +1,16 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
 import Web3Modal from 'web3modal';
 import { ethers } from 'ethers';
 import { mainChainABI, mainChainAddress } from './Constants';
-
-
-interface MainchainContextType {
-  currentAccount: string | null;
-  connectWallet: () => Promise<void>;
-  disconnectWallet: () => void;
-  checkIfWalletIsConnected: () => Promise<void>;
-  addRoleToMe: (role: string) => Promise<void>;
-  removeRoleFromMe: (role: string) => Promise<void>;
-  addRegulator: (regulatorToBeAdded: string) => Promise<void>;
-  addDrugDesign: (drugDesgignerName: string, drugDesignName: string, drugDesignDescription: string, drugDrsignNotes: string) => Promise<void>;
-  addDrugTest: (drugTestUDPC: string, drugTestDesc: string, drugTestPass: string, drugTestNotes: string) => Promise<void>;
-  addDrugTestByRegulator: (drugTestUDPC: string, drugTestDesc: string, drugTestPass: string, DrugTestNotes: string) => Promise<void>;
-  approveDrug: (drugApproveUDPC: string) => Promise<void>;
-  sellDrugDesign: (sellDrugUDPC: string, price: number) => Promise<void>;
-  buyDrugDesign: (buyDrugUDPC: string, price: number) => Promise<void>;
-  updatePartnerState: (state: string, partnerStateUDPC: string, partnerStateShare: string) => Promise<void>;
-  addPartner: (addPartnerUDPC: string, addPartnerAddress: string, addPartnerName: string, addPartnerShare: string) => Promise<void>;
-  assignPartner: (buildPartnerUDPC: string, buildPartnerName: string) => Promise<void>;
-  manufactureDrugLoad: (manufactureUDPC: string, manufactureQuantity: string) => Promise<void>;
-  packDrugLoad: (packSLU: string) => Promise<void>;
-  addDrugLoad: (addSLU: string, price: number) => Promise<void>;
-  buyDrugLoad: (retailerAddress: string, buySLU: string) => Promise<void>;
-  shipDrugLoad: (shipSLU: string) => Promise<void>;
-  receiveDrugLoad: (receiveSLU: string) => Promise<void>;
-  updateShipEnv: (shipEnvSLU: string, shipEnvHumidity: string, shipEnvTemperature: string) => Promise<void>;
-  updateStockEnv: (stockEnvSLU: string, stockEnvHumidity: string, stockEnvTemperature: string) => Promise<void>;
-  purchaseDrug: (purchasePKU: string, price: number) => Promise<void>;
-  fetchDrugDesignData: (udpc: string) => Promise<void>;
-  fetchDrugLoadData: (slu: string) => Promise<void>;
-  getDrugLoadPKUs: (slu: string) => Promise<void>;
-  fetchDrugData: (fetchDrugPKU: string) => Promise<void>;
-  fetchEnvHistory: (fetchDrugPKU: string) => Promise<void>;
-};
-
-type Role = {
-  role: string,
-  isAssign: boolean
-};
+import { MainchainContextType, Role } from '../types/types';
 
 const fetchContract = (signerOrProvider: ethers.Signer | ethers.Provider): ethers.Contract => {
   return new ethers.Contract(mainChainAddress, mainChainABI, signerOrProvider);
 };
 
-export const MainchainContext = React.createContext<MainchainContextType | null>(null);
+export const MainchainContext = React.createContext<MainchainContextType>({} as MainchainContextType);
 
 export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
@@ -55,7 +19,7 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const [signer, setSigner] = useState<ethers.Signer | null>(null);
   const [contract, setContract] = useState<ethers.Contract | null>(null);
   const [roles, setRoles] = useState<Role[]>([]);
-  const [currentAccount, setCurrentAccount] = useState<string | null>('');
+  const [currentAccount, setCurrentAccount] = useState<string | null>(null);
   const [logs, setLogs] = useState<string[]>([]);
   const [error, setError] = useState<string>('');
   const [openError, setOpenError] = useState<boolean>(false);
@@ -79,10 +43,12 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     }
     initializeWeb3()
   }, []
-
-
   );
 
+  useEffect(() => {
+    console.log(`current account ${currentAccount}`);
+  }, [currentAccount]);
+  
   const addTxToLogs = async (tx: any) => {
 
     const txHash = tx.transactionHash;
@@ -121,12 +87,15 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         method: 'eth_requestAccounts'
       });
       setCurrentAccount(accounts[0]);
+
+      console.log('connected to wallet');
     } catch (err) {
       console.log(`Error while connecting to account! ${err}`);
     }
   };
   const disconnectWallet = () => {
     setCurrentAccount(null);
+    console.log('disconnected from wallet');
   };
 
   const currentAccountRoles = async (): Promise<void> => {
@@ -346,7 +315,7 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       if (!contract) return;
 
       try {
-        const priceInWei = ethers.parseEther("");
+        const priceInWei = ethers.parseEther(price.toString());
         const transaction = await contract.upForSale(sellDrugUDPC, priceInWei, { from: currentAccount });
         await transaction.wait();
 
@@ -363,7 +332,7 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       if (!contract) return;
 
       try {
-        const priceInWei = ethers.parseEther("");
+        const priceInWei = ethers.parseEther(price.toString());
         const transaction = await contract.purchaseDrugDesign(buyDrugUDPC, { from: currentAccount, value: priceInWei });
 
         await transaction.wait();
@@ -496,7 +465,7 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       if (!contract) return;
 
       try {
-        const priceInWei = ethers.parseEther("");
+        const priceInWei = ethers.parseEther(price.toString());
         const transaction = await contract.addDrugsLoud(
           addSLU,
           priceInWei,
@@ -511,12 +480,12 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         console.log(`Couldn't add drug load! ${err}`);
       }
     };
-    const buyDrugLoad = async (retailerAddress: string, buySLU: string): Promise<void> => {
+    const buyDrugLoad = async (retailerAddress: string, buySLU: string,value: number): Promise<void> => {
 
       if (!contract) return;
 
       try {
-        const valueInWei = ethers.parseEther("");
+        const valueInWei = ethers.parseEther(value.toString());
         // const retailerAddress;
         const retailerAccount = ethers.getAddress(retailerAddress);
         const transaction = await contract.buyDrugsLoud(
@@ -619,12 +588,12 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       }
     };
 
-    const purchaseDrug = async (purchasePKU: string, price: number): Promise<void> => {
+    const purchaseDrug = async (purchasePKU: string, value: number): Promise<void> => {
 
       if (!contract) return;
 
       try {
-        const valueInWei = ethers.parseEther("");
+        const valueInWei = ethers.parseEther(value.toString());
         const transaction = await contract.purchaseDrug(
           purchasePKU,
           {
