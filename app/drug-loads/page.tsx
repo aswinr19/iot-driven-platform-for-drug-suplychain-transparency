@@ -3,10 +3,10 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { MainchainContext } from "../context/Mainchain";
-import { MainchainContextType } from '../types/types';
+import { MainchainContext } from "../../context/Mainchain";
+import { MainchainContextType } from '../../types/types';
 
-export default function Home() {
+export default function DrugLoads() {
   const { 
         currentAccount, 
         connectWallet, 
@@ -64,13 +64,13 @@ export default function Home() {
           >
             <span>Drug Supplychain</span>
           </Link>
-          <Link className="font-bold" href="#">
+          <Link className="text-gray-500 dark:text-gray-400" href="#">
            My Roles 
           </Link>
           <Link className="text-gray-500 dark:text-gray-400" href="/drug-design">
            Drug Design 
           </Link>
-          <Link className="text-gray-500 dark:text-gray-400" href="/drug-loads">
+          <Link className="font-bold" href="/drug-loads">
             Drug Loads 
           </Link>
           <Link className="text-gray-500 dark:text-gray-400" href="/drug">
@@ -95,13 +95,7 @@ export default function Home() {
         )}
       </header>
       <div>
-        {/* {roles.map((role) => {
-          <div>
-            <Button onClick={ () => addRoleToMe(role.role) }>Assign {role.role} </Button>
-            <Button onClick={ () => removeRoleFromMe(role.role) }>Remove {role.role} </Button>
-            <Button onClick={ () => currentAccountRoles() }>Who am i ?</Button>
-          </div>
-        })} */}
+        
     </div> 
     </>
   );
