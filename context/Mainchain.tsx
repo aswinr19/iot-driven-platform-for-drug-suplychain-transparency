@@ -36,6 +36,11 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         setProvider(prvdr);
         setSigner(sgnr);
         setContract(cntrct);
+
+        console.log('successfully fetched provider');
+        console.log(prvdr);
+        console.log(sgnr);
+        console.log(cntrct);
       } catch(err){
         console.log(`Failed to initialize app! ${err}`);
         setError('Failed to initialize app!')

@@ -15,44 +15,17 @@ export default function Home() {
         addRoleToMe,
         removeRoleFromMe,
         addRegulator,
-        addDrugDesign,
-        addDrugTest,
-        addDrugTestByRegulator,
-        approveDrug,
-        sellDrugDesign,
-        buyDrugDesign,
-        updatePartnerState,
-        addPartner,
-        assignPartner,
-        manufactureDrugLoad,
-        packDrugLoad,
-        addDrugLoad,
-        buyDrugLoad,
-        shipDrugLoad,
-        receiveDrugLoad,
-        updateShipEnv,
-        updateStockEnv,
-        purchaseDrug,
-        fetchDrugDesignData,
-        fetchDrugLoadData,
-        getDrugLoadPKUs,
-        fetchDrugData,
-        fetchEnvHistory
  } = useContext<MainchainContextType>(MainchainContext);
  
   const [roles, setRoles] = useState<string[]>([]);
+  const [regulator, setRegulator] = useState<string>(''); 
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [errMessage, setErrMessage] = useState<string>("");
-  // const [logs, setLogs] = useState<string[]>([]);
 
-  //   useEffect(() => {
-  //      const checkWallet = async () => {
-  //       await checkIfWalletIsConnected();
-  //     }
-
-  //   checkWallet();
-  // }, []);
-
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setRegulator(e.target.value);
+    console.log(regulator);
+  };
 
   return (
     <>
@@ -60,11 +33,11 @@ export default function Home() {
         <nav className="flex items-center gap-6 text-lg font-medium md:gap-5 md:text-sm lg:gap-6">
           <Link
             className="flex items-center gap-2 text-lg font-semibold md:text-base"
-            href="#"
+            href="/"
           >
             <span>Drug Supplychain</span>
           </Link>
-          <Link className="font-bold" href="#">
+          <Link className="font-bold" href="/">
            My Roles 
           </Link>
           <Link className="text-gray-500 dark:text-gray-400" href="/drug-design">
@@ -96,12 +69,26 @@ export default function Home() {
       </header>
       <div>
         {/* {roles.map((role) => {
-          <div>
+          <div key={role.id}>
             <Button onClick={ () => addRoleToMe(role.role) }>Assign {role.role} </Button>
             <Button onClick={ () => removeRoleFromMe(role.role) }>Remove {role.role} </Button>
-            <Button onClick={ () => currentAccountRoles() }>Who am i ?</Button>
           </div>
         })} */}
+        {/*
+          <div>
+            <Button onClick={ () => currentAccountRoles() }>Who am i ?</Button>
+          </div>
+          <div>
+            <span> Add new regulator </span>
+            <input type='text' 
+                placeholder='Regulator address' 
+                name='regulatorToBeAdded' 
+                value={ regulator }
+                onChange={ handleChange }
+                />
+            <Button onClick={ addRegulator(regulator) }> Add </Button>
+          </div>
+        */}
     </div> 
     </>
   );
