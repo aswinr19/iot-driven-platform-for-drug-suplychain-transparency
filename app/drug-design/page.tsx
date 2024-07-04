@@ -23,37 +23,20 @@ export default function DrugDesign() {
         buyDrugDesign,
         updatePartnerState,
         addPartner,
-        assignPartner,
-        manufactureDrugLoad,
-        packDrugLoad,
-        addDrugLoad,
-        buyDrugLoad,
-        shipDrugLoad,
-        receiveDrugLoad,
-        updateShipEnv,
-        updateStockEnv,
-        purchaseDrug,
-        fetchDrugDesignData,
-        fetchDrugLoadData,
-        getDrugLoadPKUs,
-        fetchDrugData,
-        fetchEnvHistory
  } = useContext<MainchainContextType>(MainchainContext);
  
   const [roles, setRoles] = useState<string[]>([]);
+  const [drugDesignName, setDrugDesignName] = useState<string>('');
+  const [drugDesignerName, setDrugDesignerName] = useState<string>('');
+  const [drugDesignDescription, setDrugDesignDescription] = useState<string>('');
+  const [drugDesignNotes, setDrugDesignNotes] = useState<string>(''); 
+  const [drugTestUDPC, setDrugTestUDPC] = useState<string>('');
+  const [drugTestDescription, setDrugTestDescription] = useState<string>('');
+  const [drugTestPass, setDrugTestPass] = useState<boolean>(false);
+  const [drugTestNotes, setDrugTestNotes] = useState<string>(''); 
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [errMessage, setErrMessage] = useState<string>("");
-  // const [logs, setLogs] = useState<string[]>([]);
-
-  //   useEffect(() => {
-  //      const checkWallet = async () => {
-  //       await checkIfWalletIsConnected();
-  //     }
-
-  //   checkWallet();
-  // }, []);
-
-
+  
   return (
     <>
       <header className="flex items-center justify-between h-16 px-4 border-b md:px-6">
@@ -95,7 +78,29 @@ export default function DrugDesign() {
         )}
       </header>
       <div>
-        
+        <div>
+          <span>Add new drug design</span>
+          <input type='text' placeholder='Designer name' name='drugDesignerName' />
+          <input type='text' placeholder='Drug name' name='drugDesignName' />
+          <textarea rows={2} placeholder='Description' name='drugDesignDesc' />
+          <textarea rows={2} placeholder='Add notes' name='drugDesignNotes' />
+          <button onClick={ () => addDrugDesign() } > Add drug design </button>
+        </div>
+         <div>
+          <span>Add drug test</span>
+          <input type='text' placeholder='UDPC' name='drugTestUDPC' />
+          <textarea rows={2} placeholder='Description' name='drugTestDesc' />
+          <label> Passed? </label> 
+          <input type='checkbox' name='drugTestPass' />
+          <textarea rows={2} placeholder='Add notes' name='drugTestNotes' />
+          <button onClick={ () => addDrugTest() }> Add test by owner </button>
+          <button onClick={ () => addDrugTestByRegulator() }> Add test by regulator </button>
+        </div>
+        <div>
+          <span>Approve drug</span>
+          <input type='text' placeholder='UDPC' name='drugApproveUDPC' />
+          <button onClick={ () => approveDrug() }> Approve </button>
+        </div>
     </div> 
     </>
   );
