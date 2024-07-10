@@ -95,7 +95,72 @@ export default function DrugLoads() {
         )}
       </header>
       <div>
-        
+								<div>
+									<span>Manufactur Drugs Load </span>
+									<span className='text-red-600'>only manufacturer</span>
+									<span  className='text-red-600'>only partner or owner of drug design</span>
+									<input type='number' placeholder='UDPC' name='manufacturUDPC'/>
+									<input type='number' placeholder='Quantity' name='manufacturQuantity'/>
+									<p/>
+									<Button onClick={()=> {manufactDrugLoad()}}>Manufactur</Button>
+								</div>	
+								<div>
+									<span>Pack Drugs Load </span>
+									<span className='text-red-600'>only manufacturer of drugs load</span>
+									<input type='text' placeholder='SLU' name='packSLU'/>
+									<p/>
+									<Button onClick={()=> {packDrugLoad()}}>Pack</Button>
+								</div>
+								<div>
+									<span>Sell Drugs Load </span>
+									<span className='text-red-600'> only manufacturer of drugs load</span>
+									<input type='text' placeholder='SLU' name='addSLU'/>
+									<input type='text' placeholder='Unit Price' name='addPrice'/>
+									<p/>
+									<Button onClick={()=> {addDrugLoad()}}>Up For Sale</Button>
+								</div>		
+								<div>
+									<span>Buy Drugs Loud</span>
+									<span className='text-red-600'>only distributor</span>
+									<input type='text' placeholder='SLU' name='buySLU'/>
+									<input type='text' placeholder='Retailer Address' name='buyRetailerAddress'/>
+									<input type='text' placeholder='Ether Value' name='buyValue'/>
+									<p/>
+									<Button onClick={()=> {buyDrugLoad()}}>Buy</Button>
+								</div>	
+								<div>
+									<span>Ship Drugs Load </span>
+									<span>only manufacturer of drugs load</Text>
+									<input type='text' placeholder='SLU' name='shipSLU'/>
+									<p/>
+									<Button onClick={()=> {shipDrugLoad()}}>Ship</Button>
+								</div>
+								<div> 
+									<span>Receive Drugs Load </span>
+									<span className='text-red-600'>only retailer of drugs load</Text>
+									<span className='text-red-600'>only drugs load shippment envuirment updated</Text>
+									<input type='text' placeholder='SLU' name='receiveSLU'/>
+									<p/>
+									<Button p ={3} m={1} onClick={()=> {receiveDrugLoad()}}>Recieve</Button>
+								</div>		
+								<div>
+									<span>Update Shippment Envuirment</span>
+									<span className='red'>only manufacturer or distributor of drugs load</span>
+									<input type='text' placeholder='SLU' name='shipEnvSLU'/>
+									<input type='text' placeholder='Humidity' name='shipEnvHumidity'/>
+									<input type='text' placeholder='Temprture' name='shipEnvTemprture'/>
+									<p/>
+									<Button onClick={()=> {updateShipEnv()}}>Add</Button>
+								</div>	
+								<div>
+									<span>Update Stocking Envuirment</span>
+									<span className='text-red-600'>only Retailer of drugs load</span>
+									<input type='text' placeholder='SLU' name='stockEnvSLU'/>
+									<input type='text' placeholder='Humidity' name='stockEnvHumidity'/>
+									<input type='text'  placeholder='Temprture' name='stockEnvTemprture'/>
+									<p/>
+									<Button onClick={()=> {updateStockEnv()}}>Add</Button>
+								</div>	
     </div> 
     </>
   );

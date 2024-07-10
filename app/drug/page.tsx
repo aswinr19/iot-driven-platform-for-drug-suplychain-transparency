@@ -1,45 +1,45 @@
-'use client';
+"use client";
 
 import React, { useState, useEffect, useContext } from "react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { MainchainContext } from "../../context/Mainchain";
-import { MainchainContextType } from '../../types/types';
+import { MainchainContextType } from "../../types/types";
 
 export default function Drug() {
-  const { 
-        currentAccount, 
-        connectWallet, 
-        disconnectWallet,
-        checkIfWalletIsConnected,
-        addRoleToMe,
-        removeRoleFromMe,
-        addRegulator,
-        addDrugDesign,
-        addDrugTest,
-        addDrugTestByRegulator,
-        approveDrug,
-        sellDrugDesign,
-        buyDrugDesign,
-        updatePartnerState,
-        addPartner,
-        assignPartner,
-        manufactureDrugLoad,
-        packDrugLoad,
-        addDrugLoad,
-        buyDrugLoad,
-        shipDrugLoad,
-        receiveDrugLoad,
-        updateShipEnv,
-        updateStockEnv,
-        purchaseDrug,
-        fetchDrugDesignData,
-        fetchDrugLoadData,
-        getDrugLoadPKUs,
-        fetchDrugData,
-        fetchEnvHistory
- } = useContext<MainchainContextType>(MainchainContext);
- 
+  const {
+    currentAccount,
+    connectWallet,
+    disconnectWallet,
+    checkIfWalletIsConnected,
+    addRoleToMe,
+    removeRoleFromMe,
+    addRegulator,
+    addDrugDesign,
+    addDrugTest,
+    addDrugTestByRegulator,
+    approveDrug,
+    sellDrugDesign,
+    buyDrugDesign,
+    updatePartnerState,
+    addPartner,
+    assignPartner,
+    manufactureDrugLoad,
+    packDrugLoad,
+    addDrugLoad,
+    buyDrugLoad,
+    shipDrugLoad,
+    receiveDrugLoad,
+    updateShipEnv,
+    updateStockEnv,
+    purchaseDrug,
+    fetchDrugDesignData,
+    fetchDrugLoadData,
+    getDrugLoadPKUs,
+    fetchDrugData,
+    fetchEnvHistory,
+  } = useContext<MainchainContextType>(MainchainContext);
+
   const [roles, setRoles] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [errMessage, setErrMessage] = useState<string>("");
@@ -53,7 +53,6 @@ export default function Drug() {
   //   checkWallet();
   // }, []);
 
-
   return (
     <>
       <header className="flex items-center justify-between h-16 px-4 border-b md:px-6">
@@ -65,19 +64,22 @@ export default function Drug() {
             <span>Drug Supplychain</span>
           </Link>
           <Link className="text-gray-500 dark:text-gray-400" href="/">
-           My Roles 
+            My Roles
           </Link>
-          <Link className="text-gray-500 dark:text-gray-400" href="/drug-design">
-           Drug Design 
+          <Link
+            className="text-gray-500 dark:text-gray-400"
+            href="/drug-design"
+          >
+            Drug Design
           </Link>
           <Link className="text-gray-500 dark:text-gray-400" href="/drug-loads">
-            Drug Loads 
+            Drug Loads
           </Link>
           <Link className="font-bold" href="/drug">
-            Drug 
+            Drug
           </Link>
           <Link className="text-gray-500 dark:text-gray-400" href="/fetch-data">
-           Fetch Data 
+            Fetch Data
           </Link>
         </nav>
 
@@ -95,8 +97,26 @@ export default function Drug() {
         )}
       </header>
       <div>
-        
-    </div> 
+          <span>Purchase Drug</span>
+          <span className="text-red-600">
+            only consumer
+          </span>
+          <input type="text" placeholder="PKU" name="purchasePKU" />
+          <input
+            type="text"
+            placeholder="Ether Value"
+            name="purchaseValue"
+          />
+          <p />
+          <Button
+            onClick={() => {
+              purchaseDrug();
+            }}
+          >
+            Purchase
+          </Button>
+        </Card>
+      </div>
     </>
   );
 }

@@ -80,6 +80,7 @@ export default function Home() {
           </div>
           <div>
             <span> Add new regulator </span>
+            <span className='text-red-600'> Only regulator </span> 
             <input type='text' 
                 placeholder='Regulator address' 
                 name='regulatorToBeAdded' 

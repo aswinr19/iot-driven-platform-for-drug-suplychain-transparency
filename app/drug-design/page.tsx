@@ -80,6 +80,7 @@ export default function DrugDesign() {
       <div>
         <div>
           <span>Add new drug design</span>
+          <span className='text-red-600'> Only desginger </span> 
           <input type='text' placeholder='Designer name' name='drugDesignerName' />
           <input type='text' placeholder='Drug name' name='drugDesignName' />
           <textarea rows={2} placeholder='Description' name='drugDesignDesc' />
@@ -88,6 +89,7 @@ export default function DrugDesign() {
         </div>
          <div>
           <span>Add drug test</span>
+          <span className='text-red-600'> Only regulator or owner </span> 
           <input type='text' placeholder='UDPC' name='drugTestUDPC' />
           <textarea rows={2} placeholder='Description' name='drugTestDesc' />
           <label> Passed? </label> 
@@ -98,9 +100,58 @@ export default function DrugDesign() {
         </div>
         <div>
           <span>Approve drug</span>
+          <span className='text-red-600'> Only regulator </span> 
           <input type='text' placeholder='UDPC' name='drugApproveUDPC' />
           <button onClick={ () => approveDrug() }> Approve </button>
         </div>
+        <div>
+          <span>Sell drug design</span>
+          <span className='text-red-600'> Only owner of drug design </span> 
+          <input type='text' placeholder='UDPC' name='sellDrugUDPC' />
+          <input type='text' placeholder='Ether value' name='sellDrugPrice' />
+          <button onClick={ () => sellDrugDesign() }> Up for sale </button>
+        </div>
+       <div>
+          <span>Buy drug design</span>
+          <span className='text-red-600'> Only manufacturer or designer </span> 
+          <input type='text' placeholder='UDPC' name='buyDrugUDPC' />
+          <input type='text' placeholder='Ether value' name='buyDrugPrice' />
+          <button onClick={ () => buyDrugDesign() }> Buy </button>
+        </div>
+        <div>
+          <span>Sell drug design</span>
+          <span className='text-red-600'> Only owner of drug design </span> 
+          <input type='text' placeholder='UDPC' name='sellDrugUDPC' />
+          <input type='text' placeholder='Ether value' name='sellDrugPrice' />
+          <button onClick={ () => sellDrugDesign() }> Up for sale </button>
+        </div>
+        <div>
+          <span>Update manaufacturer partnership state</span>
+          <span className='text-red-600'> Only owner of drug design </span> 
+          <input type='text' placeholder='UDPC' name='partnerStateUDPC' />
+          <button onClick={ () => updatePartnerState('close') }> Close partnership </button>
+          <button onClick={ () => updatePartnerState('restrict') }> Restrict partnership </button>
+          <input type='text' placeholder='Partner share 100%' name='partnerStateShare' />
+          <button onClick={ () => updatePartnerState('open') }> Open partnership </button>
+        </div>
+        <div>
+									<span>Add Manufacture Partner </span>
+									<span className='text-red-600'>Only owner of drug design</span>
+									<span className='text-red-600'>When partnership state is restricted only</span>
+									<input type='text' placeholder='UDPC' name='addPatnerUDPC'/>
+									<input type='text' placeholder='Partner Address' name='addPatnerAddress'/>
+									<input type='text' placeholder='Mabufacturer Name' name='addPatnerName'/>
+									<input type='text' placeholder='Partner Share 100%' name='addPartnerShare'/>
+									<Button  onClick={()=> {addPartner()}}>Add Partner</Button>
+								</div>	
+								<div>
+									<span>Build Manufactur Partnership </span>
+									<span className='text-red-600'> only manufacturer</span>
+									<span  className='text-red-600'>When partnership state is open only</span>
+									<input type='text' placeholder='UDPC' name='buildPartnerUDPC'/>
+									<input type='text' placeholder='Mabufacturer Name' name='buildPartnerName'/>
+									<Button onClick={()=> {assignPartner()}}>Build Partnership</Button>
+								</div>	
     </div> 
     </>
   );
