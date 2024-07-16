@@ -84,7 +84,6 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     setLogs(updatedLogs);
   };
 
-
   const connectWallet = async () => {
     try {
       if (!window.ethereum) return setOpenError(true), setError('Install metamask'), console.log('Install metamask!');
@@ -98,6 +97,7 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       console.log(`Error while connecting to account! ${err}`);
     }
   };
+
   const disconnectWallet = () => {
     setCurrentAccount(null);
     console.log('disconnected from wallet');
@@ -117,14 +117,9 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       const values: boolean[] = Object.values(myRoles);
       let updatedRoles: Role[] = [];
       for (var i = 6; i < 12; i++) {
-        updatedRoles.push({ role: keys[i], isAssign: values[i] })
+        updatedRoles.push({id: `${i}`, role: keys[i], isAssign: values[i] })
       }
 
-      /* 
-       const updatedRoles: Role[] = Object.entries(myRoles)
-       .slice(6,12)
-       .map(([role,isAssign]) => ({ role, isAssign }));
-       */
       setRoles(updatedRoles)
 
       console.log(`Roles fetched successfully - ${myRoles}`);
@@ -593,12 +588,12 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       }
     };
 
-    const purchaseDrug = async (purchasePKU: string, value: number): Promise<void> => {
+    const purchaseDrug = async (purchasePKU: string, value: string): Promise<void> => {
 
       if (!contract) return;
 
       try {
-        const valueInWei = ethers.parseEther(value.toString());
+        const valueInWei = ethers.parseEther(value);
         const transaction = await contract.purchaseDrug(
           purchasePKU,
           {
@@ -732,9 +727,11 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   return (
     <MainchainContext.Provider
       value={{
+        title,
         currentAccount,
         connectWallet,
         disconnectWallet,
+        currentAccountRoles,
         checkIfWalletIsConnected,
         addRoleToMe,
         removeRoleFromMe,

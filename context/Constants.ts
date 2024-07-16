@@ -1,8 +1,8 @@
-import mainChain from './Mainchain.json';
-import partnership from './Partnerships.json';
+import mainChain from './Mainchain.json'
+import partnership from './Partnerships.json'
 
-export const mainChainAddress = '0xa513E6E4b8f2a923D98304ec87F64353C4D5C853';
-export const partnershipAddress = '0x0165878A594ca255338adfa4d48449f69242Eb8F';
+export const mainChainAddress = '0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9'
+export const partnershipAddress = '0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0'
 
-export const mainChainABI = mainChain.abi;
-export const partnershipABI = partnership.abi;
+export const mainChainABI = mainChain.abi
+export const partnershipABI = partnership.abi
