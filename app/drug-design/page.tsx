@@ -194,6 +194,9 @@ export default function DrugDesign() {
                         className="text-gray-500 dark:text-gray-400"
                         href="/"
                     ></Link>
+                     <Link className="text-gray-500 dark:text-gray-400" href="/">
+                        My Roles
+                    </Link>
                     <Link className="font-bold" href="/drug-design">
                         Drug Design
                     </Link>

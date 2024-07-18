@@ -1,4 +1,4 @@
-'uuse client'
+'use client'
 
 import React, { useState, useEffect } from 'react'
 import Web3Modal from 'web3modal'
@@ -29,30 +29,30 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
     const [error, setError] = useState<string>('')
     const [openError, setOpenError] = useState<boolean>(false)
 
-    useEffect(() => {
-        const initializeWeb3 = async () => {
-            try {
-                const web3Modal = new Web3Modal()
-                const connection = await web3Modal.connect()
-                const prvdr = new ethers.BrowserProvider(connection)
-                const sgnr = await prvdr.getSigner()
-                const cntrct = fetchContract(sgnr)
+    // useEffect(() => {
+    //     const initializeWeb3 = async () => {
+    //         try {
+    //             const web3Modal = new Web3Modal()
+    //             const connection = await web3Modal.connect()
+    //             const prvdr = new ethers.BrowserProvider(connection)
+    //             const sgnr = await prvdr.getSigner()
+    //             const cntrct = fetchContract(sgnr)
 
-                setProvider(prvdr)
-                setSigner(sgnr)
-                setContract(cntrct)
+    //             setProvider(prvdr)
+    //             setSigner(sgnr)
+    //             setContract(cntrct)
 
-                console.log('successfully fetched provider')
-                console.log(prvdr)
-                console.log(sgnr)
-                console.log(cntrct)
-            } catch (err) {
-                console.log(`Failed to initialize app! ${err}`)
-                setError('Failed to initialize app!')
-            }
-        }
-        initializeWeb3()
-    }, [])
+    //             console.log('successfully fetched provider')
+    //             console.log(prvdr)
+    //             console.log(sgnr)
+    //             console.log(cntrct)
+    //         } catch (err) {
+    //             console.log(`Failed to initialize app! ${err}`)
+    //             setError('Failed to initialize app!')
+    //         }
+    //     }
+    //     initializeWeb3()
+    // }, [])
 
     useEffect(() => {
         console.log(`current account ${currentAccount}`)
@@ -72,6 +72,28 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
 
         updatedLogs.push(newLogHash + newLogEvent, ...logs)
         setLogs(updatedLogs)
+    }
+    const checkIfWalletIsConnected = async () => {
+        try {
+            if (!window.ethereum)
+                return (
+                    setOpenError(true),
+                    setError('Install metamask'),
+                    console.log('Install metamask!')
+                )
+            //    if( !window.ethereum) return console.log('Install metamask!');
+
+            const accounts = await window.ethereum.request({
+                method: 'eth_accounts',
+            })
+
+            if (accounts.length) setCurrentAccount(accounts[0])
+            else console.log('No account found!')
+        } catch (err) {
+            console.log(
+                `Something went wrong while connecting to account! ${err}`
+            )
+        }
     }
 
     const addToLogs = async (logObject: any) => {
@@ -113,18 +135,30 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
     }
 
     const currentAccountRoles = async (): Promise<void> => {
+        const provider = new ethers.JsonRpcProvider()
+        const contract = fetchContract(provider)
+
         if (!contract) return
 
         try {
             const myRoles = await contract.whoAmI({ from: currentAccount })
-            await myRoles.wait()
 
-            addToLogs(myRoles)
+            // addToLogs(myRoles)
 
-            const keys: string[] = Object.keys(myRoles)
+            const keys: string[] = [
+                'consumer',
+                'designer',
+                'distributor',
+                'manufacturer',
+                'regulator',
+                'retailer',
+            ]
+
             const values: boolean[] = Object.values(myRoles)
+
             let updatedRoles: Role[] = []
-            for (var i = 6; i < 12; i++) {
+
+            for (let i = 0; i < 6; i++) {
                 updatedRoles.push({
                     id: `${i}`,
                     role: keys[i],
@@ -133,15 +167,22 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
             }
 
             setRoles(updatedRoles)
+            console.log(roles)
 
-            console.log(`Roles fetched successfully - ${myRoles}`)
+            console.log(`Roles fetched successfully :)`)
         } catch (err) {
-            setError(`Roles fetch failed!`)
+            setError(`Roles fetch failed! - details ${err}`)
             console.log(`Roles fetch failed! - ${err}`)
         }
     }
 
     const addRoleToMe = async (role: string): Promise<void> => {
+        const web3Modal = new Web3Modal()
+        const connection = await web3Modal.connect()
+        const provider = new ethers.BrowserProvider(connection)
+        const signer = await provider.getSigner()
+        const contract = fetchContract(signer)
+
         if (!contract) return
 
         let transaction
@@ -154,7 +195,7 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
                     })
                     break
                 case 'regulator':
-                    transaction = await contract.addRegulator({
+                    transaction = await contract.assignMeAsRegulator({
                         from: currentAccount,
                     })
                     break
@@ -185,7 +226,7 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
             await transaction.wait()
 
             console.log(`Added role successfully ${transaction}`)
-            addTxToLogs(transaction)
+            //addTxToLogs(transaction)
             currentAccountRoles()
         } catch (err) {
             setError(`Couldn't add role!`)
@@ -194,15 +235,21 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
     }
 
     const removeRoleFromMe = async (role: string): Promise<void> => {
+        const web3Modal = new Web3Modal()
+        const connection = await web3Modal.connect()
+        const provider = new ethers.BrowserProvider(connection)
+        const signer = await provider.getSigner()
+        const contract = fetchContract(signer)
+
         if (!contract) return
         let transaction
 
         try {
             switch (role) {
                 case 'designer':
-                    transaction = await contract.renounceMeFromDesigner(
-                        currentAccount
-                    )
+                    transaction = await contract.renounceMeFromDesigner({
+                        from: currentAccount,
+                    })
                     break
                 case 'regulator':
                     transaction = await contract.renounceMeFromRegulator({
@@ -234,31 +281,54 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
             await transaction.wait()
             console.log(`Successfully removed role ${transaction}`)
 
-            addTxToLogs(transaction)
+            // addTxToLogs(transaction)
             currentAccountRoles()
         } catch (err) {
             console.log(`Role removal failed! ${err}`)
             setError(`Role romoval failed!`)
         }
     }
-
     const addRegulator = async (regulatorToBeAdded: string): Promise<void> => {
+        const web3Modal = new Web3Modal()
+        const connection = await web3Modal.connect()
+        const provider = new ethers.BrowserProvider(connection)
+        const signer = await provider.getSigner()
+        const contract = fetchContract(signer)
+
         if (!contract) return
 
         try {
-            const transaction = await contract.addRegulator(
+            const transaction = await contract.assignThisAccountAsRegulator(
                 regulatorToBeAdded,
                 { from: currentAccount }
             )
             await transaction.wait()
 
             console.log(`Successfully added regulator ${transaction}`)
-            addTxToLogs(transaction)
+            //addTxToLogs(transaction)
         } catch (err) {
             console.log(`Failed to add regulator ${err}`)
             setError(`Failed to add regulator`)
         }
     }
+
+    // const addRegulator = async (regulatorToBeAdded: string): Promise<void> => {
+    //     if (!contract) return
+
+    //     try {
+    //         const transaction = await contract.addRegulator(
+    //             regulatorToBeAdded,
+    //             { from: currentAccount }
+    //         )
+    //         await transaction.wait()
+
+    //         console.log(`Successfully added regulator ${transaction}`)
+    //         addTxToLogs(transaction)
+    //     } catch (err) {
+    //         console.log(`Failed to add regulator ${err}`)
+    //         setError(`Failed to add regulator`)
+    //     }
+    // }
 
     const addDrugDesign = async (
         drugDesgignerName: string,
@@ -266,6 +336,12 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
         drugDesignDescription: string,
         drugDrsignNotes: string
     ) => {
+        const web3Modal = new Web3Modal()
+        const connection = await web3Modal.connect()
+        const provider = new ethers.BrowserProvider(connection)
+        const signer = await provider.getSigner()
+        const contract = fetchContract(signer)
+
         if (!contract) return
 
         try {
@@ -292,6 +368,12 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
         drugTestPass: boolean,
         drugTestNotes: string
     ): Promise<void> => {
+        const web3Modal = new Web3Modal()
+        const connection = await web3Modal.connect()
+        const provider = new ethers.BrowserProvider(connection)
+        const signer = await provider.getSigner()
+        const contract = fetchContract(signer)
+
         if (!contract) return
 
         try {
@@ -319,6 +401,12 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
         drugTestPass: boolean,
         DrugTestNotes: string
     ): Promise<void> => {
+        const web3Modal = new Web3Modal()
+        const connection = await web3Modal.connect()
+        const provider = new ethers.BrowserProvider(connection)
+        const signer = await provider.getSigner()
+        const contract = fetchContract(signer)
+
         if (!contract) return
 
         try {
@@ -341,6 +429,12 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
     }
 
     const approveDrug = async (drugApproveUDPC: string): Promise<void> => {
+        const web3Modal = new Web3Modal()
+        const connection = await web3Modal.connect()
+        const provider = new ethers.BrowserProvider(connection)
+        const signer = await provider.getSigner()
+        const contract = fetchContract(signer)
+
         if (!contract) return
 
         try {
@@ -361,6 +455,12 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
         sellDrugUDPC: string,
         price: string
     ): Promise<void> => {
+        const web3Modal = new Web3Modal()
+        const connection = await web3Modal.connect()
+        const provider = new ethers.BrowserProvider(connection)
+        const signer = await provider.getSigner()
+        const contract = fetchContract(signer)
+
         if (!contract) return
 
         try {
@@ -384,6 +484,12 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
         buyDrugUDPC: string,
         price: string
     ): Promise<void> => {
+        const web3Modal = new Web3Modal()
+        const connection = await web3Modal.connect()
+        const provider = new ethers.BrowserProvider(connection)
+        const signer = await provider.getSigner()
+        const contract = fetchContract(signer)
+
         if (!contract) return
 
         try {
@@ -406,6 +512,12 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
         partnerStateUDPC: string,
         partnerStateShare: string
     ): Promise<void> => {
+        const web3Modal = new Web3Modal()
+        const connection = await web3Modal.connect()
+        const provider = new ethers.BrowserProvider(connection)
+        const signer = await provider.getSigner()
+        const contract = fetchContract(signer)
+
         if (!contract) return
 
         try {
@@ -449,6 +561,12 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
         addPartnerName: string,
         addPartnerShare: string
     ): Promise<void> => {
+        const web3Modal = new Web3Modal()
+        const connection = await web3Modal.connect()
+        const provider = new ethers.BrowserProvider(connection)
+        const signer = await provider.getSigner()
+        const contract = fetchContract(signer)
+
         if (!contract) return
 
         try {
@@ -472,6 +590,12 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
         buildPartnerUDPC: string,
         buildPartnerName: string
     ): Promise<void> => {
+        const web3Modal = new Web3Modal()
+        const connection = await web3Modal.connect()
+        const provider = new ethers.BrowserProvider(connection)
+        const signer = await provider.getSigner()
+        const contract = fetchContract(signer)
+
         if (!contract) return
 
         try {
@@ -495,6 +619,12 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
         manufactureUDPC: string,
         manufactureQuantity: string
     ): Promise<void> => {
+        const web3Modal = new Web3Modal()
+        const connection = await web3Modal.connect()
+        const provider = new ethers.BrowserProvider(connection)
+        const signer = await provider.getSigner()
+        const contract = fetchContract(signer)
+
         if (!contract) return
 
         try {
@@ -515,6 +645,12 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
     }
 
     const packDrugLoad = async (packSLU: string): Promise<void> => {
+        const web3Modal = new Web3Modal()
+        const connection = await web3Modal.connect()
+        const provider = new ethers.BrowserProvider(connection)
+        const signer = await provider.getSigner()
+        const contract = fetchContract(signer)
+
         if (!contract) return
 
         try {
@@ -533,8 +669,14 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
 
     const addDrugLoad = async (
         addSLU: string,
-        price: string 
+        price: string
     ): Promise<void> => {
+        const web3Modal = new Web3Modal()
+        const connection = await web3Modal.connect()
+        const provider = new ethers.BrowserProvider(connection)
+        const signer = await provider.getSigner()
+        const contract = fetchContract(signer)
+
         if (!contract) return
 
         try {
@@ -558,6 +700,12 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
         buySLU: string,
         value: string
     ): Promise<void> => {
+        const web3Modal = new Web3Modal()
+        const connection = await web3Modal.connect()
+        const provider = new ethers.BrowserProvider(connection)
+        const signer = await provider.getSigner()
+        const contract = fetchContract(signer)
+
         if (!contract) return
 
         try {
@@ -584,6 +732,12 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
     }
 
     const shipDrugLoad = async (shipSLU: string): Promise<void> => {
+        const web3Modal = new Web3Modal()
+        const connection = await web3Modal.connect()
+        const provider = new ethers.BrowserProvider(connection)
+        const signer = await provider.getSigner()
+        const contract = fetchContract(signer)
+
         if (!contract) return
 
         try {
@@ -602,6 +756,12 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
     }
 
     const receiveDrugLoad = async (receiveSLU: string): Promise<void> => {
+        const web3Modal = new Web3Modal()
+        const connection = await web3Modal.connect()
+        const provider = new ethers.BrowserProvider(connection)
+        const signer = await provider.getSigner()
+        const contract = fetchContract(signer)
+
         if (!contract) return
 
         try {
@@ -624,6 +784,12 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
         shipEnvHumidity: string,
         shipEnvTemperature: string
     ): Promise<void> => {
+        const web3Modal = new Web3Modal()
+        const connection = await web3Modal.connect()
+        const provider = new ethers.BrowserProvider(connection)
+        const signer = await provider.getSigner()
+        const contract = fetchContract(signer)
+
         if (!contract) return
 
         try {
@@ -648,6 +814,12 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
         stockEnvHumidity: string,
         stockEnvTemperature: string
     ): Promise<void> => {
+        const web3Modal = new Web3Modal()
+        const connection = await web3Modal.connect()
+        const provider = new ethers.BrowserProvider(connection)
+        const signer = await provider.getSigner()
+        const contract = fetchContract(signer)
+
         if (!contract) return
 
         try {
@@ -671,6 +843,12 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
         purchasePKU: string,
         value: string
     ): Promise<void> => {
+        const web3Modal = new Web3Modal()
+        const connection = await web3Modal.connect()
+        const provider = new ethers.BrowserProvider(connection)
+        const signer = await provider.getSigner()
+        const contract = fetchContract(signer)
+
         if (!contract) return
 
         try {
@@ -690,6 +868,9 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
     }
 
     const fetchDrugDesignData = async (udpc: string): Promise<void> => {
+        const provider = new ethers.JsonRpcProvider()
+        const contract = fetchContract(provider)
+
         if (!contract) return
 
         try {
@@ -697,7 +878,7 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
                 from: currentAccount,
             })
 
-            await transaction.wait()
+            // await transaction.wait()
             console.log(`Fetched drug design successfully ${transaction}`)
             addTxToLogs(transaction)
         } catch (err) {
@@ -707,6 +888,9 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
     }
 
     const fetchDrugLoadData = async (slu: string): Promise<void> => {
+        const provider = new ethers.JsonRpcProvider()
+        const contract = fetchContract(provider)
+
         if (!contract) return
 
         try {
@@ -714,7 +898,7 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
                 from: currentAccount,
             })
 
-            await transaction.wait()
+            // await transaction.wait()
 
             console.log(`Fetched drug load data successfully ${transaction}`)
             addTxToLogs(transaction)
@@ -725,6 +909,9 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
     }
 
     const getDrugLoadPKUs = async (slu: string): Promise<void> => {
+        const provider = new ethers.JsonRpcProvider()
+        const contract = fetchContract(provider)
+
         if (!contract) return
 
         try {
@@ -732,7 +919,7 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
                 from: currentAccount,
             })
 
-            await transaction.wait()
+            // await transaction.wait()
             console.log(`Fetched drug load pku's successfully ${transaction}`)
             addTxToLogs(transaction)
         } catch (err) {
@@ -742,6 +929,9 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
     }
 
     const fetchDrugData = async (fetchDrugPKU: string): Promise<void> => {
+        const provider = new ethers.JsonRpcProvider()
+        const contract = fetchContract(provider)
+
         if (!contract) return
 
         try {
@@ -749,7 +939,7 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
                 from: currentAccount,
             })
 
-            await transaction.wait()
+            // await transaction.wait()
             console.log(`Fetched drug data successfully ${transaction}`)
             addToLogs(transaction)
         } catch (err) {
@@ -759,13 +949,17 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
     }
 
     const fetchEnvHistory = async (fetchDrugPKU: string): Promise<void> => {
+        const provider = new ethers.JsonRpcProvider()
+        const contract = fetchContract(provider)
+
         if (!contract) return
 
         try {
             const transaction = await contract.fetchEnvHistory(fetchDrugPKU, {
                 from: currentAccount,
             })
-            await transaction.wait()
+
+            // await transaction.wait()
             console.log(`Fetched env history successfully ${transaction}`)
             addToLogs(transaction)
         } catch (err) {
@@ -774,33 +968,12 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
         }
     }
 
-    const checkIfWalletIsConnected = async () => {
-        try {
-            if (!window.ethereum)
-                return (
-                    setOpenError(true),
-                    setError('Install metamask'),
-                    console.log('Install metamask!')
-                )
-            //    if( !window.ethereum) return console.log('Install metamask!');
-
-            const accounts = await window.ethereum.request({
-                method: 'eth_accounts',
-            })
-
-            if (accounts.length) setCurrentAccount(accounts[0])
-            else console.log('No account found!')
-        } catch (err) {
-            console.log(
-                `Something went wrong while connecting to account! ${err}`
-            )
-        }
-    }
-
     return (
         <MainchainContext.Provider
             value={{
                 title,
+                roles,
+                error,
                 currentAccount,
                 connectWallet,
                 disconnectWallet,

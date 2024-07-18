@@ -1,5 +1,7 @@
 export interface MainchainContextType {
     title: string
+    roles: Role[]
+    error: string
     currentAccount: string | null
     connectWallet: () => Promise<void>
     disconnectWallet: () => void

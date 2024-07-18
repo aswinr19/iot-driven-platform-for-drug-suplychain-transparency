@@ -8,6 +8,8 @@ import { MainchainContextType, Role } from '../types/types'
 
 export default function Home() {
     const {
+        roles,
+        error,
         currentAccount,
         connectWallet,
         disconnectWallet,
@@ -17,15 +19,29 @@ export default function Home() {
         currentAccountRoles,
     } = useContext<MainchainContextType>(MainchainContext)
 
-    const [roles, setRoles] = useState<Role[]>([])
     const [regulator, setRegulator] = useState<string>('')
-    //    const [isLoading, setIsLoading] = useState<boolean>(true)
-    //    const [errMessage, setErrMessage] = useState<string>('')
+    const [isVisible, setIsVisible] = useState<boolean>(false)
+    const [hasRole, setHasRole] = useState<boolean>(false)
+
+    const toggleVisibility = () => {
+        setIsVisible(!isVisible)
+    }
+
+    const hasAnyRole = (roles: Role[]) => {
+        roles.map((role) => {
+            if (role.isAssign) setHasRole(true)
+        })
+    }
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setRegulator(e.target.value)
         console.log(regulator)
     }
+
+    useEffect(() => {
+        currentAccountRoles()
+        hasAnyRole(roles)
+    }, [currentAccount])
 
     return (
         <>
@@ -77,24 +93,52 @@ export default function Home() {
                     </Button>
                 )}
             </header>
-            <div>
-                {roles.map((role) => (
-                    <div key={role.id}>
-                        <Button onClick={() => addRoleToMe(role.role)}>
-                            Assign {role.role}{' '}
-                        </Button>
-                        <Button onClick={() => removeRoleFromMe(role.role)}>
-                            Remove {role.role}{' '}
-                        </Button>
-                    </div>
-                ))}
-                <div>
-                    <Button onClick={() => currentAccountRoles()}>
+            <div className="my-6">
+                <span className="font-semibold text-3xl m-6">
+                    {' '}
+                    Add or remove roles{' '}
+                </span>
+                <div className="flex m-6">
+                    {roles.map((role) => (
+                        <div key={role.id} className="m-6">
+                            {!role.isAssign ? (
+                                <Button onClick={() => addRoleToMe(role.role)}>
+                                    Assign {role.role}{' '}
+                                </Button>
+                            ) : (
+                                <Button
+                                    onClick={() => removeRoleFromMe(role.role)}
+                                >
+                                    Remove {role.role}{' '}
+                                </Button>
+                            )}
+                        </div>
+                    ))}
+                </div>
+                <div className="m-6">
+                    <Button
+                        onClick={() => {
+                            currentAccountRoles()
+                            toggleVisibility()
+                        }}
+                    >
                         Who am i ?
                     </Button>
+                    {isVisible &&
+                        roles.map((role) => (
+                            <div key={role.id}>
+                                <span> {role.isAssign && role.role} </span>
+                            </div>
+                        ))}
+                    {!hasRole && (
+                        <span> You don't have any role assigned :( </span>
+                    )}
                 </div>
-                <div>
-                    <span> Add new regulator </span>
+                <div className="flex">
+                    <span className="font-semibold text-3xl m-6">
+                        {' '}
+                        Add new regulator{' '}
+                    </span>
                     <span className="text-red-600"> Only regulator </span>
                     <input
                         type="text"
@@ -111,6 +155,9 @@ export default function Home() {
                         {' '}
                         Add{' '}
                     </Button>
+                </div>
+                <div className="m-6">
+                    {error && <span className="text-red-600"> {error} </span>}
                 </div>
             </div>
         </>

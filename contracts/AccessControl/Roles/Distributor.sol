@@ -31,7 +31,7 @@ contract Distributor is AccessControl {
    _addDistributor(msg.sender);
  }
 
- function renounceMeromDistributor() public {
+ function renounceMeFromDistributor() public {
    _removeDistributor(msg.sender);
  }
 

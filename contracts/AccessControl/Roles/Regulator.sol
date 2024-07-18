@@ -35,6 +35,14 @@ contract Regulator is AccessControl {
       _removeRegulator(msg.sender);
     }
 
+    function assignThisAccountAsRegulator(address account) public {
+      _addRegulator(account);
+    }
+
+    function renounceThisAccountFromRegulator(address account) public {
+      _removeRegulator(account);
+    }
+
     function _addRegulator(address account) internal {
         _grantRole(REGULATOR_ROLE,account);
         emit RegulatorAdded(account);

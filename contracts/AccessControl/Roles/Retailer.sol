@@ -42,6 +42,7 @@ contract Retailer is AccessControl {
     function renounceThisAccountFromRetailer(address account) public {
       _removeRetailer(account);
     }
+
     function _addRetailer(address account) internal {
         _grantRole(RETAILER_ROLE,account);
         emit RetailerAdded(account);
