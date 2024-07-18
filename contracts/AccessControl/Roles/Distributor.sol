@@ -35,6 +35,14 @@ contract Distributor is AccessControl {
    _removeDistributor(msg.sender);
  }
 
+ function assignThisAccountAsDistributor(address account) public {
+      _addDistributor(account);
+    }
+
+    function renounceThisAccountFromDistributor(address account) public {
+      _removeDistributor(account);
+    }
+
  function _addDistributor(address account) internal {
    _grantRole(DISTRIBUTOR_ROLE,account);
    emit DistributorAdded(account);

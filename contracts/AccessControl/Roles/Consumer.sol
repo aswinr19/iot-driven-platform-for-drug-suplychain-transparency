@@ -35,6 +35,15 @@ contract Consumer is AccessControl {
       _removeConsumer(msg.sender);
     }
 
+    function assignThisAccountAsConsumer(address account) public {
+      _addConsumer(account);
+    }
+
+    function renounceThisAccountFromConsumer(address account) public {
+      _removeConsumer(account);
+    }
+
+
     function _addConsumer(address account) internal {
         _grantRole(CONSUMER_ROLE,account);
         emit ConsumerAdded(account);

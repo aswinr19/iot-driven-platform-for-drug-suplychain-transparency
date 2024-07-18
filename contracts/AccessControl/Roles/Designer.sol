@@ -34,6 +34,13 @@ contract Designer is AccessControl {
   function renounceMeFromDesigner() public {
     _removeDesigner(msg.sender);
   }
+    function assignThisAccountAsDesigner(address account) public {
+      _addDesigner(account);
+    }
+
+    function renounceThisAccountFromDesigner(address account) public {
+      _removeDesigner(account);
+    }
 
   function _addDesigner(address account) internal {
     _grantRole(DESIGNER_ROLE,account);

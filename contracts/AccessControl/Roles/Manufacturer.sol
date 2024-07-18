@@ -34,6 +34,14 @@ contract Manufacturer is AccessControl {
       _removeManufacturer(msg.sender);
     }
 
+    function assignThisAccountAsManufacturer(address account) public {
+      _addManufacturer(account);
+    }
+
+    function renounceThisAccountFromManufacturer(address account) public {
+      _removeManufacturer(account);
+    }
+
     function _addManufacturer(address account) internal {
         _grantRole(MANUFACTURER_ROLE,account);
         emit ManufacturerAdded(account);
