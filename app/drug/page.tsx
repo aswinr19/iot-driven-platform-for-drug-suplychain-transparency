@@ -16,8 +16,7 @@ export default function Drug() {
         useContext<MainchainContextType>(MainchainContext)
 
     const [roles, setRoles] = useState<Role[]>([])
-    const [isLoading, setIsLoading] = useState<boolean>(true)
-    const [errMessage, setErrMessage] = useState<string>('')
+
     const [formData, setFormData] = useState<FormData>({
         pku: '',
         value: '',

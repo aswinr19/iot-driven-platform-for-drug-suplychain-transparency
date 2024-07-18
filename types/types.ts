@@ -17,13 +17,13 @@ export interface MainchainContextType {
     addDrugTest: (
         drugTestUDPC: string,
         drugTestDesc: string,
-        drugTestPass: string,
+        drugTestPass: boolean,
         drugTestNotes: string
     ) => Promise<void>
     addDrugTestByRegulator: (
         drugTestUDPC: string,
         drugTestDesc: string,
-        drugTestPass: string,
+        drugTestPass: boolean,
         DrugTestNotes: string
     ) => Promise<void>
     approveDrug: (drugApproveUDPC: string) => Promise<void>

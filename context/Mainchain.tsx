@@ -289,7 +289,7 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
     const addDrugTest = async (
         drugTestUDPC: string,
         drugTestDesc: string,
-        drugTestPass: string,
+        drugTestPass: boolean,
         drugTestNotes: string
     ): Promise<void> => {
         if (!contract) return
@@ -316,7 +316,7 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
     const addDrugTestByRegulator = async (
         drugTestUDPC: string,
         drugTestDesc: string,
-        drugTestPass: string,
+        drugTestPass: boolean,
         DrugTestNotes: string
     ): Promise<void> => {
         if (!contract) return
