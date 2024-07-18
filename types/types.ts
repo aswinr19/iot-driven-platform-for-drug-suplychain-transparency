@@ -27,8 +27,8 @@ export interface MainchainContextType {
         DrugTestNotes: string
     ) => Promise<void>
     approveDrug: (drugApproveUDPC: string) => Promise<void>
-    sellDrugDesign: (sellDrugUDPC: string, price: number) => Promise<void>
-    buyDrugDesign: (buyDrugUDPC: string, price: number) => Promise<void>
+    sellDrugDesign: (sellDrugUDPC: string, price: string) => Promise<void>
+    buyDrugDesign: (buyDrugUDPC: string, price: string) => Promise<void>
     updatePartnerState: (
         state: string,
         partnerStateUDPC: string,
@@ -49,11 +49,11 @@ export interface MainchainContextType {
         manufactureQuantity: string
     ) => Promise<void>
     packDrugLoad: (packSLU: string) => Promise<void>
-    addDrugLoad: (addSLU: string, price: number) => Promise<void>
+    addDrugLoad: (addSLU: string, price: string) => Promise<void>
     buyDrugLoad: (
         retailerAddress: string,
         buySLU: string,
-        price: number
+        price: string
     ) => Promise<void>
     shipDrugLoad: (shipSLU: string) => Promise<void>
     receiveDrugLoad: (receiveSLU: string) => Promise<void>
