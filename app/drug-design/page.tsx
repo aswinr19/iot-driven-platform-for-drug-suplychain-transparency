@@ -123,12 +123,17 @@ export default function DrugDesign() {
     const handleChangeTwo = (
         e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
     ) => {
-        const { name, value } = e.target
+        const { name, value, type } = e.target
 
         setFormDataTwo((prevState) => ({
             ...prevState,
-            [name]: value,
+            [name]:
+                type === 'checkbox'
+                    ? (e.target as HTMLInputElement).checked
+                    : value,
         }))
+
+        console.log(formDataTwo)
     }
     const handleChangeThree = (e: ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target
@@ -194,7 +199,7 @@ export default function DrugDesign() {
                         className="text-gray-500 dark:text-gray-400"
                         href="/"
                     ></Link>
-                     <Link className="text-gray-500 dark:text-gray-400" href="/">
+                    <Link className="text-gray-500 dark:text-gray-400" href="/">
                         My Roles
                     </Link>
                     <Link className="font-bold" href="/drug-design">
@@ -235,335 +240,355 @@ export default function DrugDesign() {
                     </Button>
                 )}
             </header>
-            <div>
-                <div>
-                    <span>Add new drug design</span>
-                    <span className="text-red-600"> Only desginger </span>
-                    <input
-                        type="text"
-                        placeholder="Designer name"
-                        name="drugDesignerName"
-                        onChange={handleChangeOne}
-                        value={formDataOne.drugDesignerName}
-                    />
-                    <input
-                        type="text"
-                        placeholder="Drug name"
-                        name="drugDesignName"
-                        onChange={handleChangeOne}
-                        value={formDataOne.drugDesignName}
-                    />
-                    <textarea
-                        rows={2}
-                        placeholder="Description"
-                        name="drugDesignDesc"
-                        onChange={handleChangeOne}
-                        value={formDataOne.drugDesignDesc}
-                    />
-                    <textarea
-                        rows={2}
-                        placeholder="Add notes"
-                        name="drugDesignNotes"
-                        onChange={handleChangeOne}
-                        value={formDataOne.drugDesignNotes}
-                    />
-                    <button
-                        onClick={() =>
-                            addDrugDesign(
-                                formDataOne.drugDesignerName,
-                                formDataOne.drugDesignName,
-                                formDataOne.drugDesignDesc,
-                                formDataOne.drugDesignNotes
-                            )
-                        }
-                    >
-                        {' '}
-                        Add drug design{' '}
-                    </button>
+            <div className="block">
+                <div className="flex">
+                    <div className="max-w-md mx-auto bg-white rounded-lg p-6 space-y-4">
+                        <span className="text-2xl font-semibold">
+                            Add new drug design
+                        </span>
+                        <span className="text-red-600"> Only desginger </span>
+                        <input
+                            type="text"
+                            placeholder="Designer name"
+                            name="drugDesignerName"
+                            onChange={handleChangeOne}
+                            value={formDataOne.drugDesignerName}
+                        />
+                        <input
+                            type="text"
+                            placeholder="Drug name"
+                            name="drugDesignName"
+                            onChange={handleChangeOne}
+                            value={formDataOne.drugDesignName}
+                        />
+                        <textarea
+                            rows={2}
+                            placeholder="Description"
+                            name="drugDesignDesc"
+                            onChange={handleChangeOne}
+                            value={formDataOne.drugDesignDesc}
+                        />
+                        <textarea
+                            rows={2}
+                            placeholder="Add notes"
+                            name="drugDesignNotes"
+                            onChange={handleChangeOne}
+                            value={formDataOne.drugDesignNotes}
+                        />
+                        <Button
+                            onClick={() =>
+                                addDrugDesign(
+                                    formDataOne.drugDesignerName,
+                                    formDataOne.drugDesignName,
+                                    formDataOne.drugDesignDesc,
+                                    formDataOne.drugDesignNotes
+                                )
+                            }
+                        >
+                            {' '}
+                            Add drug design{' '}
+                        </Button>
+                    </div>
+                    <div className="max-w-md mx-auto bg-white rounded-lg p-6 space-y-4">
+                        <span className="text-2xl font-semibold">
+                            Add drug test
+                        </span>
+                        <span className="text-red-600">
+                            {' '}
+                            Only regulator or owner{' '}
+                        </span>
+                        <input
+                            type="text"
+                            placeholder="UDPC"
+                            name="drugTestUDPC"
+                            onChange={handleChangeTwo}
+                            value={formDataTwo.drugTestUDPC}
+                        />
+                        <textarea
+                            rows={2}
+                            placeholder="Description"
+                            name="drugTestDesc"
+                            onChange={handleChangeTwo}
+                            value={formDataTwo.drugTestDesc}
+                        />
+                        <label> Passed? </label>
+                        <input
+                            type="checkbox"
+                            name="drugTestPass"
+                            checked={formDataTwo.drugTestPass}
+                            onChange={handleChangeTwo}
+                        />
+                        <textarea
+                            rows={2}
+                            placeholder="Add notes"
+                            name="drugTestNotes"
+                            onChange={handleChangeTwo}
+                            value={formDataTwo.drugTestNotes}
+                        />
+                        <Button
+                            onClick={() =>
+                                addDrugTest(
+                                    formDataTwo.drugTestUDPC,
+                                    formDataTwo.drugTestDesc,
+                                    formDataTwo.drugTestPass,
+                                    formDataTwo.drugTestNotes
+                                )
+                            }
+                        >
+                            {' '}
+                            Add test by owner{' '}
+                        </Button>
+                        <Button
+                            onClick={() =>
+                                addDrugTestByRegulator(
+                                    formDataTwo.drugTestUDPC,
+                                    formDataTwo.drugTestDesc,
+                                    formDataTwo.drugTestPass,
+                                    formDataTwo.drugTestNotes
+                                )
+                            }
+                        >
+                            {' '}
+                            Add test by regulator{' '}
+                        </Button>
+                    </div>
+                    <div className="max-w-md mx-auto bg-white rounded-lg p-6 space-y-4">
+                        <span className="text-2xl font-semibold">
+                            Approve drug
+                        </span>
+                        <span className="text-red-600"> Only regulator </span>
+                        <input
+                            type="text"
+                            placeholder="UDPC"
+                            name="drugApproveUDPC"
+                            value={formDataThree.drugApproveUDPC}
+                            onChange={handleChangeThree}
+                        />
+                        <Button
+                            onClick={() =>
+                                approveDrug(formDataThree.drugApproveUDPC)
+                            }
+                        >
+                            {' '}
+                            Approve{' '}
+                        </Button>
+                    </div>
+                    <div className="max-w-md mx-auto bg-white rounded-lg p-6 space-y-4">
+                        <span className="text-2xl font-semibold">
+                            Sell drug design
+                        </span>
+                        <span className="text-red-600">
+                            {' '}
+                            Only owner of drug design{' '}
+                        </span>
+                        <input
+                            type="text"
+                            placeholder="UDPC"
+                            name="sellDrugUDPC"
+                            value={formDataFour.sellDrugUDPC}
+                            onChange={handleChangeFour}
+                        />
+                        <input
+                            type="text"
+                            placeholder="Ether value"
+                            name="sellDrugPrice"
+                            value={formDataFour.sellDrugPrice}
+                            onChange={handleChangeFour}
+                        />
+                        <Button
+                            onClick={() =>
+                                sellDrugDesign(
+                                    formDataFour.sellDrugUDPC,
+                                    formDataFour.sellDrugPrice
+                                )
+                            }
+                        >
+                            {' '}
+                            Up for sale{' '}
+                        </Button>
+                    </div>
                 </div>
-                <div>
-                    <span>Add drug test</span>
-                    <span className="text-red-600">
-                        {' '}
-                        Only regulator or owner{' '}
-                    </span>
-                    <input
-                        type="text"
-                        placeholder="UDPC"
-                        name="drugTestUDPC"
-                        onChange={handleChangeTwo}
-                        value={formDataTwo.drugTestUDPC}
-                    />
-                    <textarea
-                        rows={2}
-                        placeholder="Description"
-                        name="drugTestDesc"
-                        onChange={handleChangeTwo}
-                        value={formDataTwo.drugTestDesc}
-                    />
-                    <label> Passed? </label>
-                    <input
-                        type="checkbox"
-                        name="drugTestPass"
-                        checked={formDataTwo.drugTestPass}
-                        onChange={handleChangeTwo}
-                    />
-                    <textarea
-                        rows={2}
-                        placeholder="Add notes"
-                        name="drugTestNotes"
-                        onChange={handleChangeTwo}
-                        value={formDataTwo.drugTestNotes}
-                    />
-                    <button
-                        onClick={() =>
-                            addDrugTest(
-                                formDataTwo.drugTestUDPC,
-                                formDataTwo.drugTestDesc,
-                                formDataTwo.drugTestPass,
-                                formDataTwo.drugTestNotes
-                            )
-                        }
-                    >
-                        {' '}
-                        Add test by owner{' '}
-                    </button>
-                    <button
-                        onClick={() =>
-                            addDrugTestByRegulator(
-                                formDataTwo.drugTestUDPC,
-                                formDataTwo.drugTestDesc,
-                                formDataTwo.drugTestPass,
-                                formDataTwo.drugTestNotes
-                            )
-                        }
-                    >
-                        {' '}
-                        Add test by regulator{' '}
-                    </button>
-                </div>
-                <div>
-                    <span>Approve drug</span>
-                    <span className="text-red-600"> Only regulator </span>
-                    <input
-                        type="text"
-                        placeholder="UDPC"
-                        name="drugApproveUDPC"
-                        value={formDataThree.drugApproveUDPC}
-                        onChange={handleChangeThree}
-                    />
-                    <button
-                        onClick={() =>
-                            approveDrug(formDataThree.drugApproveUDPC)
-                        }
-                    >
-                        {' '}
-                        Approve{' '}
-                    </button>
-                </div>
-                <div>
-                    <span>Sell drug design</span>
-                    <span className="text-red-600">
-                        {' '}
-                        Only owner of drug design{' '}
-                    </span>
-                    <input
-                        type="text"
-                        placeholder="UDPC"
-                        name="sellDrugUDPC"
-                        value={formDataFour.sellDrugUDPC}
-                        onChange={handleChangeFour}
-                    />
-                    <input
-                        type="text"
-                        placeholder="Ether value"
-                        name="sellDrugPrice"
-                        value={formDataFour.sellDrugPrice}
-                        onChange={handleChangeFour}
-                    />
-                    <button
-                        onClick={() =>
-                            sellDrugDesign(
-                                formDataFour.sellDrugUDPC,
-                                formDataFour.sellDrugPrice
-                            )
-                        }
-                    >
-                        {' '}
-                        Up for sale{' '}
-                    </button>
-                </div>
-                <div>
-                    <span>Buy drug design</span>
-                    <span className="text-red-600">
-                        {' '}
-                        Only manufacturer or designer{' '}
-                    </span>
-                    <input
-                        type="text"
-                        placeholder="UDPC"
-                        name="buyDrugUDPC"
-                        value={formDataFive.buyDrugUDPC}
-                        onChange={handleChangeFive}
-                    />
-                    <input
-                        type="text"
-                        placeholder="Ether value"
-                        name="buyDrugPrice"
-                        value={formDataFive.buyDrugPrice}
-                        onChange={handleChangeFive}
-                    />
-                    <button
-                        onClick={() =>
-                            buyDrugDesign(
-                                formDataFive.buyDrugUDPC,
-                                formDataFive.buyDrugPrice
-                            )
-                        }
-                    >
-                        {' '}
-                        Buy{' '}
-                    </button>
-                </div>
-                <div>
-                    <span>Update manaufacturer partnership state</span>
-                    <span className="text-red-600">
-                        {' '}
-                        Only owner of drug design{' '}
-                    </span>
-                    <input
-                        type="text"
-                        placeholder="UDPC"
-                        name="partnerStateUDPC"
-                        value={formDataSix.partnerStateUDPC}
-                        onChange={handleChangeSix}
-                    /> 
+                <div className="flex">
+                    <div className="max-w-md mx-auto bg-white rounded-lg p-6 space-y-4">
+                        <span className="text-2xl font-semibold">
+                            Buy drug design
+                        </span>
+                        <span className="text-red-600">
+                            {' '}
+                            Only manufacturer or designer{' '}
+                        </span>
+                        <input
+                            type="text"
+                            placeholder="UDPC"
+                            name="buyDrugUDPC"
+                            value={formDataFive.buyDrugUDPC}
+                            onChange={handleChangeFive}
+                        />
+                        <input
+                            type="text"
+                            placeholder="Ether value"
+                            name="buyDrugPrice"
+                            value={formDataFive.buyDrugPrice}
+                            onChange={handleChangeFive}
+                        />
+                        <Button
+                            onClick={() =>
+                                buyDrugDesign(
+                                    formDataFive.buyDrugUDPC,
+                                    formDataFive.buyDrugPrice
+                                )
+                            }
+                        >
+                            {' '}
+                            Buy{' '}
+                        </Button>
+                    </div>
+                    <div className="max-w-md mx-auto bg-white rounded-lg p-6 space-y-4">
+                        <span className="text-2xl font-semibold">
+                            Update manaufacturer partnership state
+                        </span>
+                        <span className="text-red-600">
+                            {' '}
+                            Only owner of drug design{' '}
+                        </span>
+                        <input
+                            type="text"
+                            placeholder="UDPC"
+                            name="partnerStateUDPC"
+                            value={formDataSix.partnerStateUDPC}
+                            onChange={handleChangeSix}
+                        />
 
-                    <input
-                        type="text"
-                        placeholder="Partner share 100%"
-                        name="partnerStateShare"
-                        value={formDataSix.partnerStateShare}
-                        onChange={handleChangeSix}
-                    />
-                   
-                    <button
-                        onClick={() =>
-                            updatePartnerState(
-                                'close',
-                                formDataSix.partnerStateUDPC,
-                                formDataSix.partnerStateShare
-                            )
-                        }
-                    >
-                        {' '}
-                        Close partnership{' '}
-                    </button>
-                    <button
-                        onClick={() =>
-                            updatePartnerState(
-                                'restrict',
-                                formDataSix.partnerStateUDPC,
-                                formDataSix.partnerStateShare
-                            )
-                        }
-                    >
-                        {' '}
-                        Restrict partnership{' '}
-                    </button>
-                   
-                    <button
-                        onClick={() =>
-                            updatePartnerState(
-                                'open',
-                                formDataSix.partnerStateUDPC,
-                                formDataSix.partnerStateShare
-                            )
-                        }
-                    >
-                        {' '}
-                        Open partnership{' '}
-                    </button>
-                </div>
-                <div>
-                    <span>Add Manufacture Partner </span>
-                    <span className="text-red-600">
-                        Only owner of drug design
-                    </span>
-                    <span className="text-red-600">
-                        When partnership state is restricted only
-                    </span>
-                    <input
-                        type="text"
-                        placeholder="UDPC"
-                        name="addPatnerUDPC"
-                        value={formDataSeven.addPartnerUDPC}
-                        onChange={handleChangeSeven}
-                    />
-                    <input
-                        type="text"
-                        placeholder="Partner Address"
-                        name="addPatnerAddress"
-                        value={formDataSeven.addPartnerAddress}
-                        onChange={handleChangeSeven}
-                    />
-                    <input
-                        type="text"
-                        placeholder="Mabufacturer Name"
-                        name="addPatnerName"
-                        value={formDataSeven.addPartnerName}
-                        onChange={handleChangeSeven}
-                    />
-                    <input
-                        type="text"
-                        placeholder="Partner Share 100%"
-                        name="addPartnerShare"
-                        value={formDataSeven.addPartnerShare}
-                        onChange={handleChangeSeven}
-                    />
-                    <Button
-                        onClick={() => {
-                            addPartner(
-                                formDataSeven.addPartnerUDPC,
-                                formDataSeven.addPartnerAddress,
-                                formDataSeven.addPartnerName,
-                                formDataSeven.addPartnerShare
-                            )
-                        }}
-                    >
-                        Add Partner
-                    </Button>
-                </div>
-                <div>
-                    <span>Build Manufactur Partnership </span>
-                    <span className="text-red-600"> only manufacturer</span>
-                    <span className="text-red-600">
-                        When partnership state is open only
-                    </span>
-                    <input
-                        type="text"
-                        placeholder="UDPC"
-                        name="buildPartnerUDPC"
-                        value={formDataEight.buildPartnerUDPC}
-                        onChange={handleChangeEight}
-                    />
-                    <input
-                        type="text"
-                        placeholder="Mabufacturer Name"
-                        name="buildPartnerName"
-                        value={formDataEight.buildPartnerName}
-                        onChange={handleChangeEight}
-                    />
-                    <Button
-                        onClick={() => {
-                            assignPartner(
-                                formDataEight.buildPartnerUDPC,
-                                formDataEight.buildPartnerName
-                            )
-                        }}
-                    >
-                        Build Partnership
-                    </Button>
+                        <input
+                            type="text"
+                            placeholder="Partner share 100%"
+                            name="partnerStateShare"
+                            value={formDataSix.partnerStateShare}
+                            onChange={handleChangeSix}
+                        />
+
+                        <Button
+                            onClick={() =>
+                                updatePartnerState(
+                                    'close',
+                                    formDataSix.partnerStateUDPC,
+                                    formDataSix.partnerStateShare
+                                )
+                            }
+                        >
+                            {' '}
+                            Close partnership{' '}
+                        </Button>
+                        <Button
+                            onClick={() =>
+                                updatePartnerState(
+                                    'restrict',
+                                    formDataSix.partnerStateUDPC,
+                                    formDataSix.partnerStateShare
+                                )
+                            }
+                        >
+                            {' '}
+                            Restrict partnership{' '}
+                        </Button>
+
+                        <Button
+                            onClick={() =>
+                                updatePartnerState(
+                                    'open',
+                                    formDataSix.partnerStateUDPC,
+                                    formDataSix.partnerStateShare
+                                )
+                            }
+                        >
+                            {' '}
+                            Open partnership{' '}
+                        </Button>
+                    </div>
+                    <div className="max-w-md mx-auto bg-white rounded-lg p-6 space-y-4">
+                        <span className="text-2xl font-semibold">
+                            Add Manufacture Partner{' '}
+                        </span>
+                        <span className="text-red-600">
+                            Only owner of drug design
+                        </span>
+                        <span className="text-red-600">
+                            When partnership state is restricted only
+                        </span>
+                        <input
+                            type="text"
+                            placeholder="UDPC"
+                            name="addPatnerUDPC"
+                            value={formDataSeven.addPartnerUDPC}
+                            onChange={handleChangeSeven}
+                        />
+                        <input
+                            type="text"
+                            placeholder="Partner Address"
+                            name="addPatnerAddress"
+                            value={formDataSeven.addPartnerAddress}
+                            onChange={handleChangeSeven}
+                        />
+                        <input
+                            type="text"
+                            placeholder="Mabufacturer Name"
+                            name="addPatnerName"
+                            value={formDataSeven.addPartnerName}
+                            onChange={handleChangeSeven}
+                        />
+                        <input
+                            type="text"
+                            placeholder="Partner Share 100%"
+                            name="addPartnerShare"
+                            value={formDataSeven.addPartnerShare}
+                            onChange={handleChangeSeven}
+                        />
+                        <Button
+                            onClick={() => {
+                                addPartner(
+                                    formDataSeven.addPartnerUDPC,
+                                    formDataSeven.addPartnerAddress,
+                                    formDataSeven.addPartnerName,
+                                    formDataSeven.addPartnerShare
+                                )
+                            }}
+                        >
+                            Add Partner
+                        </Button>
+                    </div>
+                    <div className="max-w-md mx-auto bg-white rounded-lg p-6 space-y-4">
+                        <span className="text-2xl font-semibold">
+                            Build Manufactur Partnership{' '}
+                        </span>
+                        <span className="text-red-600"> only manufacturer</span>
+                        <span className="text-red-600">
+                            When partnership state is open only
+                        </span>
+                        <input
+                            type="text"
+                            placeholder="UDPC"
+                            name="buildPartnerUDPC"
+                            value={formDataEight.buildPartnerUDPC}
+                            onChange={handleChangeEight}
+                        />
+                        <input
+                            type="text"
+                            placeholder="Mabufacturer Name"
+                            name="buildPartnerName"
+                            value={formDataEight.buildPartnerName}
+                            onChange={handleChangeEight}
+                        />
+                        <Button
+                            onClick={() => {
+                                assignPartner(
+                                    formDataEight.buildPartnerUDPC,
+                                    formDataEight.buildPartnerName
+                                )
+                            }}
+                        >
+                            Build Partnership
+                        </Button>
+                    </div>
                 </div>
             </div>
         </>

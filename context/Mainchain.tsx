@@ -368,6 +368,11 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
         drugTestPass: boolean,
         drugTestNotes: string
     ): Promise<void> => {
+        console.log(drugTestUDPC)
+        console.log(drugTestDesc)
+        console.log(drugTestPass)
+        console.log(drugTestNotes)
+
         const web3Modal = new Web3Modal()
         const connection = await web3Modal.connect()
         const provider = new ethers.BrowserProvider(connection)
@@ -386,7 +391,7 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
             )
 
             await transaction.wait()
-            addTxToLogs(transaction)
+            // addTxToLogs(transaction)
 
             console.log(`Drug test added successfully ${transaction}`)
         } catch (err) {
@@ -399,8 +404,13 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
         drugTestUDPC: string,
         drugTestDesc: string,
         drugTestPass: boolean,
-        DrugTestNotes: string
+        drugTestNotes: string
     ): Promise<void> => {
+        console.log(drugTestUDPC)
+        console.log(drugTestDesc)
+        console.log(drugTestPass)
+        console.log(drugTestNotes)
+
         const web3Modal = new Web3Modal()
         const connection = await web3Modal.connect()
         const provider = new ethers.BrowserProvider(connection)
@@ -410,18 +420,18 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
         if (!contract) return
 
         try {
-            const transaction = await contract.addTestCaseByRegulator(
+            const transaction = await contract.addTestCaseByRegulaor(
                 drugTestUDPC,
                 drugTestDesc,
                 drugTestPass,
-                DrugTestNotes,
+                drugTestNotes,
                 { from: currentAccount }
             )
             await transaction.wait()
             console.log(
                 `Drug test by regulator added successfully ${transaction}`
             )
-            addTxToLogs(transaction)
+            // addTxToLogs(transaction)
         } catch (err) {
             console.log(`Failed to add regulator ${err}`)
             setError(`Failed to add regulator`)
