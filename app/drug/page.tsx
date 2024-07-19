@@ -2,6 +2,8 @@
 
 import React, { useState, useContext, ChangeEvent, FormEvent } from 'react'
 import { Button } from '@/components/ui/button'
+import { Label } from '@/components/ui/label'
+import { Input } from '@/components/ui/input'
 import Link from 'next/link'
 import { MainchainContext } from '../../context/Mainchain'
 import { MainchainContextType, Role } from '../../types/types'
@@ -82,31 +84,61 @@ export default function Drug() {
                     </Button>
                 )}
             </header>
-            <div>
-                <span>Purchase Drug</span>
-                <span className="text-red-600">only consumer</span>
-                <input
-                    type="text"
-                    placeholder="PKU"
-                    name="purchasePKU"
-                    value={formData.pku}
-                    onChange={handleChange}
-                />
-                <input
-                    type="text"
-                    placeholder="Ether Value"
-                    name="purchaseValue"
-                    value={formData.value}
-                    onChange={handleChange}
-                />
+            <div className="space-y-4 mx-10 my-6">
+                <div className="space-y-2">
+                    <h2 className="text-2xl font-bold mb-4">Purchase Drug</h2>
+                    <Label htmlFor="purchasePKU">Drug UDPC</Label>
+                    <Input
+                        placeholder="PKU"
+                        name="purchasePKU"
+                        value={formData.pku}
+                        onChange={handleChange}
+                    />
+
+                    <Label htmlFor="purchaseValue">Drug Price</Label>
+                    <Input
+                        placeholder="Ether Value"
+                        name="purchaseValue"
+                        value={formData.value}
+                        onChange={handleChange}
+                    />
+                </div>
                 <Button
                     onClick={() => {
                         purchaseDrug(formData.pku, formData.value)
                     }}
                 >
-                    Purchase
+                    Fetch Drug Data
                 </Button>
             </div>
         </>
     )
 }
+
+/*
+<div>
+         <span>Purchase Drug</span>
+         <span className="text-red-600">only consumer</span>
+         <input
+             type="text"
+             placeholder="PKU"
+             name="purchasePKU"
+             value={formData.pku}
+             onChange={handleChange}
+         />
+         <input
+             type="text"
+             placeholder="Ether Value"
+             name="purchaseValue"
+             value={formData.value}
+             onChange={handleChange}
+         />
+         <Button
+             onClick={() => {
+                 purchaseDrug(formData.pku, formData.value)
+             }}
+         >
+             Purchase
+         </Button>
+     </div>
+*/
