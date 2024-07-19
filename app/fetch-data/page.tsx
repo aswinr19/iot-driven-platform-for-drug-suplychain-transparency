@@ -1,6 +1,8 @@
 'use client'
 
 import React, { useState, useContext, ChangeEvent } from 'react'
+import { Label } from '@/components/ui/label'
+import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { MainchainContext } from '../../context/Mainchain'
@@ -118,76 +120,135 @@ export default function FetchData() {
                     </Button>
                 )}
             </header>
-            <div>
-                <div>
-                    <span>Drug Design</span>
-                    <input
-                        type="text"
+
+            <div className="space-y-4 mx-10 my-6">
+                <div className="space-y-2">
+                    <Label htmlFor="fetchDrugUDPC">Drug UDPC</Label>
+                    <Input
                         placeholder="UDPC"
                         name="fetchDrugUDPC"
                         value={formDataOne.fetchDrugUDPC}
                         onChange={handleChangeOne}
                     />
-                    <Button
-                        onClick={() => {
-                            fetchDrugDesignData(formDataOne.fetchDrugUDPC)
-                        }}
-                    >
-                        Fetch Data
-                    </Button>
-                    <span className="text-green-600">see logs </span>
                 </div>
-                <div>
-                    <span>Drug Load</span>
-                    <input
-                        type="text"
+                <Button
+                    onClick={() => {
+                        fetchDrugDesignData(formDataOne.fetchDrugUDPC)
+                    }}
+                >
+                    Fetch Drug Data
+                </Button>
+                <div className="space-y-2">
+                    <Label htmlFor="fetchDrugSLU">Drug UDPC</Label>
+                    <Input
                         placeholder="SLU"
                         name="fetchDrugSLU"
                         value={formDataTwo.fetchDrugSLU}
                         onChange={handleChangeTwo}
                     />
-                    <Button
-                        onClick={() => {
-                            fetchDrugLoadData(formDataTwo.fetchDrugSLU)
-                        }}
-                    >
-                        Fetch Load Data
-                    </Button>
-                    <Button
-                        onClick={() => {
-                            getDrugLoadPKUs(formDataTwo.fetchDrugSLU)
-                        }}
-                    >
-                        Fetch Load PKUs
-                    </Button>
-                    <span className="text-green-660"> see logs </span>
                 </div>
-                <div>
-                    <span>Drug Design</span>
-                    <input
-                        type="text"
+                <Button
+                    onClick={() => {
+                        fetchDrugLoadData(formDataTwo.fetchDrugSLU)
+                    }}
+                >
+                    Fetch Drug Load Data
+                </Button>
+                <div className="space-y-2">
+                    <Label htmlFor="fetchDrugPKU">Drug PKU </Label>
+                    <Input
                         placeholder="PKU"
                         name="fetchDrugPKU"
                         onChange={handleChangeThree}
                         value={formDataThree.fetchDrugPKU}
                     />
-                    <Button
-                        onClick={() => {
-                            fetchDrugData(formDataThree.fetchDrugPKU)
-                        }}
-                    >
-                        Fetch Data
-                    </Button>
-                    <Button
-                        onClick={() => {
-                            fetchEnvHistory(formDataThree.fetchDrugPKU)
-                        }}
-                    >
-                        Fetch Enviurment History
-                    </Button>
-                    <span className="text-green-600">see logs </span>
                 </div>
+                <Button
+                    onClick={() => {
+                        fetchDrugData(formDataThree.fetchDrugPKU)
+                    }}
+                >
+                    Fetch Drug Data
+                </Button>{' '}
+                <Button
+                    onClick={() => {
+                        fetchEnvHistory(formDataThree.fetchDrugPKU)
+                    }}
+                >
+                    Fetch Environment History
+                </Button>
             </div>
         </>
     )
 }
+
+// <div>
+//          <div>
+//              <span>Drug Design</span>
+//              <input
+
+//                  placeholder="UDPC"
+//                  name="fetchDrugUDPC"
+//                  value={formDataOne.fetchDrugUDPC}
+//                  onChange={handleChangeOne}
+//              />
+//              <Button
+//                  onClick={() => {
+//                      fetchDrugDesignData(formDataOne.fetchDrugUDPC)
+//                  }}
+//              >
+//                  Fetch Data
+//              </Button>
+//              <span className="text-green-600">see logs </span>
+//          </div>
+//          <div>
+//              <span>Drug Load</span>
+//              <input
+//                  type="text"
+//                  placeholder="SLU"
+//                  name="fetchDrugSLU"
+//                  value={formDataTwo.fetchDrugSLU}
+//                  onChange={handleChangeTwo}
+//              />
+//              <Button
+//                  onClick={() => {
+//                      fetchDrugLoadData(formDataTwo.fetchDrugSLU)
+//                  }}
+//              >
+//                  Fetch Load Data
+//              </Button>
+//              <Button
+//                  onClick={() => {
+//                      getDrugLoadPKUs(formDataTwo.fetchDrugSLU)
+//                  }}
+//              >
+//                  Fetch Load PKUs
+//              </Button>
+//              <span className="text-green-660"> see logs </span>
+//          </div>
+//          <div>
+//              <span>Drug Design</span>
+//              <input
+//                  type="text"
+
+//                  name="fetchDrugPKU"
+//                  onChange={handleChangeThree}
+//                  value={formDataThree.fetchDrugPKU}
+//              />
+//              <Button
+//                  onClick={() => {
+//                      fetchDrugData(formDataThree.fetchDrugPKU)
+//                  }}
+//              >
+//                  Fetch Data
+//              </Button>
+//              <Button
+//                  onClick={() => {
+//                      fetchEnvHistory(formDataThree.fetchDrugPKU)
+//                  }}
+//              >
+//                  Fetch Enviurment History
+//              </Button>
+//              <span className="text-green-600">see logs </span>
+//          </div>
+//      </div>
