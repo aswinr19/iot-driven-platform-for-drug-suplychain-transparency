@@ -2,6 +2,9 @@ export interface MainchainContextType {
     title: string
     roles: Role[]
     error: string
+    drugData: string
+    drugDesignData: string
+    drugLoadData: string
     currentAccount: string | null
     connectWallet: () => Promise<void>
     disconnectWallet: () => void

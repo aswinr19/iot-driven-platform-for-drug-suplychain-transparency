@@ -4,7 +4,7 @@ pragma solidity ^0.8.24;
 import "@openzeppelin/contracts/access/AccessControl.sol";
 
 //Err 6 - Not a retailer!
-contract Retailer is AccessControl { 
+contract Retailer is AccessControl {
   bytes32 public immutable RETAILER_ROLE = keccak256("RETAILER");
 
   event RetailerAdded(address indexed account);
@@ -15,12 +15,12 @@ contract Retailer is AccessControl {
   }
 
   modifier onlyRetailer() {
-    require(isRetailer(msg.sender), '6');
-    _; 
+    require(isRetailer(msg.sender), 'Not a retailer!');
+    _;
   }
 
     function isRetailer(address account) public view returns (bool) {
-       return hasRole(RETAILER_ROLE,account); 
+       return hasRole(RETAILER_ROLE,account);
     }
 
     function amIRetailer() public view returns (bool) {

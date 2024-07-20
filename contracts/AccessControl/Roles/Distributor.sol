@@ -15,7 +15,7 @@ contract Distributor is AccessControl {
  }
 
  modifier onlyDistributor() {
-   require(isDistributor(msg.sender), '3');
+   require(isDistributor(msg.sender), 'Not a distributor!');
   _;
  }
 

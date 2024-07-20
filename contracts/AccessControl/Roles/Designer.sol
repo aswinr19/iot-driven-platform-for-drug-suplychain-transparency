@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/access/AccessControl.sol";
 // Err: 2 - Not a designer!
 contract Designer is AccessControl {
   bytes32 public immutable DESIGNER_ROLE = keccak256("DESIGNER");
-  
+
   event DesignerAdded(address indexed account);
   event DesignerRemoved(address indexed account);
 
@@ -15,7 +15,7 @@ contract Designer is AccessControl {
   }
 
   modifier onlyDesigner() {
-    require(isDesigner(msg.sender),'2');
+    require(isDesigner(msg.sender),'Not a designer!');
     _;
   }
 

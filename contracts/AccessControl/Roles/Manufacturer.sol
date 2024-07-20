@@ -14,12 +14,12 @@ contract Manufacturer is AccessControl {
   }
 
   modifier onlyManufacturer() {
-    require(isManufacturer(msg.sender), '4');
-    _; 
+    require(isManufacturer(msg.sender), 'Not a manufacturer!');
+    _;
   }
 
     function isManufacturer(address account) public view returns (bool) {
-       return hasRole(MANUFACTURER_ROLE,account); 
+       return hasRole(MANUFACTURER_ROLE,account);
     }
 
     function amIManufacturer() public view returns (bool) {

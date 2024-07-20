@@ -4,10 +4,10 @@ pragma solidity ^0.8.24;
 //Err 7 - Invalid slu!
 //Err 8 - Invalid pku!
 contract Drug {
-  /* 
+  /*
      PKU - Product Kepping Unit - used to uniquely identify an individual drug
     SLU - Stock Loud Unit - used uniquely identify a batch of drugs
-  */ 
+  */
   uint pku;
   uint slu;
 
@@ -30,7 +30,7 @@ contract Drug {
     uint temperature;
     address updaterAddress;
   }
-  
+
   struct DrugItem {
     uint udpc;
     uint pku;
@@ -67,7 +67,7 @@ contract Drug {
       require(dItems[firstPKU].state == DrugState.Packed);
     _;
   }
-  
+
   modifier drugLoudForSale(uint _slu) {
     uint firstPKU = stockLouds[_slu][0];
     require(dItems[firstPKU].state == DrugState.ForSale);
@@ -138,20 +138,9 @@ contract Drug {
 //dItems and stockLouds for fetching later
     function manufacturDrugsLoud(uint _udpc, uint quantity) public virtual {
         uint _slu = ++slu;
-       /* 
-        DrugItem storage newDrugItem;
-        newDrugItem.udpc = _udpc;
-        newDrugItem.slu = _slu;
-        newDrugItem.state = DrugState.Manufactured;
-        newDrugItem.currentOwnerId = payable(msg.sender);
-        newDrugItem.manufacturerId = msg.sender;
-        newDrugItem.envUpdateCounter = 0;
-       */
-
         for (uint i = 0; i < quantity; i++) {
             uint _pku = ++pku;
-            //newDrugItem.pku = _pku;
-          
+
             dItems[_pku].pku = _pku;
             dItems[_pku].udpc = _udpc;
             dItems[_pku].slu= _slu;
@@ -159,7 +148,6 @@ contract Drug {
             dItems[_pku].currentOwnerId = payable(msg.sender);
             dItems[_pku].manufacturerId = msg.sender;
             dItems[_pku].envUpdateCounter = 0;
-           //dItems[_pku] = newDrugItem;
             stockLouds[_slu].push(_pku);
         }
         emit Manufactured(_slu);
@@ -234,7 +222,7 @@ contract Drug {
     {
         uint quantity = stockLouds[_slu].length;
         EnvUpdateObj memory _envUpdate = EnvUpdateObj(
-           block.timestamp, 
+           block.timestamp,
             _humidity,
             _temprture,
             msg.sender
@@ -300,10 +288,10 @@ contract Drug {
         dItems[_pku].currentOwnerId = payable(msg.sender);
         emit Purchased(_pku);
     }
-    
-    function fetchDrugLoaudData(uint _slu) 
-        external 
-        view 
+
+    function fetchDrugLoaudData(uint _slu)
+        external
+        view
         returns(
             uint quantity,
             uint _udpc,
@@ -315,7 +303,7 @@ contract Drug {
             uint price
         )
     {
-        require(_slu <= slu && _slu != 0, '7');
+        require(_slu <= slu && _slu != 0, 'Invalid slu!');
         uint sampleItemPKU = stockLouds[_slu][stockLouds[_slu].length-1];
         (
             _udpc,
@@ -327,7 +315,7 @@ contract Drug {
             retailerId,
             price,
             ,
-            
+
         ) = fetchDrugItemData(sampleItemPKU);
         quantity = stockLouds[_slu].length;
     }
@@ -348,7 +336,7 @@ contract Drug {
             uint numberOfEnvUpdate
         )
     {
-        require(_pku <= pku && _pku != 0, '8');
+        require(_pku <= pku && _pku != 0, 'Invalid pku!');
         DrugItem  storage _drugItem = dItems[_pku];
 
         _udpc = _drugItem.udpc;
@@ -414,8 +402,8 @@ contract Drug {
             _updaterAddresses[i] = _envUpdate.updaterAddress;
         }
         (timeStamps, temprtures, humiditys, updaterAddresses) = (
-            _timeStamps, 
-            _temprtures, 
+            _timeStamps,
+            _temprtures,
             _humiditys,
             _updaterAddresses
         );

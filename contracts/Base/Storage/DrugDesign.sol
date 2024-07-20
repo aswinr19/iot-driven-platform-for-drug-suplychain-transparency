@@ -61,7 +61,7 @@ contract DrugDesign {
     event PartnerClosed(uint udpc);
 
     modifier checkDrugDesignPaymentValue(uint _udpc) {
-        require(msg.value >= dDItems[_udpc].salePrice, '9');
+        require(msg.value >= dDItems[_udpc].salePrice, 'Not enough (price too low)!');
         _;
         uint _price = dDItems[_udpc].salePrice;
         uint amountToReturn = msg.value - _price;
@@ -132,20 +132,8 @@ contract DrugDesign {
        dDItems[udpc].metaData = DrugDesignMeta(_drugName, _description, _notes);
        dDItems[udpc].salePrice = 0;
        dDItems[udpc].manufacturers.partnersIndex = 1;
-        
+
        emit Owned(udpc);
-        /*
-        DrugDesignItem storage newDDItem;
-        newDDItem.udpc = udpc;
-        newDDItem.currentOwner = payable(msg.sender);
-        newDDItem.designerId = msg.sender;
-        newDDItem.designerName = _designerName;
-        newDDItem.state = DrugDesignState.Owned;
-        newDDItem.metaData = DrugDesignMeta(_drugName, _description, _notes);
-        newDDItem.salePrice = 0;
-        newDDItem.manufacturers.partnersIndex = 1;
-        dDItems[udpc] = newDDItem;
-        */
     }
 
     function addTestCase(
@@ -157,7 +145,7 @@ contract DrugDesign {
         public
         onlyOwnerOf(_udpc)
     {
-        require(_udpc <= udpc, '10');
+        require(_udpc <= udpc, 'Invalid udpc!');
         DrugDesignTestCase memory _ddtc = DrugDesignTestCase(
             msg.sender,
             block.timestamp,
@@ -181,7 +169,7 @@ contract DrugDesign {
         public
         virtual
     {
-        require(_udpc <= udpc, '10');
+        require(_udpc <= udpc, 'Invalid udpc!');
         DrugDesignTestCase memory _ddtc = DrugDesignTestCase(
             msg.sender,
             block.timestamp,
@@ -231,7 +219,7 @@ contract DrugDesign {
         isApproved(_udpc)
         onlyOwnerOf(_udpc)
     {
-        require(_shares <= 100, '11');
+        require(_shares <= 100, 'Shares must be less than %100');
         dDItems[_udpc].manufacturers.defultSharesPresntage = _shares;
         dDItems[_udpc].manufacturers.state = Partnerships.PartnershipState.Opened;
         emit UpForPartnered(_udpc);
@@ -277,14 +265,14 @@ contract DrugDesign {
         onlyOwnerOf(_udpc)
         isPartnerRestricted(_udpc)
     {
-        require(_shares <= 100, '11');
+        require(_shares <= 100, 'Shares must be less than %100');
         dDItems[_udpc].manufacturers.add(_partner, _name, _shares);
         emit RestrictPartnerTransfered(_udpc, _partner);
     }
 
-    function fetchDrugDesignData(uint _udpc) 
-        external 
-        view 
+    function fetchDrugDesignData(uint _udpc)
+        external
+        view
         returns(
             address currentOwner,
             address designerId,
@@ -299,7 +287,7 @@ contract DrugDesign {
             uint numberOfManufacturers
         )
     {
-        require(_udpc <= udpc, '12');
+        require(_udpc <= udpc, 'Given UDPC not created yet!');
         currentOwner = dDItems[_udpc].currentOwner;
         designerId = dDItems[_udpc].designerId;
         designerName = dDItems[_udpc].designerName;
@@ -326,7 +314,7 @@ contract DrugDesign {
         numberOfManufacturers = dDItems[_udpc].manufacturers.numberOfActive();
     }
 
-    function featchDrugDesignMetaData(uint _udpc) 
+    function featchDrugDesignMetaData(uint _udpc)
         external
         view
         returns(
@@ -335,7 +323,7 @@ contract DrugDesign {
             string memory notes
         )
     {
-        require(_udpc <= udpc, '12');
+        require(_udpc <= udpc, 'Given UDPC not created yet!');
         (name, description, notes) = (
             dDItems[_udpc].metaData.name,
             dDItems[_udpc].metaData.description,
@@ -343,18 +331,18 @@ contract DrugDesign {
         );
     }
 
-    function featchDrugDesignTestCases(uint _udpc, uint _testIndex) 
+    function featchDrugDesignTestCases(uint _udpc, uint _testIndex)
         external
         view
         returns(
             string memory description,
-            bool isPassed, 
+            bool isPassed,
             string  memory notes
         )
     {
-        require(_udpc <= udpc, '12');
-        require(_testIndex < dDItems[_udpc].testIndexed, '13');
-        
+        require(_udpc <= udpc, 'Given UDPC not created yet!');
+        require(_testIndex < dDItems[_udpc].testIndexed, 'Test case not created yet!');
+
         (description, isPassed, notes) = (
             dDItems[_udpc].testCases[_testIndex].description,
             dDItems[_udpc].testCases[_testIndex].isPassed,
@@ -370,4 +358,3 @@ contract DrugDesign {
         return dDItems[_udpc].manufacturers.sharesOf(_manufacturerId);
     }
 }
-

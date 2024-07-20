@@ -15,12 +15,12 @@ contract Regulator is AccessControl {
   }
 
   modifier onlyRegulator() {
-    require(isRegulator(msg.sender), '5');
-    _; 
+    require(isRegulator(msg.sender), 'Not a regulator!');
+    _;
   }
 
     function isRegulator(address account) public view returns (bool) {
-       return hasRole( REGULATOR_ROLE,account); 
+       return hasRole( REGULATOR_ROLE,account);
     }
 
     function amIRegulator() public view returns (bool) {

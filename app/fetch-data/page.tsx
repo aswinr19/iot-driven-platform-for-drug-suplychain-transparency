@@ -20,6 +20,9 @@ type FormDataThree = {
 
 export default function FetchData() {
     const {
+        drugData,
+        drugLoadData,
+        error,
         currentAccount,
         connectWallet,
         disconnectWallet,
@@ -138,6 +141,7 @@ export default function FetchData() {
                 >
                     Fetch Drug Data
                 </Button>
+                {drugData && <span> {drugData} </span>}
                 <div className="space-y-2">
                     <Label htmlFor="fetchDrugSLU">Drug SLU</Label>
                     <Input
@@ -154,6 +158,7 @@ export default function FetchData() {
                 >
                     Fetch Drug Load Data
                 </Button>
+                {drugLoadData && <span> {drugLoadData} </span>}
                 <div className="space-y-2">
                     <Label htmlFor="fetchDrugPKU">Drug PKU </Label>
                     <Input
@@ -177,78 +182,8 @@ export default function FetchData() {
                 >
                     Fetch Environment History
                 </Button>
+                {error && <span className="block text-red-600">{error} </span>}
             </div>
         </>
     )
 }
-
-// <div>
-//          <div>
-//              <span>Drug Design</span>
-//              <input
-
-//                  placeholder="UDPC"
-//                  name="fetchDrugUDPC"
-//                  value={formDataOne.fetchDrugUDPC}
-//                  onChange={handleChangeOne}
-//              />
-//              <Button
-//                  onClick={() => {
-//                      fetchDrugDesignData(formDataOne.fetchDrugUDPC)
-//                  }}
-//              >
-//                  Fetch Data
-//              </Button>
-//              <span className="text-green-600">see logs </span>
-//          </div>
-//          <div>
-//              <span>Drug Load</span>
-//              <input
-//                  type="text"
-//                  placeholder="SLU"
-//                  name="fetchDrugSLU"
-//                  value={formDataTwo.fetchDrugSLU}
-//                  onChange={handleChangeTwo}
-//              />
-//              <Button
-//                  onClick={() => {
-//                      fetchDrugLoadData(formDataTwo.fetchDrugSLU)
-//                  }}
-//              >
-//                  Fetch Load Data
-//              </Button>
-//              <Button
-//                  onClick={() => {
-//                      getDrugLoadPKUs(formDataTwo.fetchDrugSLU)
-//                  }}
-//              >
-//                  Fetch Load PKUs
-//              </Button>
-//              <span className="text-green-660"> see logs </span>
-//          </div>
-//          <div>
-//              <span>Drug Design</span>
-//              <input
-//                  type="text"
-
-//                  name="fetchDrugPKU"
-//                  onChange={handleChangeThree}
-//                  value={formDataThree.fetchDrugPKU}
-//              />
-//              <Button
-//                  onClick={() => {
-//                      fetchDrugData(formDataThree.fetchDrugPKU)
-//                  }}
-//              >
-//                  Fetch Data
-//              </Button>
-//              <Button
-//                  onClick={() => {
-//                      fetchEnvHistory(formDataThree.fetchDrugPKU)
-//                  }}
-//              >
-//                  Fetch Enviurment History
-//              </Button>
-//              <span className="text-green-600">see logs </span>
-//          </div>
-//      </div>

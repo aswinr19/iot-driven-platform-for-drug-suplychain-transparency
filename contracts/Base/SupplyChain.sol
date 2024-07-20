@@ -19,7 +19,7 @@ contract SupplyChain is Pausable, Drug, DrugDesign, Rolable {
         string memory _notes
     )
         public
-        virtual 
+        virtual
         override
         onlyDesigner()
         whenNotPaused()
@@ -39,7 +39,7 @@ contract SupplyChain is Pausable, Drug, DrugDesign, Rolable {
         string memory _notes
     )
         public
-        virtual 
+        virtual
         override
         onlyRegulator()
     {
@@ -53,7 +53,7 @@ contract SupplyChain is Pausable, Drug, DrugDesign, Rolable {
 
     function approveDrug(uint _udpc)
         public
-        virtual 
+        virtual
         override
         onlyRegulator()
         whenNotPaused()
@@ -63,7 +63,7 @@ contract SupplyChain is Pausable, Drug, DrugDesign, Rolable {
 
     function purchaseDrugDesign(uint _udpc)
         public
-        virtual 
+        virtual
         override
         payable
         onlyManufacturer()
@@ -73,7 +73,7 @@ contract SupplyChain is Pausable, Drug, DrugDesign, Rolable {
 
     function buildPartnerContract(uint _udpc, string memory _name)
         public
-        virtual 
+        virtual
         override
         onlyManufacturer()
         whenNotPaused()
@@ -83,7 +83,7 @@ contract SupplyChain is Pausable, Drug, DrugDesign, Rolable {
 
     function manufacturDrugsLoud(uint _udpc, uint quantity)
         public
-        virtual 
+        virtual
         override
         onlyManufacturer()
         onlyManufacturPartnerOf(_udpc)
@@ -93,7 +93,7 @@ contract SupplyChain is Pausable, Drug, DrugDesign, Rolable {
 
     function buyDrugsLoud(uint _slu, address _receiver)
         public
-        virtual 
+        virtual
         override
         payable
         onlyDistributor()
@@ -105,16 +105,16 @@ contract SupplyChain is Pausable, Drug, DrugDesign, Rolable {
         uint price = sampleUnit.price;
         uint quantity = stockLouds[_slu].length;
         uint totalPrice = price * quantity;
-        
+
         address payable sallerId = payable(address(sampleUnit.currentOwnerId));
 
-        require(msg.value >= totalPrice, '9');
+        require(msg.value >= totalPrice, 'Not enough (price too low)!');
         uint amountToReturn = msg.value - totalPrice;
         if (amountToReturn != 0)
             payable(address(msg.sender)).transfer(amountToReturn);
 
         super.buyDrugsLoud(_slu, _receiver);
-        
+
         if (sallerId == dDItems[_udpc].currentOwner){
             sallerId.transfer(totalPrice);
         }
@@ -125,12 +125,12 @@ contract SupplyChain is Pausable, Drug, DrugDesign, Rolable {
           //  sallerId.transfer(shareOfSeller);
            // orignalSallerId.transfer(totalPrice - shareOfSeller);
         }
-        
+
     }
 
     function purchaseDrug (uint _pku)
         public
-        virtual 
+        virtual
         override
         payable
         onlyConsumer()
@@ -141,9 +141,9 @@ contract SupplyChain is Pausable, Drug, DrugDesign, Rolable {
 
         address payable retailerId = payable(address(uint160(dItems[_pku].retailerId)));
         uint retialerBounty = (price * 5) / 100;
-        uint developerBounty = (price * 1) / 100; 
+        uint developerBounty = (price * 1) / 100;
 
-        require(msg.value >= price, '9');
+        require(msg.value >= price, 'Not enough (price too low)!');
         uint amountToReturn = msg.value - price;
         if (amountToReturn != 0)
             payable(address(msg.sender)).transfer(amountToReturn);

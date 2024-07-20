@@ -15,12 +15,12 @@ contract Consumer is AccessControl {
   }
 
   modifier onlyConsumer() {
-    require(isConsumer(msg.sender), '1');
+    require(isConsumer(msg.sender), 'Not a consumer!');
     _;
   }
 
     function isConsumer(address account) public view returns (bool) {
-       return hasRole(CONSUMER_ROLE,account); 
+       return hasRole(CONSUMER_ROLE,account);
     }
 
     function amIConsumer() public view returns (bool) {

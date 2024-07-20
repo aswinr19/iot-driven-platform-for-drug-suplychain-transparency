@@ -1,6 +1,12 @@
 'use client'
 
-import React, { useState, useContext, ChangeEvent, FormEvent } from 'react'
+import React, {
+    useState,
+    useContext,
+    ChangeEvent,
+    FormEvent,
+    useEffect,
+} from 'react'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
@@ -9,19 +15,22 @@ import { MainchainContext } from '../../context/Mainchain'
 import { MainchainContextType, Role } from '../../types/types'
 
 type FormData = {
-    pku: string
-    value: string
+    purchasePKU: string
+    purchaseValue: string
 }
 
 export default function Drug() {
-    const { currentAccount, connectWallet, disconnectWallet, purchaseDrug } =
-        useContext<MainchainContextType>(MainchainContext)
-
-    const [roles, setRoles] = useState<Role[]>([])
+    const {
+        error,
+        currentAccount,
+        connectWallet,
+        disconnectWallet,
+        purchaseDrug,
+    } = useContext<MainchainContextType>(MainchainContext)
 
     const [formData, setFormData] = useState<FormData>({
-        pku: '',
-        value: '',
+        purchasePKU: '',
+        purchaseValue: '',
     })
 
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -93,7 +102,7 @@ export default function Drug() {
                     <Input
                         placeholder="PKU"
                         name="purchasePKU"
-                        value={formData.pku}
+                        value={formData.purchasePKU}
                         onChange={handleChange}
                     />
 
@@ -101,46 +110,22 @@ export default function Drug() {
                     <Input
                         placeholder="Ether Value"
                         name="purchaseValue"
-                        value={formData.value}
+                        value={formData.purchaseValue}
                         onChange={handleChange}
                     />
                 </div>
                 <Button
                     onClick={() => {
-                        purchaseDrug(formData.pku, formData.value)
+                        purchaseDrug(
+                            formData.purchasePKU,
+                            formData.purchaseValue
+                        )
                     }}
                 >
                     Purchase Drug
                 </Button>
+                {error && <span className="block text-red-600">{error} </span>}
             </div>
         </>
     )
 }
-
-/*
-<div>
-         <span>Purchase Drug</span>
-         <span className="text-red-600">only consumer</span>
-         <input
-             type="text"
-             placeholder="PKU"
-             name="purchasePKU"
-             value={formData.pku}
-             onChange={handleChange}
-         />
-         <input
-             type="text"
-             placeholder="Ether Value"
-             name="purchaseValue"
-             value={formData.value}
-             onChange={handleChange}
-         />
-         <Button
-             onClick={() => {
-                 purchaseDrug(formData.pku, formData.value)
-             }}
-         >
-             Purchase
-         </Button>
-     </div>
-*/

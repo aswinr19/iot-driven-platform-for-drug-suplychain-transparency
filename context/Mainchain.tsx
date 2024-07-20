@@ -28,35 +28,9 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
     const [logs, setLogs] = useState<string[]>([])
     const [error, setError] = useState<string>('')
     const [openError, setOpenError] = useState<boolean>(false)
-
-    // useEffect(() => {
-    //     const initializeWeb3 = async () => {
-    //         try {
-    //             const web3Modal = new Web3Modal()
-    //             const connection = await web3Modal.connect()
-    //             const prvdr = new ethers.BrowserProvider(connection)
-    //             const sgnr = await prvdr.getSigner()
-    //             const cntrct = fetchContract(sgnr)
-
-    //             setProvider(prvdr)
-    //             setSigner(sgnr)
-    //             setContract(cntrct)
-
-    //             console.log('successfully fetched provider')
-    //             console.log(prvdr)
-    //             console.log(sgnr)
-    //             console.log(cntrct)
-    //         } catch (err) {
-    //             console.log(`Failed to initialize app! ${err}`)
-    //             setError('Failed to initialize app!')
-    //         }
-    //     }
-    //     initializeWeb3()
-    // }, [])
-
-    useEffect(() => {
-        console.log(`current account ${currentAccount}`)
-    }, [currentAccount])
+    const [drugData, setDrugData] = useState<string>('')
+    const [drugDesignData, setDrugDesignData] = useState<string>('')
+    const [drugLoadData, setDrugLoadData] = useState<string>('')
 
     const addTxToLogs = async (tx: any) => {
         const txHash = tx.transactionHash
@@ -311,24 +285,6 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
             setError(`Failed to add regulator`)
         }
     }
-
-    // const addRegulator = async (regulatorToBeAdded: string): Promise<void> => {
-    //     if (!contract) return
-
-    //     try {
-    //         const transaction = await contract.addRegulator(
-    //             regulatorToBeAdded,
-    //             { from: currentAccount }
-    //         )
-    //         await transaction.wait()
-
-    //         console.log(`Successfully added regulator ${transaction}`)
-    //         addTxToLogs(transaction)
-    //     } catch (err) {
-    //         console.log(`Failed to add regulator ${err}`)
-    //         setError(`Failed to add regulator`)
-    //     }
-    // }
 
     const addDrugDesign = async (
         drugDesgignerName: string,
@@ -884,12 +840,13 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
         if (!contract) return
 
         try {
-            const transaction = await contract.fetchDrugDesignData(udpc, {
+            const drugDesignData = await contract.fetchDrugDesignData(udpc, {
                 from: currentAccount,
             })
 
-            // await transaction.wait()
-            console.log(`Fetched drug design successfully ${transaction}`)
+            setDrugData(drugDesignData)
+            console.log(`Fetched drug design successfully ${drugDesignData}`)
+
             // addTxToLogs(transaction)
         } catch (err) {
             setError(`Couldn't fetch drug design!`)
@@ -904,13 +861,12 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
         if (!contract) return
 
         try {
-            const transaction = await contract.fetchDrugLoaudData(slu, {
+            const drugLoadData = await contract.fetchDrugLoaudData(slu, {
                 from: currentAccount,
             })
 
-            // await transaction.wait()
-
-            console.log(`Fetched drug load data successfully ${transaction}`)
+            setDrugLoadData(drugLoadData)
+            console.log(`Fetched drug load data successfully ${drugLoadData}`)
             // addTxToLogs(transaction)
         } catch (err) {
             setError(`Couldn't fetched drug load data!`)
@@ -945,12 +901,12 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
         if (!contract) return
 
         try {
-            const transaction = await contract.fetchDrugItemData(fetchDrugPKU, {
+            const drugData = await contract.fetchDrugItemData(fetchDrugPKU, {
                 from: currentAccount,
             })
 
-            // await transaction.wait()
-            console.log(`Fetched drug data successfully ${transaction}`)
+            setDrugData(drugData)
+            console.log(`Fetched drug data successfully ${drugData}`)
             // addToLogs(transaction)
         } catch (err) {
             setError(`Couldn't fetch drug data !`)
@@ -969,11 +925,10 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
                 from: currentAccount,
             })
 
-            // await transaction.wait()
             console.log(`Fetched env history successfully ${transaction}`)
             // addToLogs(transaction)
         } catch (err) {
-            setError(`Couldn't fetched env history`)
+            setError(`Couldn't fetch env history`)
             console.log(`Couldn't fetch env history! ${err}`)
         }
     }
@@ -983,6 +938,9 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
             value={{
                 title,
                 roles,
+                drugData,
+                drugDesignData,
+                drugLoadData,
                 error,
                 currentAccount,
                 connectWallet,

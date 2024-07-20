@@ -8,10 +8,6 @@ contract Mainchain is Ownable, SupplyChain {
  
   constructor() Ownable(msg.sender) SupplyChain()  {}
 
-  //function kill() public onlyOwner {
-  //  selfdestruct(msg.sender);
-  //}
-
   function purchaseDrug (uint _pku)
         public
         payable
