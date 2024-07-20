@@ -454,7 +454,7 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
             await transaction.wait()
 
             console.log(`Drug approved successfully ${transaction}`)
-            addTxToLogs(transaction)
+            // addTxToLogs(transaction)
         } catch (err) {
             console.log(`Failed to add regulator ${err}`)
             setError(`Failed to add regulator`)
@@ -483,7 +483,7 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
             await transaction.wait()
 
             console.log(`Drug design sold successfully ${transaction}`)
-            addTxToLogs(transaction)
+            // addTxToLogs(transaction)
         } catch (err) {
             console.log(`Failed to add regulator ${err}`)
             setError(`Failed to add regulator`)
@@ -541,7 +541,7 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
                     )
                     break
                 case 'open':
-                    transaction = await contract.openManufacPartnership(
+                    transaction = await contract.openManufactPartnership(
                         partnerStateUDPC,
                         partnerStateShare,
                         { from: currentAccount }
@@ -558,7 +558,7 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
             await transaction.wait()
 
             console.log(`Updated partner state successfully ${transaction}`)
-            addTxToLogs(transaction)
+            // addTxToLogs(transaction)
         } catch (err) {
             setError(`Couldn't add partner state!`)
             console.log(`Couldn't add role! ${err}`)
@@ -589,7 +589,7 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
             )
             await transaction.wait()
             console.log(`Partner added successfully ${transaction}`)
-            addTxToLogs(transaction)
+            // addTxToLogs(transaction)
         } catch (err) {
             setError(`Couldn't add partner!`)
             console.log(`Couldn't add partner! ${err}`)
@@ -618,7 +618,7 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
             await transaction.wait()
 
             console.log(`Partner assigned successfully ${transaction}`)
-            addTxToLogs(transaction)
+            // addTxToLogs(transaction)
         } catch (err) {
             setError(`Couldn't assign partner`)
             console.log(`Couldn't assign partner! ${err}`)
@@ -638,7 +638,7 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
         if (!contract) return
 
         try {
-            const transaction = await contract.manufacureDrugsLoud(
+            const transaction = await contract.manufacturDrugsLoud(
                 manufactureUDPC,
                 manufactureQuantity,
                 { from: currentAccount }
@@ -647,7 +647,7 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
             await transaction.wait()
 
             console.log(`Manufacturer added successfully ${transaction}`)
-            addTxToLogs(transaction)
+            // addTxToLogs(transaction)
         } catch (err) {
             setError(`Couldn't add manufacturer!`)
             console.log(`Couldn't add manufacturer! ${err}`)
@@ -670,7 +670,7 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
 
             await transaction.wait()
             console.log(`Drug load packed successfully ${transaction}`)
-            addTxToLogs(transaction)
+            // addTxToLogs(transaction)
         } catch (err) {
             setError(`Couldn't pack drug load!`)
             console.log(`Couldn't pack drug load! ${err}`)
@@ -699,7 +699,7 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
 
             await transaction.wait()
             console.log(`Drug load added successfully ${transaction}`)
-            addTxToLogs(transaction)
+            // addTxToLogs(transaction)
         } catch (err) {
             setError(`Couldn't add drug load!`)
             console.log(`Couldn't add drug load! ${err}`)
@@ -734,7 +734,7 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
             await transaction.wait()
 
             console.log(`Drug load bought successfully ${transaction}`)
-            addTxToLogs(transaction)
+            // addTxToLogs(transaction)
         } catch (err) {
             setError(`Couldn't buy drug load!`)
             console.log(`Couldn't buy drug load! ${err}`)
@@ -758,7 +758,7 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
             await transaction.wait()
 
             console.log(`Drug load shipped successfully ${transaction}`)
-            addTxToLogs(transaction)
+            // addTxToLogs(transaction)
         } catch (err) {
             setError(`Couldn't ship drug load!`)
             console.log(`Couldn't ship drug load! ${err}`)
@@ -782,7 +782,7 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
             await transaction.wait()
 
             console.log(`Drug load received successfully ${transaction}`)
-            addTxToLogs(transaction)
+            // addTxToLogs(transaction)
         } catch (err) {
             setError(`Couldn't drug load received!`)
             console.log(`Couldn't add role! ${err}`)
@@ -812,7 +812,7 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
 
             await transaction.wait()
             console.log(`Updated ship environment successfully ${transaction}`)
-            addTxToLogs(transaction)
+            // addTxToLogs(transaction)
         } catch (err) {
             setError(`Couldn't updated ship environment!`)
             console.log(`Couldn't updated ship environment! ${err}`)
@@ -842,7 +842,7 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
 
             await transaction.wait()
             console.log(`Updated stock environment successfully ${transaction}`)
-            addTxToLogs(transaction)
+            // addTxToLogs(transaction)
         } catch (err) {
             setError(`Couldn't update stock environment!`)
             console.log(`Couldn't update stock environment! ${err}`)
@@ -870,7 +870,7 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
 
             await transaction.wait()
             console.log(`Purchased drug successfully ${transaction}`)
-            addTxToLogs(transaction)
+            // addTxToLogs(transaction)
         } catch (err) {
             setError(`Couldn't purchase drug!`)
             console.log(`Couldn't purchase drug! ${err}`)
@@ -890,7 +890,7 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
 
             // await transaction.wait()
             console.log(`Fetched drug design successfully ${transaction}`)
-            addTxToLogs(transaction)
+            // addTxToLogs(transaction)
         } catch (err) {
             setError(`Couldn't fetch drug design!`)
             console.log(`Couldn't fetch drug design! ${err}`)
@@ -904,14 +904,14 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
         if (!contract) return
 
         try {
-            const transaction = await contract.fetchDrugLoudData(slu, {
+            const transaction = await contract.fetchDrugLoaudData(slu, {
                 from: currentAccount,
             })
 
             // await transaction.wait()
 
             console.log(`Fetched drug load data successfully ${transaction}`)
-            addTxToLogs(transaction)
+            // addTxToLogs(transaction)
         } catch (err) {
             setError(`Couldn't fetched drug load data!`)
             console.log(`Couldn't  fetched drug load data! ${err}`)
@@ -931,7 +931,7 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
 
             // await transaction.wait()
             console.log(`Fetched drug load pku's successfully ${transaction}`)
-            addTxToLogs(transaction)
+            // addTxToLogs(transaction)
         } catch (err) {
             setError(`Couldn't fetched drug load pku's!`)
             console.log(`Couldn't fetched drug load pku's! ${err}`)
@@ -951,7 +951,7 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
 
             // await transaction.wait()
             console.log(`Fetched drug data successfully ${transaction}`)
-            addToLogs(transaction)
+            // addToLogs(transaction)
         } catch (err) {
             setError(`Couldn't fetch drug data !`)
             console.log(`Couldn't fetch drug data! ${err}`)
@@ -971,7 +971,7 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
 
             // await transaction.wait()
             console.log(`Fetched env history successfully ${transaction}`)
-            addToLogs(transaction)
+            // addToLogs(transaction)
         } catch (err) {
             setError(`Couldn't fetched env history`)
             console.log(`Couldn't fetch env history! ${err}`)
