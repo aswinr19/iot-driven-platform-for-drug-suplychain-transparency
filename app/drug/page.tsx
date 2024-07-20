@@ -84,9 +84,11 @@ export default function Drug() {
                     </Button>
                 )}
             </header>
-            <div className="space-y-4 mx-10 my-6">
+            <div className="space-y-4 mx-6 my-24">
                 <div className="space-y-2">
-                    <h2 className="text-2xl font-bold mb-4">Purchase Drug</h2>
+                    <h2 className="text-2xl font-semibold mb-4">
+                        Purchase Drug
+                    </h2>
                     <Label htmlFor="purchasePKU">Drug UDPC</Label>
                     <Input
                         placeholder="PKU"

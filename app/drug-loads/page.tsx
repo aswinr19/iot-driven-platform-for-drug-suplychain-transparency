@@ -2,9 +2,11 @@
 
 import React, { useState, useEffect, useContext, ChangeEvent } from 'react'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import Link from 'next/link'
 import { MainchainContext } from '../../context/Mainchain'
 import { MainchainContextType } from '../../types/types'
+import { Label } from '@/components/ui/label'
 
 type FormDataOne = {
     manufactureUDPC: ''
@@ -217,251 +219,461 @@ export default function DrugLoads() {
                     </Button>
                 )}
             </header>
-            <div>
-                <div>
-                    <span>Manufactur Drugs Load </span>
-                    <span className="text-red-600">only manufacturer</span>
-                    <span className="text-red-600">
-                        only partner or owner of drug design
-                    </span>
-                    <input
-                        type="number"
-                        placeholder="UDPC"
-                        name="manufactureUDPC"
-                        value={formDataOne.manufactureUDPC}
-                        onChange={handleChangeOne}
-                    />
-                    <input
-                        type="number"
-                        placeholder="Quantity"
-                        name="manufactureQuantity"
-                        onChange={handleChangeOne}
-                        value={formDataOne.manufactureQuantity}
-                    />
-                    <p />
-                    <Button
-                        onClick={() => {
-                            manufactureDrugLoad(
-                                formDataOne.manufactureUDPC,
-                                formDataOne.manufactureQuantity
-                            )
-                        }}
-                    >
-                        Manufactur
-                    </Button>
-                </div>
-                <div>
-                    <span>Pack Drugs Load </span>
-                    <span className="text-red-600">
-                        only manufacturer of drugs load
-                    </span>
-                    <input
-                        type="text"
-                        placeholder="SLU"
-                        name="packSLU"
-                        value={formDataTwo.packSLU}
-                        onChange={handleChangeTwo}
-                    />
-                    <p />
-                    <Button
-                        onClick={() => {
-                            packDrugLoad(formDataTwo.packSLU)
-                        }}
-                    >
-                        Pack
-                    </Button>
-                </div>
-                <div>
-                    <span>Sell Drugs Load </span>
-                    <span className="text-red-600">
-                        {' '}
-                        only manufacturer of drugs load
-                    </span>
-                    <input
-                        type="text"
-                        placeholder="SLU"
-                        name="addSLU"
-                        value={formDataThree.addSLU}
-                        onChange={handleChangeThree}
-                    />
-                    <input
-                        type="text"
-                        placeholder="Unit Price"
-                        name="addPrice"
-                        value={formDataThree.addPrice}
-                        onChange={handleChangeThree}
-                    />
-                    <p />
-                    <Button
-                        onClick={() => {
-                            addDrugLoad(
-                                formDataThree.addSLU,
-                                formDataThree.addPrice
-                            )
-                        }}
-                    >
-                        Up For Sale
-                    </Button>
-                </div>
-                <div>
-                    <span>Buy Drugs Loud</span>
-                    <span className="text-red-600">only distributor</span>
-                    <input
-                        type="text"
-                        placeholder="SLU"
-                        name="buySLU"
-                        value={formDataFour.buySLU}
-                        onChange={handleChangeFour}
-                    />
-                    <input
-                        type="text"
-                        placeholder="Retailer Address"
-                        name="buyRetailerAddress"
-                        value={formDataFour.buyRetailerAddress}
-                        onChange={handleChangeFour}
-                    />
-                    <input
-                        type="text"
-                        placeholder="Ether Value"
-                        name="buyPrice"
-                        value={formDataFour.buyPrice}
-                        onChange={handleChangeFour}
-                    />
-                    <p />
-                    <Button
-                        onClick={() => {
-                            buyDrugLoad(
-                                formDataFour.buyRetailerAddress,
-                                formDataFour.buySLU,
-                                formDataFour.buyPrice
-                            )
-                        }}
-                    >
-                        Buy
-                    </Button>
-                </div>
-                <div>
-                    <span>Ship Drugs Load </span>
-                    <span>only manufacturer of drugs load</span>
-                    <input
-                        type="text"
-                        placeholder="SLU"
-                        name="shipSLU"
-                        value={formDataFive.shipSLU}
-                        onChange={handleChangeFive}
-                    />
-                    <p />
-                    <Button
-                        onClick={() => {
-                            shipDrugLoad(formDataFive.shipSLU)
-                        }}
-                    >
-                        Ship
-                    </Button>
-                </div>
-                <div>
-                    <span>Receive Drugs Load </span>
-                    <span className="text-red-600">
-                        only retailer of drugs load
-                    </span>
-                    <span className="text-red-600">
-                        only drugs load shippment envuirment updated
-                    </span>
-                    <input
-                        type="text"
-                        placeholder="SLU"
-                        name="receiveSLU"
-                        value={formDataSix.receiveSLU}
-                        onChange={handleChangeSix}
-                    />
-                    <p />
-                    <Button
-                        onClick={() => {
-                            receiveDrugLoad(formDataSix.receiveSLU)
-                        }}
-                    >
-                        Recieve
-                    </Button>
-                </div>
-                <div>
-                    <span>Update Shippment Envuirment</span>
-                    <span className="red">
-                        only manufacturer or distributor of drugs load
-                    </span>
-                    <input
-                        type="text"
-                        placeholder="SLU"
-                        name="shipEnvSLU"
-                        value={formDataSeven.shipEnvSLU}
-                        onChange={handleChangeSeven}
-                    />
-                    <input
-                        type="text"
-                        placeholder="Humidity"
-                        name="shipEnvHumidity"
-                        value={formDataSeven.shipEnvHumidity}
-                        onChange={handleChangeSeven}
-                    />
-                    <input
-                        type="text"
-                        placeholder="Temprture"
-                        name="shipEnvTemprture"
-                        value={formDataSeven.shipEnvTemprture}
-                        onChange={handleChangeSeven}
-                    />
-                    <p />
-                    <Button
-                        onClick={() => {
-                            updateShipEnv(
-                                formDataSeven.shipEnvSLU,
-                                formDataSeven.shipEnvHumidity,
-                                formDataSeven.shipEnvTemprture
-                            )
-                        }}
-                    >
-                        Add
-                    </Button>
-                </div>
-                <div>
-                    <span>Update Stocking Envuirment</span>
-                    <span className="text-red-600">
-                        only Retailer of drugs load
-                    </span>
-                    <input
-                        type="text"
-                        placeholder="SLU"
-                        name="stockEnvSLU"
-                        value={formDataEight.stockEnvSLU}
-                        onChange={handleChangeEight}
-                    />
-                    <input
-                        type="text"
-                        placeholder="Humidity"
-                        name="stockEnvHumidity"
-                        value={formDataEight.stockEnvHumidity}
-                        onChange={handleChangeEight}
-                    />
-                    <input
-                        type="text"
-                        placeholder="Temprture"
-                        name="stockEnvTemprture"
-                        value={formDataEight.stockEnvTemprture}
-                        onChange={handleChangeEight}
-                    />
-                    <p />
-                    <Button
-                        onClick={() => {
-                            updateStockEnv(
-                                formDataEight.stockEnvSLU,
-                                formDataEight.stockEnvHumidity,
-                                formDataEight.stockEnvTemprture
-                            )
-                        }}
-                    >
-                        Add
-                    </Button>
+            <div className="container mx-auto max-w-4xl py-12">
+                <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2">
+                    <div className="space-y-4">
+                        <h3 className="text-lg font-semibold">
+                            Pack Drug Load
+                        </h3>
+                        <div className="flex items-center gap-2">
+                            <Input
+                                type="text"
+                                placeholder="SLU"
+                                name="packSLU"
+                                value={formDataTwo.packSLU}
+                                onChange={handleChangeTwo}
+                            />
+                            <Button
+                                onClick={() => {
+                                    packDrugLoad(formDataTwo.packSLU)
+                                }}
+                            >
+                                Pack
+                            </Button>
+                        </div>
+                    </div>
+
+                    <div className="space-y-4">
+                        <h3 className="text-lg font-semibold">
+                            Receive Drugs Load{' '}
+                        </h3>
+                        <div className="flex items-center gap-2">
+                            <Input
+                                type="text"
+                                placeholder="SLU"
+                                name="receiveSLU"
+                                value={formDataSix.receiveSLU}
+                                onChange={handleChangeSix}
+                            />
+                            <Button
+                                onClick={() => {
+                                    receiveDrugLoad(formDataSix.receiveSLU)
+                                }}
+                            >
+                                Receive
+                            </Button>
+                        </div>
+                    </div>
+
+                    <div className="space-y-4">
+                        <h3 className="text-lg font-semibold">
+                            Manufactur Drugs Load
+                        </h3>
+                        <div className="grid grid-cols-2 gap-2">
+                            <Input
+                                placeholder="UDPC"
+                                name="manufactureUDPC"
+                                value={formDataOne.manufactureUDPC}
+                                onChange={handleChangeOne}
+                            />
+                            <Input
+                                placeholder="Quantity"
+                                name="manufactureQuantity"
+                                onChange={handleChangeOne}
+                                value={formDataOne.manufactureQuantity}
+                            />
+                            <Button
+                                className="col-span-2"
+                                onClick={() => {
+                                    manufactureDrugLoad(
+                                        formDataOne.manufactureUDPC,
+                                        formDataOne.manufactureQuantity
+                                    )
+                                }}
+                            >
+                                {' '}
+                                Manufacture
+                            </Button>
+                        </div>
+                    </div>
+
+                    <div className="space-y-4">
+                        <h3 className="text-lg font-semibold">
+                            Sell Drug Load
+                        </h3>
+                        <div className="grid grid-cols-2 gap-2">
+                            <Input
+                                placeholder="SLU"
+                                name="addSLU"
+                                value={formDataThree.addSLU}
+                                onChange={handleChangeThree}
+                            />
+                            <Input
+                                placeholder="Unit Price"
+                                name="addPrice"
+                                value={formDataThree.addPrice}
+                                onChange={handleChangeThree}
+                            />
+                            <Button
+                                className="col-span-2"
+                                onClick={() => {
+                                    addDrugLoad(
+                                        formDataThree.addSLU,
+                                        formDataThree.addPrice
+                                    )
+                                }}
+                            >
+                                {' '}
+                                Sell Drug Load
+                            </Button>
+                        </div>
+                    </div>
+
+                    <div className="space-y-4">
+                        <h3 className="text-lg font-semibold">Buy Drug Load</h3>
+                        <div className="grid grid-cols-2 gap-2">
+                            <Input
+                                placeholder="SLU"
+                                name="buySLU"
+                                value={formDataFour.buySLU}
+                                onChange={handleChangeFour}
+                            />
+                            <Input
+                                placeholder="Retailer Address"
+                                name="buyRetailerAddress"
+                                value={formDataFour.buyRetailerAddress}
+                                onChange={handleChangeFour}
+                            />
+                            <Input
+                                placeholder="Ether Value"
+                                name="buyPrice"
+                                value={formDataFour.buyPrice}
+                                onChange={handleChangeFour}
+                            />
+                            <Button
+                                className="col-span-2"
+                                onClick={() => {
+                                    buyDrugLoad(
+                                        formDataFour.buyRetailerAddress,
+                                        formDataFour.buySLU,
+                                        formDataFour.buyPrice
+                                    )
+                                }}
+                            >
+                                {' '}
+                                Buy Drug Load
+                            </Button>
+                        </div>
+                    </div>
+
+                    <div className="space-y-4">
+                        <h3 className="text-lg font-semibold">
+                            Update Shipment Environment
+                        </h3>
+                        <div className="grid grid-cols-2 gap-2">
+                            <Input
+                                placeholder="SLU"
+                                name="shipEnvSLU"
+                                value={formDataSeven.shipEnvSLU}
+                                onChange={handleChangeSeven}
+                            />
+                            <Input
+                                placeholder="Humidity"
+                                name="shipEnvHumidity"
+                                value={formDataSeven.shipEnvHumidity}
+                                onChange={handleChangeSeven}
+                            />
+                            <Input
+                                placeholder="Temprture"
+                                name="shipEnvTemprture"
+                                value={formDataSeven.shipEnvTemprture}
+                                onChange={handleChangeSeven}
+                            />
+                            <Button
+                                className="col-span-2"
+                                onClick={() => {
+                                    updateShipEnv(
+                                        formDataSeven.shipEnvSLU,
+                                        formDataSeven.shipEnvHumidity,
+                                        formDataSeven.shipEnvTemprture
+                                    )
+                                }}
+                            >
+                                Update Ship Env
+                            </Button>
+                        </div>
+                    </div>
+
+                    <div className="space-y-4">
+                        <h3 className="text-lg font-semibold">
+                            Update Stocking Environment
+                        </h3>
+                        <div className="grid grid-cols-2 gap-2">
+                            <Input
+                                placeholder="SLU"
+                                name="stockEnvSLU"
+                                value={formDataEight.stockEnvSLU}
+                                onChange={handleChangeEight}
+                            />
+                            <Input
+                                placeholder="Humidity"
+                                name="stockEnvHumidity"
+                                value={formDataEight.stockEnvHumidity}
+                                onChange={handleChangeEight}
+                            />
+                            <Input
+                                placeholder="Temprture"
+                                name="stockEnvTemprture"
+                                value={formDataEight.stockEnvTemprture}
+                                onChange={handleChangeEight}
+                            />
+                            <Button
+                                className="col-span-2"
+                                onClick={() => {
+                                    updateStockEnv(
+                                        formDataEight.stockEnvSLU,
+                                        formDataEight.stockEnvHumidity,
+                                        formDataEight.stockEnvTemprture
+                                    )
+                                }}
+                            >
+                                Update Stock Env
+                            </Button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </>
     )
 }
+
+/*
+
+<div>
+    <div>
+        <span>Manufactur Drugs Load </span>
+        <span className="text-red-600">only manufacturer</span>
+        <span className="text-red-600">
+            only partner or owner of drug design
+        </span>
+        <input
+            type="number"
+            placeholder="UDPC"
+            name="manufactureUDPC"
+            value={formDataOne.manufactureUDPC}
+            onChange={handleChangeOne}
+        />
+        <input
+            type="number"
+            placeholder="Quantity"
+            name="manufactureQuantity"
+            onChange={handleChangeOne}
+            value={formDataOne.manufactureQuantity}
+        />
+        <p />
+        <Button
+            onClick={() => {
+                manufactureDrugLoad(
+                    formDataOne.manufactureUDPC,
+                    formDataOne.manufactureQuantity
+                )
+            }}
+        >
+            Manufactur
+        </Button>
+    </div>
+    <div>
+        <span>Pack Drugs Load </span>
+        <span className="text-red-600">
+            only manufacturer of drugs load
+        </span>
+        <input
+            type="text"
+            placeholder="SLU"
+            name="packSLU"
+            value={formDataTwo.packSLU}
+            onChange={handleChangeTwo}
+        />
+        <p />
+        <Button
+            onClick={() => {
+                packDrugLoad(formDataTwo.packSLU)
+            }}
+        >
+            Pack
+        </Button>
+    </div>
+    <div>
+        <span>Sell Drugs Load </span>
+        <span className="text-red-600">
+            {' '}
+            only manufacturer of drugs load
+        </span>
+        <input
+            type="text"
+            placeholder="SLU"
+            name="addSLU"
+            value={formDataThree.addSLU}
+            onChange={handleChangeThree}
+        />
+        <input
+            type="text"
+            placeholder="Unit Price"
+            name="addPrice"
+            value={formDataThree.addPrice}
+            onChange={handleChangeThree}
+        />
+        <p />
+        <Button
+            onClick={() => {
+                addDrugLoad(
+                    formDataThree.addSLU,
+                    formDataThree.addPrice
+                )
+            }}
+        >
+            Up For Sale
+        </Button>
+    </div>
+    <div>
+        <span>Buy Drugs Loud</span>
+        <span className="text-red-600">only distributor</span>
+        <input
+            type="text"
+            placeholder="SLU"
+            name="buySLU"
+            value={formDataFour.buySLU}
+            onChange={handleChangeFour}
+        />
+        <input
+            type="text"
+            placeholder="Retailer Address"
+            name="buyRetailerAddress"
+            value={formDataFour.buyRetailerAddress}
+            onChange={handleChangeFour}
+        />
+        <input
+            type="text"
+            placeholder="Ether Value"
+            name="buyPrice"
+            value={formDataFour.buyPrice}
+            onChange={handleChangeFour}
+        />
+        <p />
+        <Button
+            onClick={() => {
+                buyDrugLoad(
+                    formDataFour.buyRetailerAddress,
+                    formDataFour.buySLU,
+                    formDataFour.buyPrice
+                )
+            }}
+        >
+            Buy
+        </Button>
+    </div>
+    <div>
+        <span>Receive Drugs Load </span>
+        <span className="text-red-600">
+            only retailer of drugs load
+        </span>
+        <span className="text-red-600">
+            only drugs load shippment envuirment updated
+        </span>
+        <input
+            type="text"
+            placeholder="SLU"
+            name="receiveSLU"
+            value={formDataSix.receiveSLU}
+            onChange={handleChangeSix}
+        />
+        <p />
+        <Button
+            onClick={() => {
+                receiveDrugLoad(formDataSix.receiveSLU)
+            }}
+        >
+            Recieve
+        </Button>
+    </div>
+    <div>
+        <span>Update Shippment Envuirment</span>
+        <span className="red">
+            only manufacturer or distributor of drugs load
+        </span>
+        <input
+            type="text"
+            placeholder="SLU"
+            name="shipEnvSLU"
+            value={formDataSeven.shipEnvSLU}
+            onChange={handleChangeSeven}
+        />
+        <input
+            type="text"
+            placeholder="Humidity"
+            name="shipEnvHumidity"
+            value={formDataSeven.shipEnvHumidity}
+            onChange={handleChangeSeven}
+        />
+        <input
+            type="text"
+            placeholder="Temprture"
+            name="shipEnvTemprture"
+            value={formDataSeven.shipEnvTemprture}
+            onChange={handleChangeSeven}
+        />
+        <p />
+        <Button
+            onClick={() => {
+                updateShipEnv(
+                    formDataSeven.shipEnvSLU,
+                    formDataSeven.shipEnvHumidity,
+                    formDataSeven.shipEnvTemprture
+                )
+            }}
+        >
+            Add
+        </Button>
+    </div>
+    <div>
+        <span>Update Stocking Envuirment</span>
+        <span className="text-red-600">
+            only Retailer of drugs load
+        </span>
+        <input
+            type="text"
+            placeholder="SLU"
+            name="stockEnvSLU"
+            value={formDataEight.stockEnvSLU}
+            onChange={handleChangeEight}
+        />
+        <input
+            type="text"
+            placeholder="Humidity"
+            name="stockEnvHumidity"
+            value={formDataEight.stockEnvHumidity}
+            onChange={handleChangeEight}
+        />
+        <input
+            type="text"
+            placeholder="Temprture"
+            name="stockEnvTemprture"
+            value={formDataEight.stockEnvTemprture}
+            onChange={handleChangeEight}
+        />
+        <p />
+        <Button
+            onClick={() => {
+                updateStockEnv(
+                    formDataEight.stockEnvSLU,
+                    formDataEight.stockEnvHumidity,
+                    formDataEight.stockEnvTemprture
+                )
+            }}
+        >
+            Add
+        </Button>
+    </div>
+</div>
+
+*/

@@ -102,7 +102,7 @@ export default function Home() {
             <div className="flex flex-col items-center justify-center min-h-[100dvh] bg-background text-foreground">
                 <main className="container px-4 py-12 md:px-6 md:py-16">
                     <div className="space-y-8">
-                        <h1 className="text-4xl font-bold tracking-tighter md:text-5xl lg:text-6xl">
+                        <h1 className="text-4xl font-extrabold tracking-tighter md:text-5xl lg:text-6xl">
                             Drug Supplychain
                         </h1>
                         <section className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-6">
