@@ -245,7 +245,7 @@ export default function DrugLoads() {
 
                     <div className="space-y-4">
                         <h3 className="text-lg font-semibold">
-                            Receive Drugs Load{' '}
+                            Receive Drug Load{' '}
                         </h3>
                         <div className="flex items-center gap-2">
                             <Input
@@ -267,7 +267,7 @@ export default function DrugLoads() {
 
                     <div className="space-y-4">
                         <h3 className="text-lg font-semibold">
-                            Manufactur Drugs Load
+                            Manufacture Drug Load
                         </h3>
                         <div className="grid grid-cols-2 gap-2">
                             <Input

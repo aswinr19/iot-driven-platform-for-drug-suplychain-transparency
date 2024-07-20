@@ -195,6 +195,8 @@ export default function DrugDesign() {
             ...prevState,
             [name]: value,
         }))
+
+        console.log(formDataSeven)
     }
     const handleChangeEight = (e: ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target
@@ -656,36 +658,36 @@ export default function DrugDesign() {
                         <div className="grid gap-4">
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <Label htmlFor="addPatnerUDPC">
+                                    <Label htmlFor="addPartnerUDPC">
                                         Partner UDPC
                                     </Label>
                                     <Input
                                         placeholder="UDPC"
-                                        name="addPatnerUDPC"
+                                        name="addPartnerUDPC"
                                         value={formDataSeven.addPartnerUDPC}
                                         onChange={handleChangeSeven}
                                     />
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="addPatnerAddress">
+                                    <Label htmlFor="addPartnerAddress">
                                         Partner Address
                                     </Label>
                                     <Input
                                         placeholder="Partner Address"
-                                        name="addPatnerAddress"
+                                        name="addPartnerAddress"
                                         value={formDataSeven.addPartnerAddress}
                                         onChange={handleChangeSeven}
                                     />
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="addpatnername">
+                                    <Label htmlFor="addPartnerName">
                                         Partner Name
                                     </Label>
                                     <Input
                                         placeholder="Partner Name"
-                                        name="addPatnerName"
+                                        name="addPartnerName"
                                         value={formDataSeven.addPartnerName}
                                         onChange={handleChangeSeven}
                                     />
@@ -723,7 +725,7 @@ export default function DrugDesign() {
 
                 <Card>
                     <CardHeader>
-                        <CardTitle>Add Manufacture Partner </CardTitle>
+                        <CardTitle>Build Manufacture Partnership </CardTitle>
                         <CardDescription className="text-red-600">
                             Only owner of drug design can assign manufacturing
                             partner

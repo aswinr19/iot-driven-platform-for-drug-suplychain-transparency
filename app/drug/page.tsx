@@ -89,7 +89,7 @@ export default function Drug() {
                     <h2 className="text-2xl font-semibold mb-4">
                         Purchase Drug
                     </h2>
-                    <Label htmlFor="purchasePKU">Drug UDPC</Label>
+                    <Label htmlFor="purchasePKU">Drug PKU</Label>
                     <Input
                         placeholder="PKU"
                         name="purchasePKU"
@@ -110,7 +110,7 @@ export default function Drug() {
                         purchaseDrug(formData.pku, formData.value)
                     }}
                 >
-                    Fetch Drug Data
+                    Purchase Drug
                 </Button>
             </div>
         </>

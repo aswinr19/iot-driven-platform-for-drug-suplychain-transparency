@@ -139,7 +139,7 @@ export default function FetchData() {
                     Fetch Drug Data
                 </Button>
                 <div className="space-y-2">
-                    <Label htmlFor="fetchDrugSLU">Drug UDPC</Label>
+                    <Label htmlFor="fetchDrugSLU">Drug SLU</Label>
                     <Input
                         placeholder="SLU"
                         name="fetchDrugSLU"
