@@ -15,13 +15,19 @@ export default function Home() {
         currentAccount,
         connectWallet,
         disconnectWallet,
+        addDesigner,
+        addDistributor,
         addRegulator,
+        addRetailer,
         addRoleToMe,
         removeRoleFromMe,
         currentAccountRoles,
     } = useContext<MainchainContextType>(MainchainContext)
 
+    const [designer, setDesigner] = useState<string>('')
+    const [distributor, setDistributor] = useState<string>('')
     const [regulator, setRegulator] = useState<string>('')
+    const [retailer, setRetailer] = useState<string>('')
     const [isVisible, setIsVisible] = useState<boolean>(false)
     const [hasRole, setHasRole] = useState<boolean>(false)
 
@@ -35,9 +41,17 @@ export default function Home() {
         })
     }
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChangeOne = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setDesigner(e.target.value)
+    }
+    const handleChangeTwo = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setDistributor(e.target.value)
+    }
+    const handleChangeThree = (e: React.ChangeEvent<HTMLInputElement>) => {
         setRegulator(e.target.value)
-        console.log(regulator)
+    }
+    const handleChangeFour = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setRetailer(e.target.value)
     }
 
     useEffect(() => {
@@ -147,12 +161,67 @@ export default function Home() {
                                     </div>
                                 ))}
                             {!hasRole && (
-                                <span>
+                                <span className="block">
                                     {' '}
                                     You don't have any role assigned :({' '}
                                 </span>
                             )}
                         </section>
+
+                        <section>
+                            <h2 className="text-2xl font-bold mb-4">
+                                Add new designer{' '}
+                            </h2>
+                            <div className="space-y-4">
+                                <div>
+                                    <Label htmlFor="designerToBeAdded">
+                                        Designer Address
+                                    </Label>
+                                    <Input
+                                        type="text"
+                                        placeholder=" Enter designer address (hex)"
+                                        name="designerToBeAdded"
+                                        value={designer}
+                                        onChange={handleChangeOne}
+                                    />
+                                </div>
+                                <Button
+                                    onClick={() => {
+                                        addDesigner(designer)
+                                    }}
+                                >
+                                    Add Designer
+                                </Button>
+                            </div>
+                        </section>
+
+                        <section>
+                            <h2 className="text-2xl font-bold mb-4">
+                                Add new distributor{' '}
+                            </h2>
+                            <div className="space-y-4">
+                                <div>
+                                    <Label htmlFor="distributorToBeAdded">
+                                        Distributor Address
+                                    </Label>
+                                    <Input
+                                        type="text"
+                                        placeholder=" Enter distributor address (hex)"
+                                        name="distributorToBeAdded"
+                                        value={distributor}
+                                        onChange={handleChangeTwo}
+                                    />
+                                </div>
+                                <Button
+                                    onClick={() => {
+                                        addDistributor(distributor)
+                                    }}
+                                >
+                                    Add Distributor
+                                </Button>
+                            </div>
+                        </section>
+
                         <section>
                             <h2 className="text-2xl font-bold mb-4">
                                 Add new regulator{' '}
@@ -167,7 +236,7 @@ export default function Home() {
                                         placeholder=" Enter regulator address (hex)"
                                         name="regulatorToBeAdded"
                                         value={regulator}
-                                        onChange={handleChange}
+                                        onChange={handleChangeThree}
                                     />
                                 </div>
                                 <Button
@@ -176,6 +245,33 @@ export default function Home() {
                                     }}
                                 >
                                     Add Regulator
+                                </Button>
+                            </div>
+                        </section>
+
+                        <section>
+                            <h2 className="text-2xl font-bold mb-4">
+                                Add new retailer{' '}
+                            </h2>
+                            <div className="space-y-4">
+                                <div>
+                                    <Label htmlFor="retailerToBeAdded">
+                                        Retailer Address
+                                    </Label>
+                                    <Input
+                                        type="text"
+                                        placeholder=" Enter regulator address (hex)"
+                                        name="retailerToBeAdded"
+                                        value={retailer}
+                                        onChange={handleChangeFour}
+                                    />
+                                </div>
+                                <Button
+                                    onClick={() => {
+                                        addRetailer(retailer)
+                                    }}
+                                >
+                                    Add Retailer
                                 </Button>
                             </div>
                         </section>

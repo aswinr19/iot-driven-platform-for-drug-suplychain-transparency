@@ -20,9 +20,9 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
     children,
 }) => {
     const title: string = 'Drug supply Chain Contract'
-    const [provider, setProvider] = useState<ethers.BrowserProvider>()
-    const [signer, setSigner] = useState<ethers.Signer | null>(null)
-    const [contract, setContract] = useState<ethers.Contract | null>(null)
+    // const [provider, setProvider] = useState<ethers.BrowserProvider>()
+    // const [signer, setSigner] = useState<ethers.Signer | null>(null)
+    // const [contract, setContract] = useState<ethers.Contract | null>(null)
     const [roles, setRoles] = useState<Role[]>([])
     const [currentAccount, setCurrentAccount] = useState<string | null>(null)
     const [logs, setLogs] = useState<string[]>([])
@@ -48,6 +48,7 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
         setLogs(updatedLogs)
     }
     const checkIfWalletIsConnected = async () => {
+        setError('')
         try {
             if (!window.ethereum)
                 return (
@@ -85,6 +86,7 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
     }
 
     const connectWallet = async () => {
+        setError('')
         try {
             if (!window.ethereum)
                 return (
@@ -112,6 +114,7 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
         const provider = new ethers.JsonRpcProvider()
         const contract = fetchContract(provider)
 
+        setError('')
         if (!contract) return
 
         try {
@@ -141,11 +144,10 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
             }
 
             setRoles(updatedRoles)
-            console.log(roles)
 
             console.log(`Roles fetched successfully :)`)
         } catch (err) {
-            setError(`Roles fetch failed! - details ${err}`)
+            setError(`Roles fetch failed :(`)
             console.log(`Roles fetch failed! - ${err}`)
         }
     }
@@ -157,6 +159,7 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
         const signer = await provider.getSigner()
         const contract = fetchContract(signer)
 
+        setError('')
         if (!contract) return
 
         let transaction
@@ -199,11 +202,12 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
 
             await transaction.wait()
 
-            console.log(`Added role successfully ${transaction}`)
+            console.log(`Added role successfully :)`)
+            console.log(transaction)
             //addTxToLogs(transaction)
             currentAccountRoles()
         } catch (err) {
-            setError(`Couldn't add role!`)
+            setError(`Couldn't add role :(`)
             console.log(`Couldn't add role! ${err}`)
         }
     }
@@ -214,6 +218,8 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
         const provider = new ethers.BrowserProvider(connection)
         const signer = await provider.getSigner()
         const contract = fetchContract(signer)
+
+        setError('')
 
         if (!contract) return
         let transaction
@@ -253,15 +259,72 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
             }
 
             await transaction.wait()
-            console.log(`Successfully removed role ${transaction}`)
+            console.log(`Successfully removed role :) `)
+            console.log(transaction)
 
             // addTxToLogs(transaction)
             currentAccountRoles()
         } catch (err) {
             console.log(`Role removal failed! ${err}`)
-            setError(`Role romoval failed!`)
+            setError(`Role romoval failed :(`)
         }
     }
+
+    const addDesigner = async (designerToBeAdded: string): Promise<void> => {
+        const web3Modal = new Web3Modal()
+        const connection = await web3Modal.connect()
+        const provider = new ethers.BrowserProvider(connection)
+        const signer = await provider.getSigner()
+        const contract = fetchContract(signer)
+
+        setError('')
+        if (!contract) return
+
+        try {
+            const transaction = await contract.assignThisAccountAsDesigner(
+                designerToBeAdded,
+                { from: currentAccount }
+            )
+            await transaction.wait()
+
+            console.log(`Successfully added designer :)`)
+            console.log(transaction)
+            //addTxToLogs(transaction)
+        } catch (err) {
+            console.log(`Failed to add designer :( ${err}`)
+            setError(`Failed to add designer :(`)
+        }
+    }
+
+    const addDistributor = async (
+        distributorToBeAdded: string
+    ): Promise<void> => {
+        const web3Modal = new Web3Modal()
+        const connection = await web3Modal.connect()
+        const provider = new ethers.BrowserProvider(connection)
+        const signer = await provider.getSigner()
+        const contract = fetchContract(signer)
+
+        setError('')
+
+        if (!contract) return
+
+        try {
+            const transaction = await contract.assignThisAccountAsDistributor(
+                distributorToBeAdded,
+                { from: currentAccount }
+            )
+            await transaction.wait()
+
+            console.log(`Successfully added distributor :)`)
+            console.log(transaction)
+            //addTxToLogs(transaction)
+        } catch (err) {
+            console.log(`Failed to add distributor ${err}`)
+            setError(`Failed to add distributor`)
+        }
+    }
+
     const addRegulator = async (regulatorToBeAdded: string): Promise<void> => {
         const web3Modal = new Web3Modal()
         const connection = await web3Modal.connect()
@@ -278,14 +341,41 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
             )
             await transaction.wait()
 
-            console.log(`Successfully added regulator ${transaction}`)
+            console.log(`Successfully added regulator :)`)
+            console.log(transaction)
             //addTxToLogs(transaction)
         } catch (err) {
-            console.log(`Failed to add regulator ${err}`)
-            setError(`Failed to add regulator`)
+            console.log(`Failed to add regulator :( ${err}`)
+            setError(`Failed to add regulator :(`)
         }
     }
 
+    const addRetailer = async (retailerToBeAdded: string): Promise<void> => {
+        const web3Modal = new Web3Modal()
+        const connection = await web3Modal.connect()
+        const provider = new ethers.BrowserProvider(connection)
+        const signer = await provider.getSigner()
+        const contract = fetchContract(signer)
+
+        setError('')
+
+        if (!contract) return
+
+        try {
+            const transaction = await contract.assignThisAccountAsRetailer(
+                retailerToBeAdded,
+                { from: currentAccount }
+            )
+            await transaction.wait()
+
+            console.log(`Successfully added retailer :)`)
+            console.log(transaction)
+            //addTxToLogs(transaction)
+        } catch (err) {
+            console.log(`Failed to add retailer :( ${err}`)
+            setError(`Failed to add retailer :(`)
+        }
+    }
     const addDrugDesign = async (
         drugDesgignerName: string,
         drugDesignName: string,
@@ -298,6 +388,7 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
         const signer = await provider.getSigner()
         const contract = fetchContract(signer)
 
+        setError('')
         if (!contract) return
 
         try {
@@ -311,10 +402,11 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
 
             await transaction.wait()
 
-            console.log(`Drug design added successfully ${transaction}`)
+            console.log(`Drug design added successfully :)`)
+            console.log(transaction)
         } catch (err) {
             console.log(`Failed to add drug design ${err}`)
-            setError(`Failed to add drug design!`)
+            setError(`Failed to add drug design :(`)
         }
     }
 
@@ -324,11 +416,7 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
         drugTestPass: boolean,
         drugTestNotes: string
     ): Promise<void> => {
-        console.log(drugTestUDPC)
-        console.log(drugTestDesc)
-        console.log(drugTestPass)
-        console.log(drugTestNotes)
-
+        setError('')
         const web3Modal = new Web3Modal()
         const connection = await web3Modal.connect()
         const provider = new ethers.BrowserProvider(connection)
@@ -349,10 +437,11 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
             await transaction.wait()
             // addTxToLogs(transaction)
 
-            console.log(`Drug test added successfully ${transaction}`)
+            console.log(`Drug test added successfully :)`)
+            console.log(transaction)
         } catch (err) {
             console.log(`Failed to add drug test ${err}`)
-            setError(`Failed to add regulator`)
+            setError(`Failed to add regulator :(`)
         }
     }
 
@@ -362,17 +451,14 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
         drugTestPass: boolean,
         drugTestNotes: string
     ): Promise<void> => {
-        console.log(drugTestUDPC)
-        console.log(drugTestDesc)
-        console.log(drugTestPass)
-        console.log(drugTestNotes)
-
+        setError('')
         const web3Modal = new Web3Modal()
         const connection = await web3Modal.connect()
         const provider = new ethers.BrowserProvider(connection)
         const signer = await provider.getSigner()
         const contract = fetchContract(signer)
 
+        setError('')
         if (!contract) return
 
         try {
@@ -384,13 +470,11 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
                 { from: currentAccount }
             )
             await transaction.wait()
-            console.log(
-                `Drug test by regulator added successfully ${transaction}`
-            )
+            console.log(`Drug test by regulator added successfully :)`)
             // addTxToLogs(transaction)
         } catch (err) {
             console.log(`Failed to add regulator ${err}`)
-            setError(`Failed to add regulator`)
+            setError(`Failed to add regulator :(`)
         }
     }
 
@@ -401,6 +485,7 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
         const signer = await provider.getSigner()
         const contract = fetchContract(signer)
 
+        setError('')
         if (!contract) return
 
         try {
@@ -409,11 +494,12 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
             })
             await transaction.wait()
 
-            console.log(`Drug approved successfully ${transaction}`)
+            console.log(`Drug approved successfully :)`)
+            console.log(transaction)
             // addTxToLogs(transaction)
         } catch (err) {
             console.log(`Failed to add regulator ${err}`)
-            setError(`Failed to add regulator`)
+            setError(`Failed to add regulator :(`)
         }
     }
 
@@ -427,6 +513,7 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
         const signer = await provider.getSigner()
         const contract = fetchContract(signer)
 
+        setError('')
         if (!contract) return
 
         try {
@@ -438,11 +525,12 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
             )
             await transaction.wait()
 
-            console.log(`Drug design sold successfully ${transaction}`)
+            console.log(`Drug design sold successfully :)`)
+            console.log(transaction)
             // addTxToLogs(transaction)
         } catch (err) {
             console.log(`Failed to add regulator ${err}`)
-            setError(`Failed to add regulator`)
+            setError(`Failed to add regulator :(`)
         }
     }
 
@@ -456,6 +544,7 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
         const signer = await provider.getSigner()
         const contract = fetchContract(signer)
 
+        setError('')
         if (!contract) return
 
         try {
@@ -466,10 +555,11 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
             })
 
             await transaction.wait()
-            console.log(`Drug desugn bought successfully ${transaction}`)
+            console.log(`Drug desugn bought successfully :)`)
+            console.log(transaction)
         } catch (err) {
+            setError(`Failed to add regulator :(`)
             console.log(`Failed to add regulator ${err}`)
-            setError(`Failed to add regulator`)
         }
     }
 
@@ -484,6 +574,7 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
         const signer = await provider.getSigner()
         const contract = fetchContract(signer)
 
+        setError('')
         if (!contract) return
 
         try {
@@ -513,10 +604,11 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
 
             await transaction.wait()
 
-            console.log(`Updated partner state successfully ${transaction}`)
+            console.log(`Updated partner state successfully :)`)
+            console.log(transaction)
             // addTxToLogs(transaction)
         } catch (err) {
-            setError(`Couldn't add partner state!`)
+            setError(`Couldn't add partner state :(`)
             console.log(`Couldn't add role! ${err}`)
         }
     }
@@ -533,6 +625,7 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
         const signer = await provider.getSigner()
         const contract = fetchContract(signer)
 
+        setError('')
         if (!contract) return
 
         try {
@@ -544,10 +637,11 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
                 { from: currentAccount }
             )
             await transaction.wait()
-            console.log(`Partner added successfully ${transaction}`)
+            console.log(`Partner added successfully :)`)
+            console.log(transaction)
             // addTxToLogs(transaction)
         } catch (err) {
-            setError(`Couldn't add partner!`)
+            setError(`Couldn't add partner :(`)
             console.log(`Couldn't add partner! ${err}`)
         }
     }
@@ -562,6 +656,7 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
         const signer = await provider.getSigner()
         const contract = fetchContract(signer)
 
+        setError('')
         if (!contract) return
 
         try {
@@ -573,10 +668,11 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
 
             await transaction.wait()
 
-            console.log(`Partner assigned successfully ${transaction}`)
+            console.log(`Partner assigned successfully :)`)
+            console.log(transaction)
             // addTxToLogs(transaction)
         } catch (err) {
-            setError(`Couldn't assign partner`)
+            setError(`Couldn't assign partner :(`)
             console.log(`Couldn't assign partner! ${err}`)
         }
     }
@@ -591,6 +687,7 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
         const signer = await provider.getSigner()
         const contract = fetchContract(signer)
 
+        setError('')
         if (!contract) return
 
         try {
@@ -602,10 +699,11 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
 
             await transaction.wait()
 
-            console.log(`Manufacturer added successfully ${transaction}`)
+            console.log(`Manufacturer added successfully :)`)
+            console.log(transaction)
             // addTxToLogs(transaction)
         } catch (err) {
-            setError(`Couldn't add manufacturer!`)
+            setError(`Couldn't add manufacturer :(`)
             console.log(`Couldn't add manufacturer! ${err}`)
         }
     }
@@ -617,6 +715,7 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
         const signer = await provider.getSigner()
         const contract = fetchContract(signer)
 
+        setError('')
         if (!contract) return
 
         try {
@@ -625,10 +724,11 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
             })
 
             await transaction.wait()
-            console.log(`Drug load packed successfully ${transaction}`)
+            console.log(`Drug load packed successfully :)`)
+            console.log(transaction)
             // addTxToLogs(transaction)
         } catch (err) {
-            setError(`Couldn't pack drug load!`)
+            setError(`Couldn't pack drug load :(`)
             console.log(`Couldn't pack drug load! ${err}`)
         }
     }
@@ -643,6 +743,7 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
         const signer = await provider.getSigner()
         const contract = fetchContract(signer)
 
+        setError('')
         if (!contract) return
 
         try {
@@ -654,10 +755,11 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
             )
 
             await transaction.wait()
-            console.log(`Drug load added successfully ${transaction}`)
+            console.log(`Drug load added successfully :)`)
+            console.log(transaction)
             // addTxToLogs(transaction)
         } catch (err) {
-            setError(`Couldn't add drug load!`)
+            setError(`Couldn't add drug load :(`)
             console.log(`Couldn't add drug load! ${err}`)
         }
     }
@@ -672,6 +774,7 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
         const signer = await provider.getSigner()
         const contract = fetchContract(signer)
 
+        setError('')
         if (!contract) return
 
         try {
@@ -689,10 +792,10 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
 
             await transaction.wait()
 
-            console.log(`Drug load bought successfully ${transaction}`)
+            console.log(`Drug load bought successfully :)`)
             // addTxToLogs(transaction)
         } catch (err) {
-            setError(`Couldn't buy drug load!`)
+            setError(`Couldn't buy drug load :(`)
             console.log(`Couldn't buy drug load! ${err}`)
         }
     }
@@ -704,6 +807,7 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
         const signer = await provider.getSigner()
         const contract = fetchContract(signer)
 
+        setError('')
         if (!contract) return
 
         try {
@@ -713,10 +817,10 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
 
             await transaction.wait()
 
-            console.log(`Drug load shipped successfully ${transaction}`)
+            console.log(`Drug load shipped successfully :)`)
             // addTxToLogs(transaction)
         } catch (err) {
-            setError(`Couldn't ship drug load!`)
+            setError(`Couldn't ship drug load :(`)
             console.log(`Couldn't ship drug load! ${err}`)
         }
     }
@@ -728,6 +832,7 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
         const signer = await provider.getSigner()
         const contract = fetchContract(signer)
 
+        setError('')
         if (!contract) return
 
         try {
@@ -737,10 +842,10 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
 
             await transaction.wait()
 
-            console.log(`Drug load received successfully ${transaction}`)
+            console.log(`Drug load received successfully :)`)
             // addTxToLogs(transaction)
         } catch (err) {
-            setError(`Couldn't drug load received!`)
+            setError(`Couldn't drug load received :(`)
             console.log(`Couldn't add role! ${err}`)
         }
     }
@@ -756,6 +861,7 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
         const signer = await provider.getSigner()
         const contract = fetchContract(signer)
 
+        setError('')
         if (!contract) return
 
         try {
@@ -767,10 +873,10 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
             )
 
             await transaction.wait()
-            console.log(`Updated ship environment successfully ${transaction}`)
+            console.log(`Updated ship environment successfully :)`)
             // addTxToLogs(transaction)
         } catch (err) {
-            setError(`Couldn't updated ship environment!`)
+            setError(`Couldn't updated ship environment :(`)
             console.log(`Couldn't updated ship environment! ${err}`)
         }
     }
@@ -786,6 +892,7 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
         const signer = await provider.getSigner()
         const contract = fetchContract(signer)
 
+        setError('')
         if (!contract) return
 
         try {
@@ -797,10 +904,11 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
             )
 
             await transaction.wait()
-            console.log(`Updated stock environment successfully ${transaction}`)
+            console.log(`Updated stock environment successfully :)`)
+            console.log(transaction)
             // addTxToLogs(transaction)
         } catch (err) {
-            setError(`Couldn't update stock environment!`)
+            setError(`Couldn't update stock environment :(`)
             console.log(`Couldn't update stock environment! ${err}`)
         }
     }
@@ -815,6 +923,7 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
         const signer = await provider.getSigner()
         const contract = fetchContract(signer)
 
+        setError('')
         if (!contract) return
 
         try {
@@ -825,10 +934,11 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
             })
 
             await transaction.wait()
-            console.log(`Purchased drug successfully ${transaction}`)
+            console.log(`Purchased drug successfully :(`)
+            console.log(transaction)
             // addTxToLogs(transaction)
         } catch (err) {
-            setError(`Couldn't purchase drug!`)
+            setError(`Couldn't purchase drug :(`)
             console.log(`Couldn't purchase drug! ${err}`)
         }
     }
@@ -837,6 +947,7 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
         const provider = new ethers.JsonRpcProvider()
         const contract = fetchContract(provider)
 
+        setError('')
         if (!contract) return
 
         try {
@@ -845,11 +956,12 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
             })
 
             setDrugData(drugDesignData)
-            console.log(`Fetched drug design successfully ${drugDesignData}`)
+            console.log(`Fetched drug design successfully :)`)
+            console.log(drugDesignData)
 
             // addTxToLogs(transaction)
         } catch (err) {
-            setError(`Couldn't fetch drug design!`)
+            setError(`Couldn't fetch drug design :(`)
             console.log(`Couldn't fetch drug design! ${err}`)
         }
     }
@@ -858,6 +970,7 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
         const provider = new ethers.JsonRpcProvider()
         const contract = fetchContract(provider)
 
+        setError('')
         if (!contract) return
 
         try {
@@ -866,10 +979,11 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
             })
 
             setDrugLoadData(drugLoadData)
-            console.log(`Fetched drug load data successfully ${drugLoadData}`)
+            console.log(`Fetched drug load data successfully :)`)
+            console.log(drugLoadData)
             // addTxToLogs(transaction)
         } catch (err) {
-            setError(`Couldn't fetched drug load data!`)
+            setError(`Couldn't fetched drug load data :(`)
             console.log(`Couldn't  fetched drug load data! ${err}`)
         }
     }
@@ -878,6 +992,7 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
         const provider = new ethers.JsonRpcProvider()
         const contract = fetchContract(provider)
 
+        setError('')
         if (!contract) return
 
         try {
@@ -886,10 +1001,11 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
             })
 
             // await transaction.wait()
-            console.log(`Fetched drug load pku's successfully ${transaction}`)
+            console.log(`Fetched drug load pku's successfully :)`)
+            console.log(transaction)
             // addTxToLogs(transaction)
         } catch (err) {
-            setError(`Couldn't fetched drug load pku's!`)
+            setError(`Couldn't fetched drug load pku's :)`)
             console.log(`Couldn't fetched drug load pku's! ${err}`)
         }
     }
@@ -898,6 +1014,7 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
         const provider = new ethers.JsonRpcProvider()
         const contract = fetchContract(provider)
 
+        setError('')
         if (!contract) return
 
         try {
@@ -906,10 +1023,11 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
             })
 
             setDrugData(drugData)
-            console.log(`Fetched drug data successfully ${drugData}`)
+            console.log(`Fetched drug data successfully :)`)
+            console.log(drugData)
             // addToLogs(transaction)
         } catch (err) {
-            setError(`Couldn't fetch drug data !`)
+            setError(`Couldn't fetch drug data :(`)
             console.log(`Couldn't fetch drug data! ${err}`)
         }
     }
@@ -918,6 +1036,7 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
         const provider = new ethers.JsonRpcProvider()
         const contract = fetchContract(provider)
 
+        setError('')
         if (!contract) return
 
         try {
@@ -925,10 +1044,11 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
                 from: currentAccount,
             })
 
-            console.log(`Fetched env history successfully ${transaction}`)
+            console.log(`Fetched env history successfully :)`)
+            console.log(transaction)
             // addToLogs(transaction)
         } catch (err) {
-            setError(`Couldn't fetch env history`)
+            setError(`Couldn't fetch env history :(`)
             console.log(`Couldn't fetch env history! ${err}`)
         }
     }
@@ -949,7 +1069,10 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
                 checkIfWalletIsConnected,
                 addRoleToMe,
                 removeRoleFromMe,
+                addDesigner,
+                addDistributor,
                 addRegulator,
+                addRetailer,
                 addDrugDesign,
                 addDrugTest,
                 addDrugTestByRegulator,
