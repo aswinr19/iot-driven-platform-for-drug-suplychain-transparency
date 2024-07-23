@@ -12,7 +12,10 @@ export interface MainchainContextType {
     checkIfWalletIsConnected: () => Promise<void>
     addRoleToMe: (role: string) => Promise<void>
     removeRoleFromMe: (role: string) => Promise<void>
+    addDesigner: (designerToBeAdded: string) => Promise<void>
+    addDistributor: (distributorToBeAdded: string) => Promise<void>
     addRegulator: (regulatorToBeAdded: string) => Promise<void>
+    addRetailer: (retailerToBeAdded: string) => Promise<void>
     addDrugDesign: (
         drugDesgignerName: string,
         drugDesignName: string,
