@@ -21,6 +21,7 @@ type FormDataThree = {
 export default function FetchData() {
     const {
         drugData,
+        drugDesignData,
         drugLoadData,
         error,
         currentAccount,
@@ -141,7 +142,47 @@ export default function FetchData() {
                 >
                     Fetch Drug Data
                 </Button>
-                {drugData && <span> {drugData} </span>}
+                {drugDesignData && (
+                    <div>
+                        <span className="block text-xl pb-4">Drug Data</span>{' '}
+                        <span className="block">
+                            {' '}
+                            {`Designer Name: ${
+                                JSON.parse(drugDesignData)[2]
+                            }`}{' '}
+                        </span>{' '}
+                        <span className="block">
+                            {' '}
+                            {`Design Name: ${
+                                JSON.parse(drugDesignData)[3]
+                            }`}{' '}
+                        </span>{' '}
+                        <span className="block">
+                            {' '}
+                            {`Passed: ${JSON.parse(drugDesignData)[5]}`}{' '}
+                        </span>{' '}
+                        <span className="block">
+                            {' '}
+                            {`Approval status: ${
+                                JSON.parse(drugDesignData)[4]
+                            }`}{' '}
+                        </span>{' '}
+                        <span className="block">
+                            {' '}
+                            {`Price: ${JSON.parse(drugDesignData)[6]}`}{' '}
+                        </span>{' '}
+                        <span className="block">
+                            {' '}
+                            {`Partnership state: ${
+                                JSON.parse(drugDesignData)[7]
+                            }`}{' '}
+                        </span>{' '}
+                        <span className="block">
+                            {' '}
+                            {`Quantity: ${JSON.parse(drugDesignData)[8]}`}{' '}
+                        </span>{' '}
+                    </div>
+                )}
                 <div className="space-y-2">
                     <Label htmlFor="fetchDrugSLU">Drug SLU</Label>
                     <Input
@@ -158,7 +199,37 @@ export default function FetchData() {
                 >
                     Fetch Drug Load Data
                 </Button>
-                {drugLoadData && <span> {drugLoadData} </span>}
+                {drugLoadData && (
+                    <div>
+                        <span className="block text-xl pb-4">
+                            Drug Load Data
+                        </span>{' '}
+                        <span className="block">
+                            {' '}
+                            {`Drug Load SLU: ${
+                                JSON.parse(drugLoadData)[1]
+                            }`}{' '}
+                        </span>{' '}
+                        <span className="block">
+                            {' '}
+                            {`Drug Load Quantity: ${
+                                JSON.parse(drugLoadData)[0]
+                            }`}{' '}
+                        </span>{' '}
+                        <span className="block">
+                            {' '}
+                            {`Drug Load Status: ${
+                                JSON.parse(drugLoadData)[2]
+                            }`}{' '}
+                        </span>{' '}
+                        <span className="block">
+                            {' '}
+                            {`Manufacturer Address: ${
+                                JSON.parse(drugLoadData)[3]
+                            }`}{' '}
+                        </span>{' '}
+                    </div>
+                )}
                 <div className="space-y-2">
                     <Label htmlFor="fetchDrugPKU">Drug PKU </Label>
                     <Input
@@ -182,6 +253,29 @@ export default function FetchData() {
                 >
                     Fetch Environment History
                 </Button>
+                {drugData && (
+                    <div>
+                        <span className="block text-xl pb-4">
+                            Drug Load Data
+                        </span>{' '}
+                        <span className="block">
+                            {' '}
+                            {`Drug Load PKU: ${JSON.parse(drugData)[1]}`}{' '}
+                        </span>{' '}
+                        <span className="block">
+                            {' '}
+                            {`Drug Load Status: ${
+                                JSON.parse(drugData)[2]
+                            }`}{' '}
+                        </span>{' '}
+                        <span className="block">
+                            {' '}
+                            {`Manufacturer Address: ${
+                                JSON.parse(drugData)[3]
+                            }`}{' '}
+                        </span>{' '}
+                    </div>
+                )}
                 {error && <span className="block text-red-600">{error} </span>}
             </div>
         </>

@@ -12,6 +12,20 @@ const fetchContract = (
     return new ethers.Contract(mainChainAddress, mainChainABI, signerOrProvider)
 }
 
+function extractProxyResult(proxyResult) {
+    const plainObject = Object.fromEntries(
+        Object.entries(proxyResult).filter(([key]) => !isNaN(parseInt(key)))
+    )
+
+    const serializable = Object.fromEntries(
+        Object.entries(plainObject).map(([key, value]) => [
+            key,
+            typeof value === 'bigint' ? value.toString() : value,
+        ])
+    )
+    return serializable
+}
+
 export const MainchainContext = React.createContext<MainchainContextType>(
     {} as MainchainContextType
 )
@@ -955,7 +969,9 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
                 from: currentAccount,
             })
 
-            setDrugData(drugDesignData)
+            const extractedData = extractProxyResult(drugDesignData)
+
+            setDrugDesignData(JSON.stringify(extractedData))
             console.log(`Fetched drug design successfully :)`)
             console.log(drugDesignData)
 
@@ -977,8 +993,9 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
             const drugLoadData = await contract.fetchDrugLoaudData(slu, {
                 from: currentAccount,
             })
+            const extractedData = extractProxyResult(drugLoadData)
+            setDrugLoadData(JSON.stringify(extractedData))
 
-            setDrugLoadData(drugLoadData)
             console.log(`Fetched drug load data successfully :)`)
             console.log(drugLoadData)
             // addTxToLogs(transaction)
@@ -1022,7 +1039,9 @@ export const MainchainProvider: React.FC<{ children: React.ReactNode }> = ({
                 from: currentAccount,
             })
 
-            setDrugData(drugData)
+            const extractedData = extractProxyResult(drugData)
+            setDrugData(JSON.stringify(extractedData))
+            console.log(extractedData)
             console.log(`Fetched drug data successfully :)`)
             console.log(drugData)
             // addToLogs(transaction)
