@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { ethers } from 'ethers'
 import { mainChainAddress, mainChainABI } from '@/context/Constants'
+import { sendAlertEmail, TEMPERATURE_THRESHOLD } from '@/utils/mail'
 
 const ETHEREUM_PROVIDER_URL = 'http://127.0.0.1:8545/'
 const PRIVATE_KEY =
@@ -14,6 +15,10 @@ export async function POST(request: NextRequest) {
     console.log('Received POST request')
     try {
         const { temperature, humidity } = await request.json()
+
+        if (temperature > TEMPERATURE_THRESHOLD) {
+            await sendAlertEmail(temperature)
+        }
 
         const provider = new ethers.JsonRpcProvider(ETHEREUM_PROVIDER_URL)
 
