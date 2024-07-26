@@ -6,7 +6,7 @@ pragma solidity ^0.8.24;
 contract Drug {
   /*
      PKU - Product Kepping Unit - used to uniquely identify an individual drug
-    SLU - Stock Loud Unit - used uniquely identify a batch of drugs
+     SLU - Stock Loud Unit - used uniquely identify a batch of drugs
   */
   uint pku;
   uint slu;

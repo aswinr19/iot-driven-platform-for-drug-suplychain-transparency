@@ -152,8 +152,6 @@ export default function DrugDesign() {
                     ? (e.target as HTMLInputElement).checked
                     : value,
         }))
-
-        console.log(formDataTwo)
     }
     const handleChangeThree = (e: ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target
@@ -196,8 +194,6 @@ export default function DrugDesign() {
             ...prevState,
             [name]: value,
         }))
-
-        console.log(formDataSeven)
     }
     const handleChangeEight = (e: ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target
