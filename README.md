@@ -13,7 +13,7 @@ cd iot-driven-platform-for-drug-suplychain-transparency
 
 npm install
 
-cp .env.example .env
+cp .env.example .env.local
 ```
 
 Next run local blokchain and deploy contract
@@ -29,7 +29,7 @@ Copy the address of both conracts and replace it in context/Constants.ts and mov
 ```
 mv artifacts/contracts/Core/Mainchain.sol/Mainchain.json context/
 
-mv artifacts/contracts/utils/Partnership.sol/Partnership.json context/
+mv artifacts/contracts/utils/Partnerships.sol/Partnerships.json context/
 ```
 
 [Setup local blockchain on metamask](https://docs.metamask.io/wallet/how-to/run-devnet), [import](https://support.metamask.io/managing-my-wallet/accounts-and-addresses/how-to-import-an-account/#importing-using-a-private-key) any one of the twenty accounts provided by hardhat and also [clear activity data](https://support.metamask.io/managing-my-wallet/resetting-deleting-and-restoring/how-to-clear-your-account-activity-reset-account) (it can cause nonce miss match error)

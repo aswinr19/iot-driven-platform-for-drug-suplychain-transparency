@@ -6,15 +6,15 @@ const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
     port: 587,
     auth: {
-        user: '',
-        pass: '',
+        user: process.env.NEXT_PUBLIC_SENDER_MAIL_ID,
+        pass: process.env.NEXT_PUBLIC_PASSWORD,
     },
 })
 
 export async function sendAlertEmail(temperature: number) {
     const mailOptions = {
-        from: '',
-        to: '',
+        from: process.env.NEXT_PUBLIC_SENDER_MAIL_ID,
+        to: process.env.NEXT_PUBLIC_RECEIVER_MAIL_ID,
         subject: 'High Temperature Alert in Drug Supply Chain',
         text: `Alert: The current temperature (${temperature}°C) has exceeded the threshold of ${TEMPERATURE_THRESHOLD}°C.`,
     }
